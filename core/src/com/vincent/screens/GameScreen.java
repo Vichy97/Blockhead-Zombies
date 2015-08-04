@@ -28,6 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.Sort;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.vincent.game.MyGdxGame;
@@ -90,7 +91,7 @@ public class GameScreen implements Screen, InputProcessor {
     private int mapWidth, mapHeight;
 
     //player fields
-    private float playerMaxSpeed = 150;
+    private float playerMaxSpeed = 300;
     private Player player;
     private Texture boxhead_1;
     private Texture boxhead_2;
@@ -108,7 +109,9 @@ public class GameScreen implements Screen, InputProcessor {
     private World world;
     private Box2DDebugRenderer debugRenderer;
     //how often the world physics should update
-    public final float step = 1f/30f;
+    public final float step = 1f/60f;
+    private double accumulator = 0;
+    private double currentTime = 0;
     //box2d is measured in meters so we use this and the debug matrix to convert
     private Matrix4 debugMatrix;
     private BodyDef bodyDef;
@@ -223,17 +226,17 @@ public class GameScreen implements Screen, InputProcessor {
 
         debugRenderer.render(world, debugMatrix);
         //TODO: interpolate world stepping to stop object stuttering
-        world.step(step, 6, 2);
+        stepWorld();
 
         gameCamera.update();
 
-       /* spriteBatch.begin();
+        spriteBatch.begin();
         font.draw(spriteBatch, "PlayerIso: " + player.position, 50, 700);
         font.draw(spriteBatch, "TouchpadPercent: X = " + touchpad1.getKnobPercentX() + " Y = " + touchpad1.getKnobPercentY(), 50, 675);
         font.draw(spriteBatch, "TouchpadAngle: " + (180 + Math.atan2(touchpad1.getKnobPercentY(), touchpad1.getKnobPercentX()) * 180.0d / Math.PI), 50, 650);
         font.draw(spriteBatch, "PlayerDirection: " + player.getDirection(), 50, 625);
         font.draw(spriteBatch, "FPS: " + (int)(1/delta), 50, 600);
-        spriteBatch.end(); */
+        spriteBatch.end();
 
         UIViewport.apply();
         UICamera.update();
@@ -360,6 +363,20 @@ public class GameScreen implements Screen, InputProcessor {
     private void updateEntities() {
         player.update();
         gameCamera.position.set(player.getEntityX(), player.getEntityY(), 0);
+    }
+
+    private void stepWorld() {
+        double newTime = TimeUtils.millis() / 1000.0;
+        double frameTime = Math.min(newTime - currentTime, 0.25);
+
+        accumulator += frameTime;
+
+        currentTime = newTime;
+
+        while (accumulator >= step) {
+            world.step(step, 6, 2);
+            accumulator -= step;
+        }
     }
 
     //method for writing to the log
