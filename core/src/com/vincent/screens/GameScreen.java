@@ -27,23 +27,16 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.I18NBundle;
-import com.badlogic.gdx.utils.Sort;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import com.vincent.World.ObjectManager;
+import com.vincent.entity.EntityManager;
 import com.vincent.game.MyGdxGame;
 import com.vincent.entity.Player;
 import com.vincent.util.AssetLoader;
-import com.vincent.util.map.CustomMapObject;
 import com.vincent.util.map.CustomTileMapRenderer;
 import com.vincent.util.GameUtils;
-import com.vincent.util.map.MapUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-
 /**
  * Created by Vincent on 6/19/2015.
  *
@@ -117,8 +110,8 @@ public class GameScreen implements Screen, InputProcessor {
     private BodyDef bodyDef;
     private FixtureDef fixtureDef;
 
-    ArrayList<CustomMapObject> mapObjects;
-    Comparator<CustomMapObject> comparator;
+    EntityManager entityManager;
+    ObjectManager objectManager;
 
     public GameScreen(MyGdxGame game, OrthographicCamera UICamera, Viewport UIViewport, OrthographicCamera gameCamera, Viewport gameViewport, I18NBundle bundle) {
         debug("constructor");
@@ -150,7 +143,6 @@ public class GameScreen implements Screen, InputProcessor {
         pauseTable.setVisible(false);
 
         inputMultiplexer = new InputMultiplexer();
-
     }
 
 
@@ -185,24 +177,13 @@ public class GameScreen implements Screen, InputProcessor {
         boxhead_8 = AssetLoader.boxhead_8;
 
         Texture[] textures = {boxhead_1, boxhead_2, boxhead_3, boxhead_4, boxhead_5, boxhead_6, boxhead_7, boxhead_8};
-        mapObjects = MapUtils.mapObjectsToList(map1.getLayers().get("objects").getObjects());
+        objectManager = new ObjectManager(tiledMapRenderer, map1.getLayers().get("objects").getObjects());
 
         world = AssetLoader.world;
         bodyDef = new BodyDef();
         fixtureDef = new FixtureDef();
-        player = new Player(textures, playerMaxSpeed, new Vector3(1984, 32, 0), world, touchpad1, bodyDef, fixtureDef);
-        mapObjects.add(player);
-
-        for (int i = 0; i < mapObjects.size(); i++) {
-            mapObjects.get(i).initPosition();
-        }
-
-        comparator = new Comparator<CustomMapObject>() {
-            @Override
-            public int compare(CustomMapObject object1, CustomMapObject object2) {
-                return object1.compareTo(object2);
-            }
-        };
+        entityManager = new EntityManager(world, fixtureDef, bodyDef);
+        entityManager.spawnPlayer(textures, playerMaxSpeed, new Vector3(1984, 32, 0), touchpad1);
 
         debugRenderer = new Box2DDebugRenderer();
 
@@ -217,11 +198,10 @@ public class GameScreen implements Screen, InputProcessor {
         tiledMapRenderer.setView(gameCamera);
         gameViewport.apply();
 
-        updateEntities();
-
         tiledMapRenderer.render(new int[]{0});
-        Collections.sort(mapObjects, comparator);
-        tiledMapRenderer.renderObjectArrayList(mapObjects);
+        entityManager.updateEntities();
+        objectManager.renderObjects();
+
         debugMatrix = gameCamera.combined.cpy().scale(GameUtils.PIXELS_PER_METER, GameUtils.PIXELS_PER_METER, 0);
 
         debugRenderer.render(world, debugMatrix);
@@ -231,10 +211,10 @@ public class GameScreen implements Screen, InputProcessor {
         gameCamera.update();
 
         spriteBatch.begin();
-        font.draw(spriteBatch, "PlayerIso: " + player.position, 50, 700);
+      //  font.draw(spriteBatch, "PlayerIso: " + player.position, 50, 700);
         font.draw(spriteBatch, "TouchpadPercent: X = " + touchpad1.getKnobPercentX() + " Y = " + touchpad1.getKnobPercentY(), 50, 675);
         font.draw(spriteBatch, "TouchpadAngle: " + (180 + Math.atan2(touchpad1.getKnobPercentY(), touchpad1.getKnobPercentX()) * 180.0d / Math.PI), 50, 650);
-        font.draw(spriteBatch, "PlayerDirection: " + player.getDirection(), 50, 625);
+//        font.draw(spriteBatch, "PlayerDirection: " + player.getDirection(), 50, 625);
         font.draw(spriteBatch, "FPS: " + (int)(1/delta), 50, 600);
         spriteBatch.end();
 
@@ -358,11 +338,6 @@ public class GameScreen implements Screen, InputProcessor {
         mainTable.top().right();
         mainTable.add(pauseButton).width(screenWidth / 15).height(screenWidth / 15);
         mainStage.addActor(mainTable);
-    }
-
-    private void updateEntities() {
-        player.update();
-        gameCamera.position.set(player.getEntityX(), player.getEntityY(), 0);
     }
 
     private void stepWorld() {

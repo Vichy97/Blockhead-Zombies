@@ -21,12 +21,14 @@ public class CustomMapObject extends TextureMapObject implements Comparable<Cust
         setScaleY(scaleY);
         width = getTextureRegion().getRegionWidth();
         height = getTextureRegion().getRegionHeight();
+        position = new Vector3();
     }
 
     public CustomMapObject(TextureRegion textureRegion) {
         super(textureRegion);
         width = getTextureRegion().getRegionWidth();
         height = getTextureRegion().getRegionHeight();
+        position = new Vector3();
     }
 
     public void render(Batch batch) {
@@ -35,7 +37,7 @@ public class CustomMapObject extends TextureMapObject implements Comparable<Cust
 
     //for some reason getX() and getY() dont work in the constructor
     public void initPosition() {
-        position = new Vector3(getX(), getY(), 0);
+        position.set(getX(), getY(), 0);
     }
 
     public int getHeight() {
