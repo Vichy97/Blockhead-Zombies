@@ -1,0 +1,33 @@
+Applications Memory Usage (kB):
+Uptime: 210096939 Realtime: 268421836
+
+** MEMINFO in pid 25095 [com.framework.game.android] **
+                   Pss  Private  Private  Swapped     Heap     Heap     Heap
+                 Total    Dirty    Clean    Dirty     Size    Alloc     Free
+                ------   ------   ------   ------   ------   ------   ------
+  Native Heap    10727    10660        0        0    14072    14072    16647
+  Dalvik Heap     3896     3568        0        0    28493    18871     9622
+ Dalvik Other      692      692        0        0                           
+        Stack      144      144        0        0                           
+    Other dev    11694    10536        4        0                           
+     .so mmap     1297      348      628        0                           
+    .apk mmap       59        0        0        0                           
+    .dex mmap     3020        0     3016        0                           
+    code mmap      552        0       76        0                           
+   image mmap      795      624       20        0                           
+   Other mmap        4        4        0        0                           
+      Unknown      144      144        0        0                           
+        TOTAL    33024    26720     3744        0    42565    32943    26269
+ 
+ Objects
+               Views:        5         ViewRootImpl:        1
+         AppContexts:        3           Activities:        1
+              Assets:        3        AssetManagers:        3
+       Local Binders:       10        Proxy Binders:       17
+    Death Recipients:        0
+     OpenSSL Sockets:        0
+ 
+ SQL
+         MEMORY_USED:        0
+  PAGECACHE_OVERFLOW:        0          MALLOC_SIZE:        0
+ 

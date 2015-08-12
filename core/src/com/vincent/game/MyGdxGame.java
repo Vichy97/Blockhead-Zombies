@@ -4,10 +4,15 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.vincent.screens.GameScreen;
+import com.vincent.screens.LoadingScreen;
+import com.vincent.screens.MapSelectScreen;
+import com.vincent.screens.MenuScreen;
 import com.vincent.util.AssetLoader;
 
 import java.util.Locale;
@@ -26,16 +31,15 @@ public class MyGdxGame extends Game {
     //aspect ratio of the actual screen size
     public static float ASPECT_RATIO;
 
-    //various screens for the games different states
-    public com.vincent.screens.LoadingScreen loadingScreen;
-    public com.vincent.screens.MenuScreen menuScreen;
-    public com.vincent.screens.GameScreen gameScreen;
-
     //reuse the viewports and camera through all the states
     private OrthographicCamera UICamera, gameCamera;
     //viewport for the game. you might want to experiment with
     //different viewports based on your game type or style
     private Viewport UIViewport, gameViewport;
+
+    private I18NBundle bundle;
+
+    private TiledMap currentMap;
 
     @Override
     public void create() {
@@ -51,18 +55,35 @@ public class MyGdxGame extends Game {
 
         //support for different languages
         FileHandle fileHandle = Gdx.files.internal("locales/Boxhead");
-        I18NBundle bundle = I18NBundle.createBundle(fileHandle, Locale.getDefault());
-
-
-        //since these are initialized here you must be sure not to access any resources in
-        //their constructors because the assets have not been loaded (they load in the show() method of LoadingScreen)
-        //and you will get a null pointer exception. access resources in show() instead
-        loadingScreen = new com.vincent.screens.LoadingScreen(this);
-        menuScreen = new com.vincent.screens.MenuScreen(this, UICamera, UIViewport, bundle);
-        gameScreen = new com.vincent.screens.GameScreen(this, UICamera, UIViewport, gameCamera, gameViewport, bundle);
+        bundle = I18NBundle.createBundle(fileHandle, Locale.getDefault());
 
         //the first screen is the loading screen
-        setScreen(loadingScreen);
+        setScreen("loading");
+    }
+
+    public void setScreen(String screen) {
+        switch (screen) {
+            case "loading": {
+                setScreen(new LoadingScreen(this));
+                break;
+            } case "menu": {
+                setScreen(new MenuScreen(this, UICamera, UIViewport, bundle));
+                break;
+            } case "map select": {
+                setScreen(new MapSelectScreen(this, UICamera, UIViewport, bundle));
+                break;
+            } case "game": {
+                setScreen(new GameScreen(this, UICamera, UIViewport, gameCamera, gameViewport, bundle, currentMap));
+                break;
+            } default: {
+                Gdx.app.log("setScreen", "Incorrect Screen Name");
+                Gdx.app.exit();
+            }
+        }
+    }
+
+    public void setCurrentMap(TiledMap map) {
+        currentMap = map;
     }
 
     @Override

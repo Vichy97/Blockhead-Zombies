@@ -59,14 +59,6 @@ public class MenuScreen implements Screen {
 
         stage = new Stage(viewport);
         table = new Table();
-    }
-
-
-
-    //do not initialize textures in the constructor, initialize them here or you may get a null pointer exception
-    @Override
-    public void show() {
-        debug("show");
 
         //set the button style
         buttonDrawable = new NinePatchDrawable(AssetLoader.button);
@@ -87,25 +79,30 @@ public class MenuScreen implements Screen {
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(game.gameScreen);
+                game.setScreen("map select");
             }
         });
 
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.gameScreen.dispose();
-                game.loadingScreen.dispose();
                 Gdx.app.exit();
             }
         });
 
-        //add ui elements to the table, add that to the stage, then set the input processor to the stage
+        //add ui elements to the table then add that to the stage
         table.setBounds(0, 0, MyGdxGame.GAME_WIDTH, MyGdxGame.GAME_HEIGHT);
         table.add(playButton).width(300).center();
         table.row();
         table.add(exitButton).width(300).center();
         stage.addActor(table);
+    }
+
+
+
+     @Override
+    public void show() {
+        debug("show");
 
         Gdx.input.setInputProcessor(stage);
 
@@ -159,9 +156,8 @@ public class MenuScreen implements Screen {
         debug("dispose");
         stage.dispose();
         textFont.dispose();
+        System.gc();
     }
-
-
 
     //method for writing to the log
     private void debug(String message) {

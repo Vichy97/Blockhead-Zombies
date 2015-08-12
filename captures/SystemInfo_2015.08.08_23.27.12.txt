@@ -1,0 +1,170 @@
+AGGREGATED OVER LAST 24 HOURS:
+System memory usage:
+  SOff/Norm: 15 samples:
+    Cached: 760MB min, 885MB avg, 1.0GB max
+    Free: 144MB min, 271MB avg, 503MB max
+    ZRam: 0.00 min, 0.00 avg, 0.00 max
+    Kernel: 121MB min, 175MB avg, 266MB max
+    Native: 73MB min, 76MB avg, 80MB max
+  SOn /Norm: 21 samples:
+    Cached: 839MB min, 0.95GB avg, 1.2GB max
+    Free: 103MB min, 209MB avg, 342MB max
+    ZRam: 0.00 min, 0.00 avg, 0.00 max
+    Kernel: 119MB min, 176MB avg, 249MB max
+    Native: 71MB min, 79MB avg, 105MB max
+
+Per-Package Stats:
+  * com.framework.game.android / u0a155 / v1:
+      * com.framework.game.android / u0a155 / v1:
+               TOTAL: 0.59% (5.3MB-37MB-123MB/4.2MB-34MB-120MB over 18)
+                 Top: 0.59% (5.3MB-37MB-123MB/4.2MB-34MB-120MB over 18)
+          (Last Act): 0.10%
+            (Cached): 0.74% (24MB-27MB-30MB/22MB-25MB-28MB over 2)
+
+Summary:
+  * com.framework.game.android / u0a155 / v1:
+           TOTAL: 0.59% (5.3MB-37MB-123MB/4.2MB-34MB-120MB over 18)
+             Top: 0.59% (5.3MB-37MB-123MB/4.2MB-34MB-120MB over 18)
+      (Last Act): 0.10%
+        (Cached): 0.74% (24MB-27MB-30MB/22MB-25MB-28MB over 2)
+
+Run time Stats:
+  SOff/Norm: +13h4m5s352ms
+  SOn /Norm: +5h38m16s434ms
+      TOTAL: +18h42m21s786ms
+
+Memory usage:
+  Kernel : 175MB (252 samples)
+  Native : 77MB (252 samples)
+  Persist: 273MB (1246 samples)
+  Top    : 114MB (1195 samples)
+  ImpFg  : 151MB (1920 samples)
+  ImpBg  : 31MB (1179 samples)
+  Service: 508MB (5992 samples)
+  Receivr: 235KB (4754 samples)
+  Home   : 23MB (92 samples)
+  LastAct: 5.4MB (274 samples)
+  CchAct : 123MB (368 samples)
+  CchCAct: 54MB (340 samples)
+  CchEmty: 152MB (2991 samples)
+  Cached : 0.89GB (252 samples)
+  Free   : 252MB (252 samples)
+  TOTAL  : 2.8GB
+  ServRst: 57KB (1539 samples)
+
+          Start time: 2015-08-07 22:08:10
+  Total elapsed time: +1d1h20m26s291ms (partial) libart.so
+
+AGGREGATED OVER LAST 3 HOURS:
+System memory usage:
+  SOff/Norm: 1 samples:
+    Cached: 846MB min, 846MB avg, 846MB max
+    Free: 144MB min, 144MB avg, 144MB max
+    ZRam: 0.00 min, 0.00 avg, 0.00 max
+    Kernel: 266MB min, 266MB avg, 266MB max
+    Native: 80MB min, 80MB avg, 80MB max
+  SOn /Norm: 3 samples:
+    Cached: 850MB min, 879MB avg, 0.90GB max
+    Free: 127MB min, 168MB avg, 206MB max
+    ZRam: 0.00 min, 0.00 avg, 0.00 max
+    Kernel: 242MB min, 245MB avg, 249MB max
+    Native: 78MB min, 81MB avg, 83MB max
+
+Per-Package Stats:
+  * com.framework.game.android / u0a155 / v1:
+      * com.framework.game.android / u0a155 / v1:
+               TOTAL: 7.3% (5.3MB-38MB-123MB/4.2MB-36MB-120MB over 14)
+                 Top: 7.3% (5.3MB-38MB-123MB/4.2MB-36MB-120MB over 14)
+          (Last Act): 1.6%
+            (Cached): 1.2%
+
+Summary:
+  * com.framework.game.android / u0a155 / v1:
+           TOTAL: 7.3% (5.3MB-38MB-123MB/4.2MB-36MB-120MB over 14)
+             Top: 7.3% (5.3MB-38MB-123MB/4.2MB-36MB-120MB over 14)
+      (Last Act): 1.6%
+        (Cached): 1.2%
+
+Run time Stats:
+  SOff/Norm: +33m45s85ms
+  SOn /Norm: +36m33s679ms
+      TOTAL: +1h10m18s764ms
+
+Memory usage:
+  Kernel : 247MB (31 samples)
+  Native : 81MB (31 samples)
+  Persist: 290MB (104 samples)
+  Top    : 90MB (126 samples)
+  ImpFg  : 151MB (303 samples)
+  ImpBg  : 24MB (84 samples)
+  Service: 568MB (766 samples)
+  Receivr: 0.96MB (835 samples)
+  Home   : 31MB (17 samples)
+  LastAct: 17MB (36 samples)
+  CchAct : 133MB (43 samples)
+  CchCAct: 58MB (22 samples)
+  CchEmty: 163MB (458 samples)
+  Cached : 875MB (31 samples)
+  Free   : 165MB (31 samples)
+  TOTAL  : 2.8GB
+  ServRst: 77KB (75 samples)
+
+          Start time: 2015-08-08 21:37:48
+  Total elapsed time: +1h49m39s563ms (partial) libart.so
+
+CURRENT STATS:
+System memory usage:
+  SOff/Norm: 1 samples:
+    Cached: 846MB min, 846MB avg, 846MB max
+    Free: 144MB min, 144MB avg, 144MB max
+    ZRam: 0.00 min, 0.00 avg, 0.00 max
+    Kernel: 266MB min, 266MB avg, 266MB max
+    Native: 80MB min, 80MB avg, 80MB max
+  SOn /Norm: 3 samples:
+    Cached: 850MB min, 879MB avg, 0.90GB max
+    Free: 127MB min, 168MB avg, 206MB max
+    ZRam: 0.00 min, 0.00 avg, 0.00 max
+    Kernel: 242MB min, 245MB avg, 249MB max
+    Native: 78MB min, 81MB avg, 83MB max
+
+Per-Package Stats:
+  * com.framework.game.android / u0a155 / v1:
+      * com.framework.game.android / u0a155 / v1:
+               TOTAL: 7.3% (5.3MB-38MB-123MB/4.2MB-36MB-120MB over 14)
+                 Top: 7.3% (5.3MB-38MB-123MB/4.2MB-36MB-120MB over 14)
+          (Last Act): 1.6%
+            (Cached): 1.2%
+
+Summary:
+  * com.framework.game.android / u0a155 / v1:
+           TOTAL: 7.3% (5.3MB-38MB-123MB/4.2MB-36MB-120MB over 14)
+             Top: 7.3% (5.3MB-38MB-123MB/4.2MB-36MB-120MB over 14)
+      (Last Act): 1.6%
+        (Cached): 1.2%
+
+Run time Stats:
+  SOff/Norm: +33m45s85ms
+  SOn /Norm: +36m33s495ms (running)
+      TOTAL: +1h10m18s580ms
+
+Memory usage:
+  Kernel : 247MB (31 samples)
+  Native : 81MB (31 samples)
+  Persist: 290MB (104 samples)
+  Top    : 90MB (126 samples)
+  ImpFg  : 151MB (303 samples)
+  ImpBg  : 24MB (84 samples)
+  Service: 568MB (766 samples)
+  Receivr: 0.96MB (835 samples)
+  Home   : 31MB (17 samples)
+  LastAct: 17MB (36 samples)
+  CchAct : 133MB (43 samples)
+  CchCAct: 58MB (22 samples)
+  CchEmty: 163MB (458 samples)
+  Cached : 875MB (31 samples)
+  Free   : 165MB (31 samples)
+  TOTAL  : 2.8GB
+  ServRst: 77KB (75 samples)
+
+          Start time: 2015-08-08 21:37:48
+  Total elapsed time: +1h49m39s597ms (partial) libart.so

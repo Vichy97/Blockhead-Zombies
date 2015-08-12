@@ -40,7 +40,7 @@ public class LoadingScreen implements Screen {
             //if it is done, initialize assets before moving on
             AssetLoader.initAssets();
             //switch to the menu
-            game.setScreen(game.menuScreen);
+            game.setScreen("menu");
         }
 
         float progress = AssetLoader.getProgress();
@@ -71,6 +71,7 @@ public class LoadingScreen implements Screen {
     @Override
     public void dispose() {
         debug("dispose");
+        System.gc();
     }
 
 

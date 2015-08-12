@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -14,22 +15,21 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.I18NBundle;
-import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import com.vincent.World.Cloud;
 import com.vincent.World.ObjectManager;
 import com.vincent.entity.EntityManager;
 import com.vincent.game.MyGdxGame;
@@ -37,6 +37,8 @@ import com.vincent.entity.Player;
 import com.vincent.util.AssetLoader;
 import com.vincent.util.map.CustomTileMapRenderer;
 import com.vincent.util.GameUtils;
+import com.vincent.util.map.MapBodyManager;
+
 /**
  * Created by Vincent on 6/19/2015.
  *
@@ -44,6 +46,10 @@ import com.vincent.util.GameUtils;
  * this class handles updating and rendering all of the actual game
  */
 public class GameScreen implements Screen, InputProcessor {
+
+    private boolean paused = false;
+    private boolean music = true;
+    private boolean sound = true;
 
     private MyGdxGame game;
     private I18NBundle bundle;
@@ -63,14 +69,16 @@ public class GameScreen implements Screen, InputProcessor {
     //visibility and we dont want input from both at once
     private Stage mainStage;
     private Stage touchpadStage;
-    private Stage pauseStage;
 
-    private Table mainTable;
-    private Table pauseTable;
+    private ImageButton pauseButton, playButton, musicOnButton, musicOffButton, soundOnButton, soundOffButton;
+    private ImageButton.ImageButtonStyle imageButtonStylePause, imageButtonStylePlay, imageButtonStyleMusicOn, imageButtonStyleMusicOff, imageButtonStyleSoundOn, imageButtonStyleSoundOff;
+    private Drawable pauseDrawable,playDrawable, musicOnDrawable, musicOffDrawable, soundOnDrawable, soundOffDrawable;
 
-    private ImageButton pauseButton, playButton;
-    private ImageButton.ImageButtonStyle imageButtonStylePause, imageButtonStylePlay;
-    private Drawable pauseDrawable,playDrawable;
+    private TextButton menuButton;
+    private TextButton.TextButtonStyle textButtonStyle;
+    private NinePatchDrawable buttonDrawable;
+    private BitmapFont textButtonFont;
+
 
     //touchpads are onscreen joysticks. your game might not need these
     private Touchpad touchpad1, touchpad2;
@@ -80,9 +88,12 @@ public class GameScreen implements Screen, InputProcessor {
 
     //map fields
     private CustomTileMapRenderer tiledMapRenderer;
-    private TiledMap map1;
+    private TiledMap currentMap;
     private int mapWidth, mapHeight;
 
+
+    //TODO: make this much less messy and remove texture variable declerations
+    //TODO: (refer to the static fields in AssetLoader directly) once i get more artwork
     //player fields
     private float playerMaxSpeed = 300;
     private Player player;
@@ -94,6 +105,9 @@ public class GameScreen implements Screen, InputProcessor {
     private Texture boxhead_6;
     private Texture boxhead_7;
     private Texture boxhead_8;
+    private Texture cloudTexture1;
+    private Texture cloudTexture2;
+    private Texture cloudTexture3;
 
     private BitmapFont font;
     private SpriteBatch spriteBatch;
@@ -104,16 +118,16 @@ public class GameScreen implements Screen, InputProcessor {
     //how often the world physics should update
     public final float step = 1f/60f;
     private double accumulator = 0;
-    private double currentTime = 0;
     //box2d is measured in meters so we use this and the debug matrix to convert
     private Matrix4 debugMatrix;
-    private BodyDef bodyDef;
-    private FixtureDef fixtureDef;
 
-    EntityManager entityManager;
-    ObjectManager objectManager;
+    private EntityManager entityManager;
+    private ObjectManager objectManager;
 
-    public GameScreen(MyGdxGame game, OrthographicCamera UICamera, Viewport UIViewport, OrthographicCamera gameCamera, Viewport gameViewport, I18NBundle bundle) {
+    private Cloud[] cloudArray;
+    private MapBodyManager mapBodyManager;
+
+    public GameScreen(MyGdxGame game, OrthographicCamera UICamera, Viewport UIViewport, OrthographicCamera gameCamera, Viewport gameViewport, I18NBundle bundle, TiledMap map) {
         debug("constructor");
         this.game = game;
         this.UICamera = UICamera;
@@ -134,28 +148,14 @@ public class GameScreen implements Screen, InputProcessor {
         gameCamera.update();
 
         touchpadStage = new Stage(UIViewport);
-        mainTable = new Table();
-
         mainStage = new Stage();
 
-        pauseStage = new Stage(UIViewport);
-        pauseTable = new Table();
-        pauseTable.setVisible(false);
-
         inputMultiplexer = new InputMultiplexer();
-    }
-
-
-
-    @Override
-    public void show() {
-        debug("show");
 
         initUI();
 
         //setup input
         inputMultiplexer.addProcessor(touchpadStage);
-        inputMultiplexer.addProcessor(pauseStage);
         inputMultiplexer.addProcessor(mainStage);
         inputMultiplexer.addProcessor(this);
         Gdx.input.setInputProcessor(inputMultiplexer);
@@ -163,9 +163,6 @@ public class GameScreen implements Screen, InputProcessor {
         font = AssetLoader.createFont("DroidSans.ttf", 25);
         font.setColor(Color.BLACK);
         spriteBatch = new SpriteBatch();
-
-        map1 = AssetLoader.map1;
-        tiledMapRenderer = new CustomTileMapRenderer(map1);
 
         boxhead_1 = AssetLoader.boxhead_1;
         boxhead_2 = AssetLoader.boxhead_2;
@@ -175,17 +172,34 @@ public class GameScreen implements Screen, InputProcessor {
         boxhead_6 = AssetLoader.boxhead_6;
         boxhead_7 = AssetLoader.boxhead_7;
         boxhead_8 = AssetLoader.boxhead_8;
+        cloudTexture1 = AssetLoader.cloudTexture1;
+        cloudTexture2 = AssetLoader.cloudTexture2;
+        cloudTexture3 = AssetLoader.cloudTexture3;
 
-        Texture[] textures = {boxhead_1, boxhead_2, boxhead_3, boxhead_4, boxhead_5, boxhead_6, boxhead_7, boxhead_8};
-        objectManager = new ObjectManager(tiledMapRenderer, map1.getLayers().get("objects").getObjects());
+        currentMap = map;
+
+        spawnClouds();
 
         world = AssetLoader.world;
-        bodyDef = new BodyDef();
-        fixtureDef = new FixtureDef();
-        entityManager = new EntityManager(world, fixtureDef, bodyDef);
-        entityManager.spawnPlayer(textures, playerMaxSpeed, new Vector3(1984, 32, 0), touchpad1);
-
         debugRenderer = new Box2DDebugRenderer();
+
+        mapBodyManager = new MapBodyManager(world, GameUtils.PIXELS_PER_METER, null, 0);
+        mapBodyManager.createPhysics(currentMap);
+    }
+
+
+
+    @Override
+    public void show() {
+        debug("show");
+
+        Texture[] textures = {boxhead_1, boxhead_2, boxhead_3, boxhead_4, boxhead_5, boxhead_6, boxhead_7, boxhead_8};
+
+        tiledMapRenderer = new CustomTileMapRenderer(currentMap);
+
+        objectManager = new ObjectManager(tiledMapRenderer, currentMap.getLayers().get("objects").getObjects());
+        entityManager = new EntityManager(world);
+        player = entityManager.spawnPlayer(textures, playerMaxSpeed, new Vector3(1984, 32, 0), touchpad1);
 
         Gdx.graphics.setContinuousRendering(true);
     }
@@ -194,38 +208,52 @@ public class GameScreen implements Screen, InputProcessor {
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+        Gdx.gl.glClearColor(40f / 255f, 175f / 255f, 230f / 255f, 1f);
 
         tiledMapRenderer.setView(gameCamera);
         gameViewport.apply();
 
+        renderClouds(delta);
+
         tiledMapRenderer.render(new int[]{0});
-        entityManager.updateEntities();
-        objectManager.renderObjects();
+        tiledMapRenderer.renderObjectLayer("static objects");
+        if (!paused) {
+            objectManager.sortObjects();
+            objectManager.renderObjects();
+            entityManager.updateEntities();
+        } else {
+            objectManager.renderObjects();
+        }
 
-        debugMatrix = gameCamera.combined.cpy().scale(GameUtils.PIXELS_PER_METER, GameUtils.PIXELS_PER_METER, 0);
+        gameCamera.position.set(player.getEntityX(), player.getEntityY(), 0);
 
+        debugMatrix = gameCamera.combined.scale(GameUtils.PIXELS_PER_METER, GameUtils.PIXELS_PER_METER, 0);
         debugRenderer.render(world, debugMatrix);
-        //TODO: interpolate world stepping to stop object stuttering
-        stepWorld();
+
+        if (!paused) {
+            stepWorld(delta);
+        }
 
         gameCamera.update();
 
-        spriteBatch.begin();
-      //  font.draw(spriteBatch, "PlayerIso: " + player.position, 50, 700);
+        /*spriteBatch.begin();
+        font.draw(spriteBatch, "PlayerIso: " + player.position, 50, 700);
         font.draw(spriteBatch, "TouchpadPercent: X = " + touchpad1.getKnobPercentX() + " Y = " + touchpad1.getKnobPercentY(), 50, 675);
         font.draw(spriteBatch, "TouchpadAngle: " + (180 + Math.atan2(touchpad1.getKnobPercentY(), touchpad1.getKnobPercentX()) * 180.0d / Math.PI), 50, 650);
-//        font.draw(spriteBatch, "PlayerDirection: " + player.getDirection(), 50, 625);
-        font.draw(spriteBatch, "FPS: " + (int)(1/delta), 50, 600);
-        spriteBatch.end();
+        font.draw(spriteBatch, "PlayerDirection: " + player.getDirection(), 50, 625);
+        font.draw(spriteBatch, "FPS: " + (int) (1 / delta), 50, 600);
+        spriteBatch.end(); */
+
 
         UIViewport.apply();
         UICamera.update();
-        pauseStage.act();
-        pauseStage.draw();
-        touchpadStage.act();
-        touchpadStage.draw();
         mainStage.act();
         mainStage.draw();
+        if (!paused) {
+            touchpadStage.act();
+            touchpadStage.draw();
+        }
+
     }
 
     @Override
@@ -244,13 +272,25 @@ public class GameScreen implements Screen, InputProcessor {
         debug("pause");
 
         //hide the pause button and show the pause menu
-        pauseTable.setVisible(true);
         pauseButton.setVisible(false);
+        playButton.setVisible(true);
+        menuButton.setVisible(true);
+
+        if (music) {
+            musicOnButton.setVisible(true);
+        } else {
+            musicOffButton.setVisible(true);
+        }
+        if (sound) {
+            soundOnButton.setVisible(true);
+        } else {
+            soundOffButton.setVisible(true);
+        }
         //get input from pause menu and ignore all other input
         inputMultiplexer.removeProcessor(touchpadStage);
         //stop rendering. now only touch events will be handled
         Gdx.graphics.setContinuousRendering(false);
-        Gdx.graphics.requestRendering();
+        paused = true;
     }
 
     //nothing happens here because if the game is minimized
@@ -270,12 +310,14 @@ public class GameScreen implements Screen, InputProcessor {
     public void dispose() {
         debug("dispose");
         font.dispose();
-        mainStage.dispose();
-        pauseStage.dispose();
-        touchpadStage.dispose();
         spriteBatch.dispose();
+        mainStage.dispose();
+        touchpadStage.dispose();
         tiledMapRenderer.dispose();
-        map1.dispose();
+        currentMap.dispose();
+        entityManager.dispose();
+        objectManager.dispose();
+        System.gc();
     }
 
 
@@ -283,13 +325,35 @@ public class GameScreen implements Screen, InputProcessor {
     //method for setting up the user interface. This just keeps the show method cleaner
     private void initUI() {
         //set button styles and images
-        pauseDrawable = new TextureRegionDrawable(AssetLoader.pause);
-        playDrawable = new TextureRegionDrawable(AssetLoader.play);
+        pauseDrawable = AssetLoader.pause;
+        playDrawable = AssetLoader.play;
+        musicOnDrawable = AssetLoader.musicOn;
+        musicOffDrawable = AssetLoader.musicOff;
+        soundOnDrawable = AssetLoader.soundOn;
+        soundOffDrawable = AssetLoader.soundOff;
 
         imageButtonStylePlay = new ImageButton.ImageButtonStyle();
         imageButtonStylePlay.up = playDrawable;
         imageButtonStylePause = new ImageButton.ImageButtonStyle();
         imageButtonStylePause.up = pauseDrawable;
+        imageButtonStyleMusicOn = new ImageButton.ImageButtonStyle();
+        imageButtonStyleMusicOn.up = musicOnDrawable;
+        imageButtonStyleMusicOff = new ImageButton.ImageButtonStyle();
+        imageButtonStyleMusicOff.up = musicOffDrawable;
+        imageButtonStyleSoundOn = new ImageButton.ImageButtonStyle();
+        imageButtonStyleSoundOn.up = soundOnDrawable;
+        imageButtonStyleSoundOff = new ImageButton.ImageButtonStyle();
+        imageButtonStyleSoundOff.up = soundOffDrawable;
+
+        buttonDrawable = new NinePatchDrawable(AssetLoader.button);
+        textButtonStyle = new TextButton.TextButtonStyle();
+        textButtonFont = AssetLoader.createFont("DroidSans.ttf", 50);
+        textButtonFont.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        textButtonStyle.font = textButtonFont;
+        textButtonStyle.fontColor = Color.WHITE;
+        textButtonStyle.down = buttonDrawable;
+        textButtonStyle.up = buttonDrawable;
+
 
         //set the buttons click listeners
         pauseButton = new ImageButton(imageButtonStylePause);
@@ -299,18 +363,96 @@ public class GameScreen implements Screen, InputProcessor {
                 pause();
             }
         });
+        pauseButton.setX(gameWidth - pauseButton.getWidth());
+        pauseButton.setY(gameHeight - pauseButton.getHeight());
+
         playButton = new ImageButton(imageButtonStylePlay);
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 //resume
-                pauseTable.setVisible(false);
+                playButton.setVisible(false);
                 pauseButton.setVisible(true);
+                musicOnButton.setVisible(false);
+                musicOffButton.setVisible(false);
+                soundOnButton.setVisible(false);
+                soundOffButton.setVisible(false);
+                menuButton.setVisible(false);
+
                 inputMultiplexer.addProcessor(touchpadStage);
                 //begin rendering again
                 Gdx.graphics.setContinuousRendering(true);
+                paused = false;
             }
         });
+        playButton.setX(gameWidth / 2 - playButton.getWidth() / 2);
+        playButton.setY(gameHeight / 2 - playButton.getHeight() / 2 + playButton.getHeight() * 1.5f);
+        playButton.setVisible(false);
+
+        musicOnButton = new ImageButton(imageButtonStyleMusicOn);
+        musicOnButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                music = false;
+                musicOnButton.setVisible(false);
+                musicOffButton.setVisible(true);
+            }
+        });
+        musicOnButton.setX(gameWidth / 2 - musicOnButton.getWidth());
+        musicOnButton.setY(gameHeight / 2);
+        musicOnButton.setVisible(false);
+
+        musicOffButton = new ImageButton(imageButtonStyleMusicOff);
+        musicOffButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                music = true;
+                musicOffButton.setVisible(false);
+                musicOnButton.setVisible(true);
+            }
+        });
+        musicOffButton.setX(gameWidth / 2 - musicOffButton.getWidth());
+        musicOffButton.setY(gameHeight / 2);
+        musicOffButton.setVisible(false);
+
+        soundOnButton = new ImageButton(imageButtonStyleSoundOn);
+        soundOnButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                sound = false;
+                soundOnButton.setVisible(false);
+                soundOffButton.setVisible(true);
+            }
+        });
+        soundOnButton.setX(gameWidth / 2);
+        soundOnButton.setY(gameHeight / 2);
+        soundOnButton.setVisible(false);
+
+        soundOffButton = new ImageButton(imageButtonStyleSoundOff);
+        soundOffButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                sound = true;
+                soundOffButton.setVisible(false);
+                soundOnButton.setVisible(true);
+            }
+        });
+        soundOffButton.setX(gameWidth / 2);
+        soundOffButton.setY(gameHeight / 2);
+        soundOffButton.setVisible(false);
+
+        menuButton = new TextButton(bundle.get("menu"), textButtonStyle);
+        menuButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen("menu");
+            }
+        });
+        menuButton.setWidth(256);
+        menuButton.setHeight(128);
+        menuButton.setX(gameWidth / 2 - menuButton.getWidth() / 2);
+        menuButton.setY(gameHeight / 2 - menuButton.getHeight());
+        menuButton.setVisible(false);
 
         //set the touchpad style and position
         touchpadBase = new TextureRegionDrawable(AssetLoader.touchpadBase);
@@ -327,26 +469,20 @@ public class GameScreen implements Screen, InputProcessor {
         touchpadStage.addActor(touchpad1);
         touchpadStage.addActor(touchpad2);
 
-        //add ui elements to the pause stage
-        pauseTable.setBounds(0, 0, gameWidth, gameHeight);
-        pauseTable.center();
-        pauseTable.add(playButton).width(screenWidth / 15).height(screenWidth / 15);
-        pauseStage.addActor(pauseTable);
-
         //add ui elements to the main stage
-        mainTable.setBounds(0, 0, screenWidth, screenHeight);
-        mainTable.top().right();
-        mainTable.add(pauseButton).width(screenWidth / 15).height(screenWidth / 15);
-        mainStage.addActor(mainTable);
+        mainStage.addActor(pauseButton);
+        mainStage.addActor(playButton);
+        mainStage.addActor(musicOnButton);
+        mainStage.addActor(musicOffButton);
+        mainStage.addActor(soundOnButton);
+        mainStage.addActor(soundOffButton);
+        mainStage.addActor(menuButton);
     }
 
-    private void stepWorld() {
-        double newTime = TimeUtils.millis() / 1000.0;
-        double frameTime = Math.min(newTime - currentTime, 0.25);
+    private void stepWorld(float delta) {
+        double frameTime = Math.min(delta, 0.25);
 
         accumulator += frameTime;
-
-        currentTime = newTime;
 
         while (accumulator >= step) {
             world.step(step, 6, 2);
@@ -358,6 +494,28 @@ public class GameScreen implements Screen, InputProcessor {
     private void debug(String message) {
         if (MyGdxGame.DEBUG) {
             Gdx.app.log("GameScreen", message);
+        }
+    }
+
+    private void spawnClouds() {
+        cloudArray = new Cloud[6];
+        for (int i = 0; i < cloudArray.length; i++) {
+            if (i % 3 == 0) {
+                cloudArray[i] = new Cloud(1920 - i * 350, cloudTexture1);
+            } else if (i % 2 == 0) {
+                cloudArray[i] = new Cloud(1920 - i * 350, cloudTexture2);
+            } else {
+                cloudArray[i] = new Cloud(1920 - i * 350, cloudTexture3);
+            }
+        }
+    }
+
+    private void renderClouds(float delta) {
+        for (int i = 0; i < cloudArray.length; i++) {
+            if (!paused) {
+                cloudArray[i].update(delta);
+            }
+            cloudArray[i].render(spriteBatch);
         }
     }
 

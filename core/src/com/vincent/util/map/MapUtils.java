@@ -106,7 +106,7 @@ public class MapUtils {
         MapObjects mapObjects = tiledMap.getLayers().get(layer).getObjects();
         for (int i = 0; i < mapObjects.getCount(); i++) {
             MapObject object = mapObjects.get(i);
-           if (object instanceof CustomMapObject) {
+           if (object instanceof TextureMapObject) {
                 tempVector3.set(((TextureMapObject) object).getX(), ((TextureMapObject) object).getY(), 0);
                 isoToGame(tempVector3);
                 ((TextureMapObject) object).setX(tempVector3.x - ((TextureMapObject) object).getTextureRegion().getRegionWidth() / 2);

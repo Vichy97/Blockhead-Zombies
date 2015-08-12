@@ -10,6 +10,10 @@ import java.util.Comparator;
 
 /**
  * Created by Vincent on 8/4/2015.
+ *
+ * Handle sorting and rendering objects
+ * updating is done in EntityManager because not all objects need updating
+ * however all objects (even entities) need rendering\
  */
 public class ObjectManager {
 
@@ -55,5 +59,9 @@ public class ObjectManager {
 
     public void sortObjects() {
         Collections.sort(objects, comparator);
+    }
+
+    public void dispose() {
+        objects.clear();
     }
 }

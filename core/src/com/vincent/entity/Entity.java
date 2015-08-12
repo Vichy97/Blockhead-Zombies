@@ -102,7 +102,7 @@ public class Entity extends CustomMapObject{
         float x = body.getPosition().x * GameUtils.PIXELS_PER_METER;
         float y = body.getPosition().y * GameUtils.PIXELS_PER_METER;
         position.set((int)x - width / 2, (int)y - height / 2, 0);
-        sprite.setCenter(x, y);
+        sprite.setCenter((int)x, (int)y);
         tilePosition = MapUtils.worldToTile(x, y);
     }
 

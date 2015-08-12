@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * Created by Vincent on 7/8/2015.
  *
  * This class handles spawning and updating entities and their bounding boxes,
- * but does not handle the rendering of entities (that is done in the entities class)
+ * but does not handle the rendering of entities (that is done in the ObjectManager class)
  */
 public class EntityManager {
 
@@ -25,10 +25,10 @@ public class EntityManager {
 
     private ArrayList<Entity> entities;
 
-    public EntityManager(World world, FixtureDef fixtureDef, BodyDef bodyDef) {
+    public EntityManager(World world) {
         this.world = world;
-        this.fixtureDef = fixtureDef;
-        this.bodyDef = bodyDef;
+        fixtureDef = new FixtureDef();
+        bodyDef = new BodyDef();
 
         entities = new ArrayList<>();
     }
@@ -39,13 +39,18 @@ public class EntityManager {
         }
     }
 
-    public void spawnPlayer(Texture[] texture, float maxSpeed, Vector3 position, Touchpad touchpad) {
+    public Player spawnPlayer(Texture[] texture, float maxSpeed, Vector3 position, Touchpad touchpad) {
         Player player = new Player(texture, maxSpeed, position, world, touchpad, bodyDef, fixtureDef);
         entities.add(player);
         ObjectManager.addObject(player);
+        return player;
     }
 
     public void spawnEntity() {
 
+    }
+
+    public void dispose() {
+        entities.clear();
     }
 }
