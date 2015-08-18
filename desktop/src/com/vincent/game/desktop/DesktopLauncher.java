@@ -22,6 +22,7 @@ public class DesktopLauncher {
             config.height = (int)screenSize.getHeight();
             config.fullscreen = true;
             config.title = "Boxhead";
+            config.vSyncEnabled = true;
 
         new LwjglApplication(new com.vincent.game.MyGdxGame(), config);
     }

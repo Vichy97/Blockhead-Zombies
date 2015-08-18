@@ -5,15 +5,17 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
@@ -23,7 +25,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.I18NBundle;
@@ -51,6 +52,8 @@ public class GameScreen implements Screen, InputProcessor {
     private boolean music = true;
     private boolean sound = true;
 
+    public boolean leftPressed, rightPressed, upPressed, downPressed;
+
     private MyGdxGame game;
     private I18NBundle bundle;
     private InputMultiplexer inputMultiplexer;
@@ -65,22 +68,20 @@ public class GameScreen implements Screen, InputProcessor {
     private int gameWidth;
     private int gameHeight;
 
+    private float aspectRatio;
+
     //separate stage and table fot the pause menu because it has different
     //visibility and we dont want input from both at once
     private Stage mainStage;
     private Stage touchpadStage;
 
     private ImageButton pauseButton, playButton, musicOnButton, musicOffButton, soundOnButton, soundOffButton;
-    private ImageButton.ImageButtonStyle imageButtonStylePause, imageButtonStylePlay, imageButtonStyleMusicOn, imageButtonStyleMusicOff, imageButtonStyleSoundOn, imageButtonStyleSoundOff;
-    private Drawable pauseDrawable,playDrawable, musicOnDrawable, musicOffDrawable, soundOnDrawable, soundOffDrawable;
-
     private TextButton menuButton;
     private TextButton.TextButtonStyle textButtonStyle;
     private NinePatchDrawable buttonDrawable;
     private BitmapFont textButtonFont;
 
-
-    //touchpads are onscreen joysticks. your game might not need these
+    //touchpads are onscreen joysticks
     private Touchpad touchpad1, touchpad2;
     private Touchpad.TouchpadStyle touchpadStyle;
     private TextureRegionDrawable touchpadBase;
@@ -90,7 +91,7 @@ public class GameScreen implements Screen, InputProcessor {
     private CustomTileMapRenderer tiledMapRenderer;
     private TiledMap currentMap;
     private int mapWidth, mapHeight;
-
+    private MapLayer tiles;
 
     //TODO: make this much less messy and remove texture variable declerations
     //TODO: (refer to the static fields in AssetLoader directly) once i get more artwork
@@ -123,9 +124,9 @@ public class GameScreen implements Screen, InputProcessor {
 
     private EntityManager entityManager;
     private ObjectManager objectManager;
+    private MapBodyManager mapBodyManager;
 
     private Cloud[] cloudArray;
-    private MapBodyManager mapBodyManager;
 
     public GameScreen(MyGdxGame game, OrthographicCamera UICamera, Viewport UIViewport, OrthographicCamera gameCamera, Viewport gameViewport, I18NBundle bundle, TiledMap map) {
         debug("constructor");
@@ -138,6 +139,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         gameWidth = MyGdxGame.GAME_WIDTH;
         gameHeight = MyGdxGame.GAME_HEIGHT;
+        aspectRatio = MyGdxGame.ASPECT_RATIO;
         screenWidth = Gdx.graphics.getWidth();
         screenHeight = Gdx.graphics.getHeight();
 
@@ -148,7 +150,7 @@ public class GameScreen implements Screen, InputProcessor {
         gameCamera.update();
 
         touchpadStage = new Stage(UIViewport);
-        mainStage = new Stage();
+        mainStage = new Stage(UIViewport);
 
         inputMultiplexer = new InputMultiplexer();
 
@@ -177,10 +179,11 @@ public class GameScreen implements Screen, InputProcessor {
         cloudTexture3 = AssetLoader.cloudTexture3;
 
         currentMap = map;
+        tiles = currentMap.getLayers().get("tiles");
 
         spawnClouds();
 
-        world = AssetLoader.world;
+        world = new World(new Vector2(0, 0), true);
         debugRenderer = new Box2DDebugRenderer();
 
         mapBodyManager = new MapBodyManager(world, GameUtils.PIXELS_PER_METER, null, 0);
@@ -197,7 +200,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         tiledMapRenderer = new CustomTileMapRenderer(currentMap);
 
-        objectManager = new ObjectManager(tiledMapRenderer, currentMap.getLayers().get("objects").getObjects());
+        objectManager = new ObjectManager(tiledMapRenderer, currentMap.getLayers().get("objects").getObjects(), currentMap.getLayers().get("static objects").getObjects());
         entityManager = new EntityManager(world);
         player = entityManager.spawnPlayer(textures, playerMaxSpeed, new Vector3(1984, 32, 0), touchpad1);
 
@@ -215,8 +218,10 @@ public class GameScreen implements Screen, InputProcessor {
 
         renderClouds(delta);
 
-        tiledMapRenderer.render(new int[]{0});
-        tiledMapRenderer.renderObjectLayer("static objects");
+        tiledMapRenderer.getBatch().begin();
+        tiledMapRenderer.renderTileLayer((TiledMapTileLayer) tiles);
+        tiledMapRenderer.getBatch().end();
+        objectManager.renderStaticObjects();
         if (!paused) {
             objectManager.sortObjects();
             objectManager.renderObjects();
@@ -225,10 +230,12 @@ public class GameScreen implements Screen, InputProcessor {
             objectManager.renderObjects();
         }
 
-        gameCamera.position.set(player.getEntityX(), player.getEntityY(), 0);
+        gameCamera.position.set((int)player.getEntityX(), (int)player.getEntityY(), 0);
 
         debugMatrix = gameCamera.combined.scale(GameUtils.PIXELS_PER_METER, GameUtils.PIXELS_PER_METER, 0);
-        debugRenderer.render(world, debugMatrix);
+        if (MyGdxGame.DEBUG) {
+            debugRenderer.render(world, debugMatrix);
+        }
 
         if (!paused) {
             stepWorld(delta);
@@ -236,13 +243,15 @@ public class GameScreen implements Screen, InputProcessor {
 
         gameCamera.update();
 
-        /*spriteBatch.begin();
-        font.draw(spriteBatch, "PlayerIso: " + player.position, 50, 700);
-        font.draw(spriteBatch, "TouchpadPercent: X = " + touchpad1.getKnobPercentX() + " Y = " + touchpad1.getKnobPercentY(), 50, 675);
-        font.draw(spriteBatch, "TouchpadAngle: " + (180 + Math.atan2(touchpad1.getKnobPercentY(), touchpad1.getKnobPercentX()) * 180.0d / Math.PI), 50, 650);
-        font.draw(spriteBatch, "PlayerDirection: " + player.getDirection(), 50, 625);
-        font.draw(spriteBatch, "FPS: " + (int) (1 / delta), 50, 600);
-        spriteBatch.end(); */
+        if (MyGdxGame.DEBUG) {
+            spriteBatch.begin();
+            font.draw(spriteBatch, "PlayerIso: " + player.position, 50, screenHeight - 25);
+            font.draw(spriteBatch, "TouchpadPercent: X = " + touchpad1.getKnobPercentX() + " Y = " + touchpad1.getKnobPercentY(), 50, screenHeight - 50);
+            font.draw(spriteBatch, "TouchpadAngle: " + (180 + Math.atan2(touchpad1.getKnobPercentY(), touchpad1.getKnobPercentX()) * 180.0d / Math.PI), 50, screenHeight - 75);
+            font.draw(spriteBatch, "PlayerDirection: " + player.getDirection(), 50, screenHeight - 100);
+            font.draw(spriteBatch, "FPS: " + (Gdx.graphics.getFramesPerSecond()), 50, screenHeight - 125);
+            spriteBatch.end();
+        }
 
 
         UIViewport.apply();
@@ -309,6 +318,9 @@ public class GameScreen implements Screen, InputProcessor {
     @Override
     public void dispose() {
         debug("dispose");
+
+        mapBodyManager.destroyPhysics();
+        world.dispose();
         font.dispose();
         spriteBatch.dispose();
         mainStage.dispose();
@@ -322,29 +334,10 @@ public class GameScreen implements Screen, InputProcessor {
 
 
 
-    //method for setting up the user interface. This just keeps the show method cleaner
+    //method for setting up the user interface. This just keeps the show() method cleaner
     private void initUI() {
+
         //set button styles and images
-        pauseDrawable = AssetLoader.pause;
-        playDrawable = AssetLoader.play;
-        musicOnDrawable = AssetLoader.musicOn;
-        musicOffDrawable = AssetLoader.musicOff;
-        soundOnDrawable = AssetLoader.soundOn;
-        soundOffDrawable = AssetLoader.soundOff;
-
-        imageButtonStylePlay = new ImageButton.ImageButtonStyle();
-        imageButtonStylePlay.up = playDrawable;
-        imageButtonStylePause = new ImageButton.ImageButtonStyle();
-        imageButtonStylePause.up = pauseDrawable;
-        imageButtonStyleMusicOn = new ImageButton.ImageButtonStyle();
-        imageButtonStyleMusicOn.up = musicOnDrawable;
-        imageButtonStyleMusicOff = new ImageButton.ImageButtonStyle();
-        imageButtonStyleMusicOff.up = musicOffDrawable;
-        imageButtonStyleSoundOn = new ImageButton.ImageButtonStyle();
-        imageButtonStyleSoundOn.up = soundOnDrawable;
-        imageButtonStyleSoundOff = new ImageButton.ImageButtonStyle();
-        imageButtonStyleSoundOff.up = soundOffDrawable;
-
         buttonDrawable = new NinePatchDrawable(AssetLoader.button);
         textButtonStyle = new TextButton.TextButtonStyle();
         textButtonFont = AssetLoader.createFont("DroidSans.ttf", 50);
@@ -354,19 +347,18 @@ public class GameScreen implements Screen, InputProcessor {
         textButtonStyle.down = buttonDrawable;
         textButtonStyle.up = buttonDrawable;
 
-
         //set the buttons click listeners
-        pauseButton = new ImageButton(imageButtonStylePause);
+        pauseButton = new ImageButton(AssetLoader.pause);
         pauseButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 pause();
             }
         });
-        pauseButton.setX(gameWidth - pauseButton.getWidth());
+        pauseButton.setX(gameHeight/aspectRatio - pauseButton.getWidth());
         pauseButton.setY(gameHeight - pauseButton.getHeight());
 
-        playButton = new ImageButton(imageButtonStylePlay);
+        playButton = new ImageButton(AssetLoader.play);
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -389,7 +381,7 @@ public class GameScreen implements Screen, InputProcessor {
         playButton.setY(gameHeight / 2 - playButton.getHeight() / 2 + playButton.getHeight() * 1.5f);
         playButton.setVisible(false);
 
-        musicOnButton = new ImageButton(imageButtonStyleMusicOn);
+        musicOnButton = new ImageButton(AssetLoader.musicOn);
         musicOnButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -402,7 +394,7 @@ public class GameScreen implements Screen, InputProcessor {
         musicOnButton.setY(gameHeight / 2);
         musicOnButton.setVisible(false);
 
-        musicOffButton = new ImageButton(imageButtonStyleMusicOff);
+        musicOffButton = new ImageButton(AssetLoader.musicOff);
         musicOffButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -415,7 +407,7 @@ public class GameScreen implements Screen, InputProcessor {
         musicOffButton.setY(gameHeight / 2);
         musicOffButton.setVisible(false);
 
-        soundOnButton = new ImageButton(imageButtonStyleSoundOn);
+        soundOnButton = new ImageButton(AssetLoader.soundOn);
         soundOnButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -428,7 +420,7 @@ public class GameScreen implements Screen, InputProcessor {
         soundOnButton.setY(gameHeight / 2);
         soundOnButton.setVisible(false);
 
-        soundOffButton = new ImageButton(imageButtonStyleSoundOff);
+        soundOffButton = new ImageButton(AssetLoader.soundOff);
         soundOffButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -524,27 +516,27 @@ public class GameScreen implements Screen, InputProcessor {
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.UP) {
-            player.setDirection(1);
+            upPressed = true;
         } else if (keycode == Input.Keys.RIGHT) {
-            player.setDirection(2);
+            rightPressed = true;
         } else if (keycode == Input.Keys.DOWN) {
-            player.setDirection(3);
+            leftPressed = true;
         } else if (keycode == Input.Keys.LEFT) {
-            player.setDirection(4);
+            downPressed = true;
         }
         return true;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        if (keycode == Input.Keys.UP && player.getDirection() == 1) {
-            player.setDirection(-1);
-        } else if (keycode == Input.Keys.RIGHT && player.getDirection() == 2) {
-            player.setDirection(-1);
-        } else if (keycode == Input.Keys.DOWN && player.getDirection() == 3) {
-            player.setDirection(-1);
-        } else if (keycode == Input.Keys.LEFT && player.getDirection() == 4) {
-            player.setDirection(-1);
+        if (keycode == Input.Keys.UP) {
+            upPressed = false;
+        } else if (keycode == Input.Keys.RIGHT) {
+            rightPressed = false;
+        } else if (keycode == Input.Keys.DOWN) {
+            downPressed = false;
+        } else if (keycode == Input.Keys.LEFT) {
+            leftPressed = false;
         }
         return true;
     }

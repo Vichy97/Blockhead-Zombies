@@ -7,7 +7,6 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.vincent.World.ObjectManager;
-import com.vincent.util.map.CustomMapObject;
 
 import java.util.ArrayList;
 

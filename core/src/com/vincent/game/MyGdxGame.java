@@ -45,7 +45,7 @@ public class MyGdxGame extends Game {
     public void create() {
         Gdx.app.log("Game", "created");
 
-        ASPECT_RATIO = (float)Gdx.graphics.getHeight() / (float) Gdx.graphics.getWidth();
+        ASPECT_RATIO = (float)Gdx.graphics.getHeight() / (float)Gdx.graphics.getWidth();
 
         UICamera = new OrthographicCamera(GAME_HEIGHT/ASPECT_RATIO, GAME_HEIGHT);
         gameCamera = new OrthographicCamera(GAME_HEIGHT/ASPECT_RATIO, GAME_HEIGHT);
@@ -57,11 +57,15 @@ public class MyGdxGame extends Game {
         FileHandle fileHandle = Gdx.files.internal("locales/Boxhead");
         bundle = I18NBundle.createBundle(fileHandle, Locale.getDefault());
 
+        Gdx.graphics.setVSync(true);
+        Gdx.graphics.setTitle(bundle.get("gameTitle"));
+
         //the first screen is the loading screen
         setScreen("loading");
     }
 
     public void setScreen(String screen) {
+        System.gc();
         switch (screen) {
             case "loading": {
                 setScreen(new LoadingScreen(this));

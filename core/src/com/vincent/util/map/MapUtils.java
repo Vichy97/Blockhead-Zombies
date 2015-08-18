@@ -1,6 +1,7 @@
 package com.vincent.util.map;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
@@ -102,15 +103,15 @@ public class MapUtils {
     }
 
     //corrects the maps object positions to game coordinates instead of isometric coordinates
-    public static void correctMapObjects(TiledMap tiledMap, String layer) {
-        MapObjects mapObjects = tiledMap.getLayers().get(layer).getObjects();
+    public static void correctMapObjects(MapLayer layer) {
+        MapObjects mapObjects = layer.getObjects();
         for (int i = 0; i < mapObjects.getCount(); i++) {
             MapObject object = mapObjects.get(i);
-           if (object instanceof TextureMapObject) {
-                tempVector3.set(((TextureMapObject) object).getX(), ((TextureMapObject) object).getY(), 0);
+           if (object instanceof com.vincent.World.CustomMapObject) {
+                tempVector3.set(((com.vincent.World.CustomMapObject) object).getX(), ((com.vincent.World.CustomMapObject) object).getY(), 0);
                 isoToGame(tempVector3);
-                ((TextureMapObject) object).setX(tempVector3.x - ((TextureMapObject) object).getTextureRegion().getRegionWidth() / 2);
-                ((TextureMapObject) object).setY(tempVector3.y + TILE_HEIGHT / 2);
+                ((com.vincent.World.CustomMapObject) object).setX(tempVector3.x - ((com.vincent.World.CustomMapObject)object).getTextureRegion().getRegionWidth() / 2);
+                ((com.vincent.World.CustomMapObject) object).setY(tempVector3.y + TILE_HEIGHT / 2);
             }
         }
     }
@@ -133,11 +134,11 @@ public class MapUtils {
         }
     }
 
-    public static ArrayList<CustomMapObject> mapObjectsToList(MapObjects mapObjects) {
-        ArrayList<CustomMapObject> objects = new ArrayList<>();
+    public static ArrayList<com.vincent.World.CustomMapObject> mapObjectsToList(MapObjects mapObjects) {
+        ArrayList<com.vincent.World.CustomMapObject> objects = new ArrayList<>();
         for (int i = 0; i < mapObjects.getCount(); i++) {
-            if (mapObjects.get(i) instanceof CustomMapObject) {
-                objects.add((CustomMapObject) mapObjects.get(i));
+            if (mapObjects.get(i) instanceof com.vincent.World.CustomMapObject) {
+                objects.add((com.vincent.World.CustomMapObject) mapObjects.get(i));
             }
         }
         return objects;

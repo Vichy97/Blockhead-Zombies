@@ -1,5 +1,6 @@
 package com.vincent.util.map;
 
+import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -33,18 +34,24 @@ public class CustomTileMapRenderer extends IsometricTiledMapRenderer {
         endRender();
     }
 
-    public void renderObjectArrayList(ArrayList<CustomMapObject> mapObjects) {
-        beginRender();
+    public void renderObjectLayer(MapLayer layer) {
+        MapObjects mapObjects = layer.getObjects();
+
+        for (int i = 0; i < mapObjects.getCount(); i++) {
+            renderObject(mapObjects.get(i));
+        }
+    }
+
+    public void renderObjectArrayList(ArrayList<com.vincent.World.CustomMapObject> mapObjects) {
         for (int i = 0; i < mapObjects.size(); i++) {
             renderObject(mapObjects.get(i));
         }
-        endRender();
     }
 
     @Override
     public void renderObject(MapObject mapObject) {
-        if(mapObject instanceof CustomMapObject) {
-            ((CustomMapObject) mapObject).render(getBatch());
+        if(mapObject instanceof com.vincent.World.CustomMapObject) {
+            ((com.vincent.World.CustomMapObject) mapObject).render(getBatch());
         }
     }
 }

@@ -32,14 +32,11 @@ import com.vincent.util.map.MapUtils;
 public class AssetLoader {
 
     private static AssetManager manager;
-    private static com.vincent.util.map.MapBodyManager mapBodyManager;
     private static InternalFileHandleResolver fileHandleResolver;
 
     //loader for tiled maps
     private static CustomAtlasTmxMapLoader mapLoader;
     private static SoundLoader soundLoader;
-
-    public static World world;
 
     //atlas for ui elements
     private static TextureAtlas ui;
@@ -71,7 +68,6 @@ public class AssetLoader {
     //load all assets here, but note that calling manager.load only queues assets to load
     public static void load() {
         Gdx.app.log("AssetLoader", "load");
-        world = new World(new Vector2(0, 0), true);
 
         TextureLoader.TextureParameter param = new TextureLoader.TextureParameter();
         param.minFilter = Texture.TextureFilter.Linear;
@@ -81,7 +77,6 @@ public class AssetLoader {
 
 
         manager = new AssetManager();
-        mapBodyManager = new com.vincent.util.map.MapBodyManager(world, GameUtils.PIXELS_PER_METER, null, 0);
         fileHandleResolver = new InternalFileHandleResolver();
         mapLoader = new CustomAtlasTmxMapLoader(fileHandleResolver);
         soundLoader = new SoundLoader(fileHandleResolver);
@@ -137,9 +132,10 @@ public class AssetLoader {
 
         map1 = manager.get("maps/map1.tmx");
         map2 = manager.get("maps/map2.tmx");
-        MapUtils.correctMapObjects(map1, "objects");
-         MapUtils.correctMapObjects(map1, "static objects");
-        MapUtils.correctMapObjects(map2, "objects");
+        MapUtils.correctMapObjects(map1.getLayers().get("objects"));
+        MapUtils.correctMapObjects(map1.getLayers().get("static objects"));
+        MapUtils.correctMapObjects(map2.getLayers().get("objects"));
+        MapUtils.correctMapObjects(map2.getLayers().get("static objects"));
     }
 
     //creates a bitmap font of the given size from the given .ttf file
@@ -162,7 +158,7 @@ public class AssetLoader {
     //assets at once but it will load them synchronously
     public static boolean update() {
         Gdx.app.log("AssetLoader", "update");
-       return manager.update();
+        return manager.update();
     }
 
     //returns a float between 0 and 1. this doesnt work well for atlas's
@@ -178,8 +174,6 @@ public class AssetLoader {
     //dispose all assets and manager
     public static void dispose() {
         manager.dispose();
-        mapBodyManager.destroyPhysics();
-        world.dispose();
     }
 
     //disposes all assets but does not dispose of the manager itself

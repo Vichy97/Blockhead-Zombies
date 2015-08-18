@@ -4,14 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 
 import com.vincent.util.GameUtils;
-import com.vincent.util.map.CustomMapObject;
+import com.vincent.World.CustomMapObject;
 import com.vincent.util.map.MapUtils;
 
 /**
@@ -101,7 +100,7 @@ public class Entity extends CustomMapObject{
         body.setLinearVelocity(speed.x, speed.y);
         float x = body.getPosition().x * GameUtils.PIXELS_PER_METER;
         float y = body.getPosition().y * GameUtils.PIXELS_PER_METER;
-        position.set((int)x - width / 2, (int)y - height / 2, 0);
+        position.set(x - width / 2, y - height / 2, 0);
         sprite.setCenter((int)x, (int)y);
         tilePosition = MapUtils.worldToTile(x, y);
     }
@@ -143,10 +142,6 @@ public class Entity extends CustomMapObject{
 
     public Vector2 getDiagonalSpeed() {
         return diagonalSpeed;
-    }
-
-    public void setTextures(Texture[] textures) {
-        this.textures = textures;
     }
 
     public void setBody(Body body) {

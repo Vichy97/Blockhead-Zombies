@@ -21,6 +21,8 @@ import com.vincent.util.AssetLoader;
 
 /**
  * Created by Vincent on 8/10/2015.
+ *
+ * Select which map you want to play
  */
 public class MapSelectScreen implements Screen {
 

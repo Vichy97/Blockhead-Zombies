@@ -1,4 +1,4 @@
-package com.vincent.util.map;
+package com.vincent.World;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -7,6 +7,8 @@ import com.badlogic.gdx.math.Vector3;
 
 /**
  * Created by Vincent on 7/19/2015.
+ *
+ * A custom object for easy sorting and rendering. It can be used for entities and static objects
  */
 public class CustomMapObject extends TextureMapObject implements Comparable<CustomMapObject>{
 

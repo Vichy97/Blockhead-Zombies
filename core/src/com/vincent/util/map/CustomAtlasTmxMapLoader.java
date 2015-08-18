@@ -19,7 +19,6 @@ import com.badlogic.gdx.maps.objects.EllipseMapObject;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.objects.PolylineMapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
-import com.badlogic.gdx.maps.objects.TextureMapObject;
 import com.badlogic.gdx.maps.tiled.BaseTmxMapLoader;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
@@ -500,7 +499,7 @@ public class CustomAtlasTmxMapLoader extends BaseTmxMapLoader<CustomAtlasTmxMapL
                     TiledMapTile tile = map.getTileSets().getTile(id & ~MASK_CLEAR);
                     TextureRegion textureRegion = new TextureRegion(tile.getTextureRegion());
                     textureRegion.flip(flipHorizontally, flipVertically);
-                    CustomMapObject textureMapObject = new CustomMapObject(textureRegion, x, y - height, scaleX, scaleY);
+                    com.vincent.World.CustomMapObject textureMapObject = new com.vincent.World.CustomMapObject(textureRegion, x, y, scaleX, scaleY);
                     textureMapObject.getProperties().put("gid", id);
                     textureMapObject.setRotation(element.getFloatAttribute("rotation", 0));
                     object = textureMapObject;
