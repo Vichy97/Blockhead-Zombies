@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -28,13 +29,17 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.I18NBundle;
+import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import com.vincent.World.BodyManager;
 import com.vincent.World.Cloud;
 import com.vincent.World.ObjectManager;
 import com.vincent.entity.EntityManager;
 import com.vincent.game.MyGdxGame;
 import com.vincent.entity.Player;
+import com.vincent.projectiles.Bullet;
+import com.vincent.projectiles.ProjectileManager;
 import com.vincent.util.AssetLoader;
 import com.vincent.util.map.CustomTileMapRenderer;
 import com.vincent.util.GameUtils;
@@ -57,6 +62,8 @@ public class GameScreen implements Screen, InputProcessor {
     private MyGdxGame game;
     private I18NBundle bundle;
     private InputMultiplexer inputMultiplexer;
+
+    private StringBuffer stringBuffer;
 
     //view related fields
     private OrthographicCamera UICamera, gameCamera;
@@ -96,7 +103,7 @@ public class GameScreen implements Screen, InputProcessor {
     //TODO: make this much less messy and remove texture variable declerations
     //TODO: (refer to the static fields in AssetLoader directly) once i get more artwork
     //player fields
-    private float playerMaxSpeed = 300;
+    private float playerMaxSpeed = 5;
     private Player player;
     private Texture boxhead_1;
     private Texture boxhead_2;
@@ -125,6 +132,8 @@ public class GameScreen implements Screen, InputProcessor {
     private EntityManager entityManager;
     private ObjectManager objectManager;
     private MapBodyManager mapBodyManager;
+    private ProjectileManager projectileManager;
+    private BodyManager bodyManager;
 
     private Cloud[] cloudArray;
 
@@ -153,6 +162,8 @@ public class GameScreen implements Screen, InputProcessor {
         mainStage = new Stage(UIViewport);
 
         inputMultiplexer = new InputMultiplexer();
+
+        stringBuffer = new StringBuffer();
 
         initUI();
 
@@ -183,7 +194,10 @@ public class GameScreen implements Screen, InputProcessor {
 
         spawnClouds();
 
+        bodyManager = new BodyManager();
+
         world = new World(new Vector2(0, 0), true);
+        world.setContactListener(bodyManager);
         debugRenderer = new Box2DDebugRenderer();
 
         mapBodyManager = new MapBodyManager(world, GameUtils.PIXELS_PER_METER, null, 0);
@@ -202,6 +216,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         objectManager = new ObjectManager(tiledMapRenderer, currentMap.getLayers().get("objects").getObjects(), currentMap.getLayers().get("static objects").getObjects());
         entityManager = new EntityManager(world);
+        projectileManager = new ProjectileManager(world);
         player = entityManager.spawnPlayer(textures, playerMaxSpeed, new Vector3(1984, 32, 0), touchpad1);
 
         Gdx.graphics.setContinuousRendering(true);
@@ -223,6 +238,7 @@ public class GameScreen implements Screen, InputProcessor {
         tiledMapRenderer.getBatch().end();
         objectManager.renderStaticObjects();
         if (!paused) {
+            projectileManager.updateProjectiles();
             objectManager.sortObjects();
             objectManager.renderObjects();
             entityManager.updateEntities();
@@ -239,17 +255,29 @@ public class GameScreen implements Screen, InputProcessor {
 
         if (!paused) {
             stepWorld(delta);
+            bodyManager.deactivateBodies();
+            bodyManager.activateBodies();
         }
 
         gameCamera.update();
 
         if (MyGdxGame.DEBUG) {
             spriteBatch.begin();
-            font.draw(spriteBatch, "PlayerIso: " + player.position, 50, screenHeight - 25);
-            font.draw(spriteBatch, "TouchpadPercent: X = " + touchpad1.getKnobPercentX() + " Y = " + touchpad1.getKnobPercentY(), 50, screenHeight - 50);
-            font.draw(spriteBatch, "TouchpadAngle: " + (180 + Math.atan2(touchpad1.getKnobPercentY(), touchpad1.getKnobPercentX()) * 180.0d / Math.PI), 50, screenHeight - 75);
-            font.draw(spriteBatch, "PlayerDirection: " + player.getDirection(), 50, screenHeight - 100);
-            font.draw(spriteBatch, "FPS: " + (Gdx.graphics.getFramesPerSecond()), 50, screenHeight - 125);
+            stringBuffer.append("playerIso: ").append(player.getPosition());
+            font.draw(spriteBatch, stringBuffer.toString(), 50, screenHeight - 25);
+            stringBuffer.delete(0, stringBuffer.length());
+            stringBuffer.append("TouchPadPercent: X =  ").append(touchpad1.getKnobPercentX()).append(" Y = ").append(touchpad1.getKnobPercentY());
+            font.draw(spriteBatch, stringBuffer.toString(), 50, screenHeight - 50);
+            stringBuffer.delete(0, stringBuffer.length());
+            stringBuffer.append("TouchpadAngle: ").append(180 + Math.atan2(touchpad1.getKnobPercentY(), touchpad1.getKnobPercentX()) * 180.0d / Math.PI);
+            font.draw(spriteBatch, stringBuffer.toString(), 50, screenHeight - 75);
+            stringBuffer.delete(0, stringBuffer.length());
+            stringBuffer.append("PlayerDirection: ").append(player.getDirection());
+            font.draw(spriteBatch, stringBuffer.toString(), 50, screenHeight - 100);
+            stringBuffer.delete(0, stringBuffer.length());
+            stringBuffer.append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
+            font.draw(spriteBatch, stringBuffer.toString(), 50, screenHeight - 125);
+            stringBuffer.delete(0, stringBuffer.length());
             spriteBatch.end();
         }
 
@@ -523,6 +551,14 @@ public class GameScreen implements Screen, InputProcessor {
             leftPressed = true;
         } else if (keycode == Input.Keys.LEFT) {
             downPressed = true;
+        } else if (keycode == Input.Keys.SPACE) {
+            float speed;
+            if (player.isMoving()) {
+                speed = player.getMaxSpeed() + 3;
+            } else {
+                speed = 6;
+            }
+            projectileManager.spawnBullet(speed, player.getPosition(), player.getDirection());
         }
         return true;
     }

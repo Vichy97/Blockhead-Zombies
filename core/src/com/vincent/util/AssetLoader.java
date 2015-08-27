@@ -61,6 +61,7 @@ public class AssetLoader {
     public static Texture cloudTexture1;
     public static Texture cloudTexture2;
     public static Texture cloudTexture3;
+    public static Texture bullet;
 
 
     public static TiledMap map1, map2;
@@ -93,7 +94,7 @@ public class AssetLoader {
         manager.load("cloud_1.png", Texture.class, param);
         manager.load("cloud_2.png", Texture.class, param);
         manager.load("cloud_3.png", Texture.class, param);
-
+        manager.load("bullet.png", Texture.class, param);
 
         manager.load("ui/ui.atlas", TextureAtlas.class);
         manager.setLoader(TiledMap.class, mapLoader);
@@ -128,6 +129,7 @@ public class AssetLoader {
         cloudTexture1 = manager.get("cloud_1.png", Texture.class);
         cloudTexture2 = manager.get("cloud_2.png", Texture.class);
         cloudTexture3 = manager.get("cloud_3.png", Texture.class);
+        bullet = manager.get("bullet.png", Texture.class);
 
 
         map1 = manager.get("maps/map1.tmx");

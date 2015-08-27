@@ -19,7 +19,7 @@ import java.util.Locale;
 
 public class MyGdxGame extends Game {
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     //width and height of the game. note these are not the size of the actual screen
     //these can be in any measurements you want but it is easy to make

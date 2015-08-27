@@ -52,8 +52,15 @@ public class Player extends Entity {
     public void update() {
         float touchpadPercentX = touchpad.getKnobPercentX();
         float touchpadPercentY = touchpad.getKnobPercentY();
-        setDirection(GameUtils.getTouchpadEightDirection(touchpadPercentX, touchpadPercentY));
-        //Gdx.app.log("object: ", worldPosition.toString());
+        if (touchpadPercentX != 0 || touchpadPercentY != 0) {
+            moving = true;
+        } else {
+            moving = false;
+        }
+
+        if (GameUtils.getTouchpadEightDirection(touchpadPercentX, touchpadPercentY) != -1) {
+            setDirection(GameUtils.getTouchpadEightDirection(touchpadPercentX, touchpadPercentY));
+        }
 
         super.update();
     }

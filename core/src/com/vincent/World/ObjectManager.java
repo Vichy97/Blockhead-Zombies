@@ -18,9 +18,9 @@ import java.util.Comparator;
 public class ObjectManager {
 
     //list of objects to be sorted and rendered *THIS INCLUDES ALL ENTITIES*
-    private static ArrayList<CustomMapObject> objects = new ArrayList<>();
+    private static ArrayList<SortableObject> objects = new ArrayList<>();
     //list of static objects that are rendered but these have no depth and are therefore not sorted
-    private static ArrayList<CustomMapObject> staticObjects = new ArrayList<>();
+    private static ArrayList<SortableObject> staticObjects = new ArrayList<>();
     private CustomTileMapRenderer renderer;
 
     public ObjectManager(CustomTileMapRenderer tileMapRenderer) {
@@ -45,15 +45,17 @@ public class ObjectManager {
         renderer.getBatch().end();
     }
 
-    private static Comparator comparator = new Comparator<CustomMapObject>() {
+    private static Comparator comparator = new Comparator<SortableObject>() {
         @Override
-        public int compare(CustomMapObject object1, CustomMapObject object2) {
+        public int compare(SortableObject object1, SortableObject object2) {
             return object1.compareTo(object2);
         }
     };
 
-    public static void addObject(CustomMapObject object) {
-        object.initPosition();
+    public static void addObject(SortableObject object) {
+        if (object instanceof CustomMapObject) {
+            ((CustomMapObject)object).initPosition();
+        }
         objects.add(object);
     }
 
@@ -67,8 +69,10 @@ public class ObjectManager {
         }
     }
 
-    public static void addStaticObject(CustomMapObject object) {
-        object.initPosition();
+    public static void addStaticObject(SortableObject object) {
+        if (object instanceof CustomMapObject) {
+            ((CustomMapObject)object).initPosition();
+        }
         staticObjects.add(object);
     }
 

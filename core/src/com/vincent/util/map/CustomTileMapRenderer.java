@@ -6,6 +6,7 @@ import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
+import com.vincent.World.SortableObject;
 
 import java.util.ArrayList;
 
@@ -42,17 +43,11 @@ public class CustomTileMapRenderer extends IsometricTiledMapRenderer {
         }
     }
 
-    public void renderObjectArrayList(ArrayList<com.vincent.World.CustomMapObject> mapObjects) {
+    public void renderObjectArrayList(ArrayList<SortableObject> mapObjects) {
         for (int i = 0; i < mapObjects.size(); i++) {
-            renderObject(mapObjects.get(i));
+            mapObjects.get(i).render(getBatch());
         }
     }
 
-    @Override
-    public void renderObject(MapObject mapObject) {
-        if(mapObject instanceof com.vincent.World.CustomMapObject) {
-            ((com.vincent.World.CustomMapObject) mapObject).render(getBatch());
-        }
-    }
 }
 
