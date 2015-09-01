@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -29,7 +28,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.I18NBundle;
-import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import com.vincent.World.BodyManager;
@@ -38,7 +36,6 @@ import com.vincent.World.ObjectManager;
 import com.vincent.entity.EntityManager;
 import com.vincent.game.MyGdxGame;
 import com.vincent.entity.Player;
-import com.vincent.projectiles.Bullet;
 import com.vincent.projectiles.ProjectileManager;
 import com.vincent.util.AssetLoader;
 import com.vincent.util.map.CustomTileMapRenderer;
@@ -83,13 +80,13 @@ public class GameScreen implements Screen, InputProcessor {
     private Stage touchpadStage;
 
     private ImageButton pauseButton, playButton, musicOnButton, musicOffButton, soundOnButton, soundOffButton;
-    private TextButton menuButton;
+    private TextButton menuButton, fireButton;
     private TextButton.TextButtonStyle textButtonStyle;
     private NinePatchDrawable buttonDrawable;
     private BitmapFont textButtonFont;
 
     //touchpads are onscreen joysticks
-    private Touchpad touchpad1, touchpad2;
+    private Touchpad touchpad1;
     private Touchpad.TouchpadStyle touchpadStyle;
     private TextureRegionDrawable touchpadBase;
     private TextureRegionDrawable touchpadNob;
@@ -217,7 +214,7 @@ public class GameScreen implements Screen, InputProcessor {
         objectManager = new ObjectManager(tiledMapRenderer, currentMap.getLayers().get("objects").getObjects(), currentMap.getLayers().get("static objects").getObjects());
         entityManager = new EntityManager(world);
         projectileManager = new ProjectileManager(world);
-        player = entityManager.spawnPlayer(textures, playerMaxSpeed, new Vector3(1984, 32, 0), touchpad1);
+        player = entityManager.spawnPlayer(textures, playerMaxSpeed, new Vector3(1984, 32, 0), touchpad1, projectileManager);
 
         Gdx.graphics.setContinuousRendering(true);
     }
@@ -241,7 +238,7 @@ public class GameScreen implements Screen, InputProcessor {
             projectileManager.updateProjectiles();
             objectManager.sortObjects();
             objectManager.renderObjects();
-            entityManager.updateEntities();
+            entityManager.updateEntities(delta);
         } else {
             objectManager.renderObjects();
         }
@@ -383,7 +380,7 @@ public class GameScreen implements Screen, InputProcessor {
                 pause();
             }
         });
-        pauseButton.setX(gameHeight/aspectRatio - pauseButton.getWidth());
+        pauseButton.setX(gameHeight / aspectRatio - pauseButton.getWidth());
         pauseButton.setY(gameHeight - pauseButton.getHeight());
 
         playButton = new ImageButton(AssetLoader.play);
@@ -474,21 +471,30 @@ public class GameScreen implements Screen, InputProcessor {
         menuButton.setY(gameHeight / 2 - menuButton.getHeight());
         menuButton.setVisible(false);
 
+        fireButton = new TextButton("F", textButtonStyle);
+        fireButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                player.fire();
+            }
+        });
+        fireButton.setHeight(128);
+        fireButton.setWidth(128);
+        fireButton.setX(gameWidth - (gameHeight / 20) - fireButton.getWidth());
+        fireButton.setY(gameHeight / 20);
+        fireButton.setVisible(true);
+
         //set the touchpad style and position
         touchpadBase = new TextureRegionDrawable(AssetLoader.touchpadBase);
         touchpadNob = new TextureRegionDrawable(AssetLoader.touchpadNob);
         touchpadStyle = new Touchpad.TouchpadStyle(touchpadBase, touchpadNob);
         touchpad1 = new Touchpad(0, touchpadStyle);
-        touchpad2 = new Touchpad(0, touchpadStyle);
         touchpad1.setX(gameHeight / 20);
         touchpad1.setY(gameHeight / 20);
-        touchpad2.setX(gameWidth - (gameHeight / 20) - touchpad1.getWidth());
-        touchpad2.setY(gameHeight / 20);
 
         //add touchpads to stage
         touchpadStage.addActor(touchpad1);
-        touchpadStage.addActor(touchpad2);
-
+        touchpadStage.addActor(fireButton);
         //add ui elements to the main stage
         mainStage.addActor(pauseButton);
         mainStage.addActor(playButton);
@@ -552,13 +558,6 @@ public class GameScreen implements Screen, InputProcessor {
         } else if (keycode == Input.Keys.LEFT) {
             downPressed = true;
         } else if (keycode == Input.Keys.SPACE) {
-            float speed;
-            if (player.isMoving()) {
-                speed = player.getMaxSpeed() + 3;
-            } else {
-                speed = 6;
-            }
-            projectileManager.spawnBullet(speed, player.getPosition(), player.getDirection());
         }
         return true;
     }

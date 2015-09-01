@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.vincent.World.ObjectManager;
+import com.vincent.projectiles.ProjectileManager;
 
 import java.util.ArrayList;
 
@@ -32,14 +33,14 @@ public class EntityManager {
         entities = new ArrayList<>();
     }
 
-    public void updateEntities() {
+    public void updateEntities(float delta) {
         for (int i = 0; i < entities.size(); i++) {
-            entities.get(i).update();
+            entities.get(i).update(delta);
         }
     }
 
-    public Player spawnPlayer(Texture[] texture, float maxSpeed, Vector3 position, Touchpad touchpad) {
-        Player player = new Player(texture, maxSpeed, position, world, touchpad, bodyDef, fixtureDef);
+    public Player spawnPlayer(Texture[] texture, float maxSpeed, Vector3 position, Touchpad moveTouchpad, ProjectileManager projectileManager) {
+        Player player = new Player(texture, maxSpeed, position, world, moveTouchpad, projectileManager, bodyDef, fixtureDef);
         entities.add(player);
         ObjectManager.addObject(player);
         return player;

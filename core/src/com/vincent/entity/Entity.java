@@ -20,17 +20,19 @@ public class Entity implements SortableObject {
 
     public Vector3 tilePosition;
 
+    protected boolean moving = false;
     protected Vector2 speed;
     protected Vector2 diagonalSpeed;
     protected Sprite sprite;
     protected Body body;
-    private int direction = 1;
-    private float maxSpeed;
+    protected int direction = 1;
+    protected float maxSpeed;
     protected Texture[] textures;
-    boolean moving = false;
-    private Vector3 position;
+    protected Vector3 position;
 
-    public Entity(TextureRegion textureRegion) {
+    private int hitpoints;
+
+    public Entity() {
         sprite = new Sprite();
         speed = new Vector2(0, 0);
         tilePosition = new Vector3(0, 0, 0);
@@ -60,52 +62,44 @@ public class Entity implements SortableObject {
         return 0;
     }
 
-    public void update() {
+    public void update(float delta) {
 
         if (moving) {
-            switch (direction) {
+            switch(direction) {
                 case 1: {
                     speed.x = 0;
                     speed.y = maxSpeed;
-                    sprite.setTexture(textures[0]);
                     break;
                 }
                 case 2: {
                     speed.set(diagonalSpeed.x * -1, diagonalSpeed.y * -1);
-                    sprite.setTexture(textures[1]);
                     break;
                 }
                 case 3: {
                     speed.x = maxSpeed;
                     speed.y = 0;
-                    sprite.setTexture(textures[2]);
                     break;
                 }
                 case 4: {
                     speed.set(diagonalSpeed.x * -1, diagonalSpeed.y);
-                    sprite.setTexture(textures[3]);
                     break;
                 }
                 case 5: {
                     speed.x = 0;
                     speed.y = maxSpeed * -1;
-                    sprite.setTexture(textures[4]);
                     break;
                 }
                 case 6: {
                     speed.set(diagonalSpeed.x, diagonalSpeed.y);
-                    sprite.setTexture(textures[5]);
                     break;
                 }
                 case 7: {
                     speed.x = maxSpeed * -1;
                     speed.y = 0;
-                    sprite.setTexture(textures[6]);
                     break;
                 }
                 case 8: {
                     speed.set(diagonalSpeed.x, diagonalSpeed.y * -1);
-                    sprite.setTexture(textures[7]);
                     break;
                 }
                 default: {
@@ -115,15 +109,20 @@ public class Entity implements SortableObject {
                 }
             }
         } else {
-            speed.x = 0;
-            speed.y = 0;
+            speed.set(0, 0);
         }
+
+        sprite.setTexture(textures[direction - 1]);
 
         body.setLinearVelocity(speed.x, speed.y);
         float x = body.getPosition().x * GameUtils.PIXELS_PER_METER;
         float y = body.getPosition().y * GameUtils.PIXELS_PER_METER;
         sprite.setCenter((int)x, (int)y);
         tilePosition = MapUtils.worldToTile(x, y);
+    }
+
+    public void damage(int hitpoints) {
+        this.hitpoints -= hitpoints;
     }
 
 
@@ -175,10 +174,6 @@ public class Entity implements SortableObject {
 
     public Sprite getSprite() {
         return sprite;
-    }
-
-    public boolean isMoving() {
-        return moving;
     }
 
     @Override

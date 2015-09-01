@@ -10,6 +10,9 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.vincent.Weapons.Gun;
+import com.vincent.Weapons.Pistol;
+import com.vincent.projectiles.ProjectileManager;
 import com.vincent.util.GameUtils;
 
 
@@ -20,12 +23,16 @@ import com.vincent.util.GameUtils;
  */
 public class Player extends Entity {
 
-    private Touchpad touchpad;
+    private Touchpad moveTouchpad;
+    private ProjectileManager projectileManager;
+    private float reloadTime = 0;
+    private Gun currentWeapon;
 
-    public Player(Texture[] texture, float maxSpeed, Vector3 position, World world, Touchpad touchpad, BodyDef bodyDef, FixtureDef fixtureDef) {
-        super(new TextureRegion(texture[0]));
+    public Player(Texture[] texture, float maxSpeed, Vector3 position, World world, Touchpad moveTouchpad, ProjectileManager projectileManager, BodyDef bodyDef, FixtureDef fixtureDef) {
+        super();
         setMaxSpeed(maxSpeed);
-        this.touchpad = touchpad;
+        this.moveTouchpad = moveTouchpad;
+        this.projectileManager = projectileManager;
         textures = texture;
         sprite = new Sprite(texture[0]);
         sprite.setCenter(position.x, position.y);
@@ -46,22 +53,31 @@ public class Player extends Entity {
 
         body.createFixture(fixtureDef);
         polygonShape.dispose();
+
+        currentWeapon = new Pistol(this.projectileManager, this);
     }
 
     @Override
-    public void update() {
-        float touchpadPercentX = touchpad.getKnobPercentX();
-        float touchpadPercentY = touchpad.getKnobPercentY();
-        if (touchpadPercentX != 0 || touchpadPercentY != 0) {
+    public void update(float delta) {
+
+        int direction = GameUtils.getTouchpadEightDirection(moveTouchpad.getKnobPercentX(), moveTouchpad.getKnobPercentY());
+
+        if (direction!= -1) {
             moving = true;
+            this.direction = direction;
         } else {
             moving = false;
         }
 
-        if (GameUtils.getTouchpadEightDirection(touchpadPercentX, touchpadPercentY) != -1) {
-            setDirection(GameUtils.getTouchpadEightDirection(touchpadPercentX, touchpadPercentY));
-        }
+        reloadTime += delta;
 
-        super.update();
+        super.update(delta);
+    }
+
+    public void fire() {
+        if (reloadTime >= currentWeapon.getFireRate()) {
+            currentWeapon.fire();
+            reloadTime = 0;
+        }
     }
 }

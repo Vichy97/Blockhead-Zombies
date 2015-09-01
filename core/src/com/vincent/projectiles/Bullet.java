@@ -32,11 +32,12 @@ public class Bullet implements SortableObject, Pool.Poolable{
 
 
     public Bullet(World world, BodyDef bodyDef, FixtureDef fixtureDef, Pool<Bullet> pool) {
+        this.pool = pool;
+
         visible = true;
         sprite = new Sprite(AssetLoader.bullet);
         position = new Vector3();
         diagonalSpeed = new Vector2();
-        this.pool = pool;
 
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(position.x / GameUtils.PIXELS_PER_METER, position.y / GameUtils.PIXELS_PER_METER);
@@ -107,10 +108,10 @@ public class Bullet implements SortableObject, Pool.Poolable{
 
     public void spawn(Vector3 position, float speed, int direction) {
         this.position.set(position);
+        this.speed = speed;
+
         sprite.setCenter(position.x, position.y);
         body.setTransform(position.x / GameUtils.PIXELS_PER_METER, position.y / GameUtils.PIXELS_PER_METER, 0);
-
-        this.speed = speed;
         diagonalSpeed.set((float) (Math.cos(22.5) * speed), (float) (Math.sin(22.5) * speed));
 
         this.direction = direction;
