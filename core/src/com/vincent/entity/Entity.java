@@ -3,7 +3,6 @@ package com.vincent.entity;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -29,6 +28,7 @@ public class Entity implements SortableObject {
     protected float maxSpeed;
     protected Texture[] textures;
     protected Vector3 position;
+    protected float angle;
 
     private int hitpoints;
 
@@ -69,15 +69,18 @@ public class Entity implements SortableObject {
                 case 1: {
                     speed.x = 0;
                     speed.y = maxSpeed;
+                    //angle = 0;
                     break;
                 }
                 case 2: {
                     speed.set(diagonalSpeed.x * -1, diagonalSpeed.y * -1);
+                   // angle = 22.5f;
                     break;
                 }
                 case 3: {
                     speed.x = maxSpeed;
                     speed.y = 0;
+                   // angle = 90;
                     break;
                 }
                 case 4: {
@@ -174,6 +177,10 @@ public class Entity implements SortableObject {
 
     public Sprite getSprite() {
         return sprite;
+    }
+
+    public void setMoving(boolean moving) {
+        this.moving = moving;
     }
 
     @Override

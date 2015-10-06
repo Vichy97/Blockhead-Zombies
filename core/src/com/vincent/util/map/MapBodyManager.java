@@ -1,5 +1,6 @@
 package com.vincent.util.map;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.maps.Map;
 import com.badlogic.gdx.maps.MapLayer;
@@ -29,6 +30,7 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.JsonValue.JsonIterator;
+import com.vincent.game.MyGdxGame;
 
 /**
  * @author David Saltares Marquez david.saltares at gmail.com
@@ -254,5 +256,12 @@ public class MapBodyManager {
         ChainShape chain = new ChainShape();
         chain.createChain(worldVertices);
         return chain;
+    }
+
+    //method for writing to the log
+    private void debug(String message) {
+        if (MyGdxGame.DEBUG) {
+            Gdx.app.log("Map Body Manager", message);
+        }
     }
 }

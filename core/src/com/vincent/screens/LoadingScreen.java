@@ -79,7 +79,7 @@ public class LoadingScreen implements Screen {
     //method for writing to the log
     private void debug(String message) {
         if (MyGdxGame.DEBUG) {
-            Gdx.app.log("LoadingScreen", message);
+            Gdx.app.log("Loading Screen", message);
         }
     }
 }

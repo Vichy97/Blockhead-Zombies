@@ -80,7 +80,7 @@ public class MyGdxGame extends Game {
                 setScreen(new GameScreen(this, UICamera, UIViewport, gameCamera, gameViewport, bundle, currentMap));
                 break;
             } default: {
-                Gdx.app.log("setScreen", "Incorrect Screen Name");
+                debug("Incorrect Screen Name");
                 Gdx.app.exit();
             }
         }
@@ -88,6 +88,13 @@ public class MyGdxGame extends Game {
 
     public void setCurrentMap(TiledMap map) {
         currentMap = map;
+    }
+
+    //method for writing to the log
+    private static void debug(String message) {
+        if (MyGdxGame.DEBUG) {
+            Gdx.app.log("My GDX Game", message);
+        }
     }
 
     @Override

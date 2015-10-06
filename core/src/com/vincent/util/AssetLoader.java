@@ -15,6 +15,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.vincent.game.MyGdxGame;
 import com.vincent.util.map.CustomAtlasTmxMapLoader;
 import com.vincent.util.map.MapUtils;
 
@@ -64,7 +65,7 @@ public class AssetLoader {
     public static Texture bullet;
 
 
-    public static TiledMap map1, map2;
+    public static TiledMap map1, map2, map3, map4;
 
     //load all assets here, but note that calling manager.load only queues assets to load
     public static void load() {
@@ -100,6 +101,9 @@ public class AssetLoader {
         manager.setLoader(TiledMap.class, mapLoader);
         manager.load("maps/map1.tmx", TiledMap.class, tileParameters);
         manager.load("maps/map2.tmx", TiledMap.class, tileParameters);
+        manager.load("maps/map3.tmx", TiledMap.class, tileParameters);
+        manager.load("maps/map4.tmx", TiledMap.class, tileParameters);
+
 
     }
 
@@ -134,10 +138,16 @@ public class AssetLoader {
 
         map1 = manager.get("maps/map1.tmx");
         map2 = manager.get("maps/map2.tmx");
+        map3 = manager.get("maps/map3.tmx");
+        map4 = manager.get("maps/map4.tmx");
         MapUtils.correctMapObjects(map1.getLayers().get("objects"));
         MapUtils.correctMapObjects(map1.getLayers().get("static objects"));
         MapUtils.correctMapObjects(map2.getLayers().get("objects"));
         MapUtils.correctMapObjects(map2.getLayers().get("static objects"));
+        MapUtils.correctMapObjects(map3.getLayers().get("objects"));
+        MapUtils.correctMapObjects(map3.getLayers().get("static objects"));
+        MapUtils.correctMapObjects(map4.getLayers().get("objects"));
+        MapUtils.correctMapObjects(map4.getLayers().get("static objects"));
     }
 
     //creates a bitmap font of the given size from the given .ttf file
@@ -159,8 +169,15 @@ public class AssetLoader {
     //them asynchronously. calling manager.finishloading() will load all
     //assets at once but it will load them synchronously
     public static boolean update() {
-        Gdx.app.log("AssetLoader", "update");
+        debug("update");
         return manager.update();
+    }
+
+    //method for writing to the log
+    private static void debug(String message) {
+        if (MyGdxGame.DEBUG) {
+            Gdx.app.log("Asset Loader", message);
+        }
     }
 
     //returns a float between 0 and 1. this doesnt work well for atlas's

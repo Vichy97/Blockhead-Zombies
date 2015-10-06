@@ -37,6 +37,8 @@ public class MapSelectScreen implements Screen {
 
     private TextButton map1;
     private TextButton map2;
+    private TextButton map3;
+    private TextButton map4;
 
     private Table table;
     private Stage stage;
@@ -69,6 +71,10 @@ public class MapSelectScreen implements Screen {
         map1.pad(20);
         map2 = new TextButton("MAP 2", textButtonStyle);
         map2.pad(20);
+        map3 = new TextButton("MAP 3", textButtonStyle);
+        map3.pad(20);
+        map4 = new TextButton("MAP 4", textButtonStyle);
+        map4.pad(20);
 
         map1.addListener(new ClickListener() {
             @Override
@@ -86,11 +92,31 @@ public class MapSelectScreen implements Screen {
             }
         });
 
+        map3.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setCurrentMap(AssetLoader.map3);
+                game.setScreen("game");
+            }
+        });
+
+        map4.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setCurrentMap(AssetLoader.map4);
+                game.setScreen("game");
+            }
+        });
+
         //add ui elements to the table then add that to the stage
         table.setBounds(0, 0, MyGdxGame.GAME_WIDTH, MyGdxGame.GAME_HEIGHT);
         table.add(map1).width(300).center();
         table.row();
         table.add(map2).width(300).center();
+        table.row();
+        table.add(map3).width(300).center();
+        table.row();
+        table.add(map4).width(300).center();
         stage.addActor(table);
     }
 
@@ -154,7 +180,7 @@ public class MapSelectScreen implements Screen {
     //method for writing to the log
     private void debug(String message) {
         if (MyGdxGame.DEBUG) {
-            Gdx.app.log("MapSelectScreen", message);
+            Gdx.app.log("Map Select Screen", message);
         }
     }
 }

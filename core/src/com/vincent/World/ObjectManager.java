@@ -1,7 +1,9 @@
 package com.vincent.World;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
+import com.vincent.game.MyGdxGame;
 import com.vincent.util.map.CustomTileMapRenderer;
 
 import java.util.ArrayList;
@@ -88,6 +90,13 @@ public class ObjectManager {
 
     public void sortObjects() {
         Collections.sort(objects, comparator);
+    }
+
+    //method for writing to the log
+    private void debug(String message) {
+        if (MyGdxGame.DEBUG) {
+            Gdx.app.log("Object Manager", message);
+        }
     }
 
     public void dispose() {

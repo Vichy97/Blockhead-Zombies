@@ -60,7 +60,7 @@ public class GameScreen implements Screen, InputProcessor {
     private I18NBundle bundle;
     private InputMultiplexer inputMultiplexer;
 
-    private StringBuffer stringBuffer;
+    private StringBuilder stringBuilder;
 
     //view related fields
     private OrthographicCamera UICamera, gameCamera;
@@ -160,7 +160,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         inputMultiplexer = new InputMultiplexer();
 
-        stringBuffer = new StringBuffer();
+        stringBuilder = new StringBuilder();
 
         initUI();
 
@@ -230,6 +230,34 @@ public class GameScreen implements Screen, InputProcessor {
 
         renderClouds(delta);
 
+       /* if (!paused) {
+            if (upPressed) {
+                player.setMoving(true);
+                player.setDirection(1);
+
+                if (leftPressed && !rightPressed) {
+                    player.setDirection(8);
+                }
+                if (rightPressed && !leftPressed) {
+                    player.setDirection(2);
+                }
+            }
+
+            else if (rightPressed) {
+                player.setMoving(true);
+                player.setDirection(3);
+                if (upPressed && !downPressed) {
+                    player.setDirection(2);
+                }
+                if (downPressed && !upPressed) {
+                    player.setDirection(4);
+                }
+            } else {
+                player.setMoving(false);
+                player.setDirection(1);
+            }
+        } */
+
         tiledMapRenderer.getBatch().begin();
         tiledMapRenderer.renderTileLayer((TiledMapTileLayer) tiles);
         tiledMapRenderer.getBatch().end();
@@ -260,24 +288,23 @@ public class GameScreen implements Screen, InputProcessor {
 
         if (MyGdxGame.DEBUG) {
             spriteBatch.begin();
-            stringBuffer.append("playerIso: ").append(player.getPosition());
-            font.draw(spriteBatch, stringBuffer.toString(), 50, screenHeight - 25);
-            stringBuffer.delete(0, stringBuffer.length());
-            stringBuffer.append("TouchPadPercent: X =  ").append(touchpad1.getKnobPercentX()).append(" Y = ").append(touchpad1.getKnobPercentY());
-            font.draw(spriteBatch, stringBuffer.toString(), 50, screenHeight - 50);
-            stringBuffer.delete(0, stringBuffer.length());
-            stringBuffer.append("TouchpadAngle: ").append(180 + Math.atan2(touchpad1.getKnobPercentY(), touchpad1.getKnobPercentX()) * 180.0d / Math.PI);
-            font.draw(spriteBatch, stringBuffer.toString(), 50, screenHeight - 75);
-            stringBuffer.delete(0, stringBuffer.length());
-            stringBuffer.append("PlayerDirection: ").append(player.getDirection());
-            font.draw(spriteBatch, stringBuffer.toString(), 50, screenHeight - 100);
-            stringBuffer.delete(0, stringBuffer.length());
-            stringBuffer.append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
-            font.draw(spriteBatch, stringBuffer.toString(), 50, screenHeight - 125);
-            stringBuffer.delete(0, stringBuffer.length());
+            stringBuilder.append("playerIso: ").append(player.getPosition());
+            font.draw(spriteBatch, stringBuilder.toString(), 50, screenHeight - 25);
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("TouchPadPercent: X =  ").append(touchpad1.getKnobPercentX()).append(" Y = ").append(touchpad1.getKnobPercentY());
+            font.draw(spriteBatch, stringBuilder.toString(), 50, screenHeight - 50);
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("TouchpadAngle: ").append(180 + Math.atan2(touchpad1.getKnobPercentY(), touchpad1.getKnobPercentX()) * 180.0d / Math.PI);
+            font.draw(spriteBatch, stringBuilder.toString(), 50, screenHeight - 75);
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("PlayerDirection: ").append(player.getDirection());
+            font.draw(spriteBatch, stringBuilder.toString(), 50, screenHeight - 100);
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
+            font.draw(spriteBatch, stringBuilder.toString(), 50, screenHeight - 125);
+            stringBuilder.delete(0, stringBuilder.length());
             spriteBatch.end();
         }
-
 
         UIViewport.apply();
         UICamera.update();
@@ -517,9 +544,9 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
     //method for writing to the log
-    private void debug(String message) {
+    private static void debug(String message) {
         if (MyGdxGame.DEBUG) {
-            Gdx.app.log("GameScreen", message);
+            Gdx.app.log("Game Screen", message);
         }
     }
 

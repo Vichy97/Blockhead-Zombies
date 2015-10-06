@@ -1,5 +1,6 @@
 package com.vincent.entity;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -7,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.vincent.World.ObjectManager;
+import com.vincent.game.MyGdxGame;
 import com.vincent.projectiles.ProjectileManager;
 
 import java.util.ArrayList;
@@ -48,6 +50,13 @@ public class EntityManager {
 
     public void spawnEntity() {
 
+    }
+
+    //method for writing to the log
+    private void debug(String message) {
+        if (MyGdxGame.DEBUG) {
+            Gdx.app.log("Entity Manager", message);
+        }
     }
 
     public void dispose() {

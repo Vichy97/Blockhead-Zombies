@@ -162,7 +162,7 @@ public class MenuScreen implements Screen {
     //method for writing to the log
     private void debug(String message) {
         if (MyGdxGame.DEBUG) {
-            Gdx.app.log("MenuScreen", message);
+            Gdx.app.log("Menu Screen", message);
         }
     }
 }

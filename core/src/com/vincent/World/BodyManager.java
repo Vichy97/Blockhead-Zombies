@@ -1,10 +1,12 @@
 package com.vincent.World;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.vincent.game.MyGdxGame;
 import com.vincent.projectiles.Bullet;
 
 import java.util.ArrayList;
@@ -81,5 +83,12 @@ public class BodyManager implements ContactListener {
         }
 
         bodiesToActivate.clear();
+    }
+
+    //method for writing to the log
+    private static void debug(String message) {
+        if (MyGdxGame.DEBUG) {
+            Gdx.app.log("Body Manager", message);
+        }
     }
 }

@@ -14,7 +14,7 @@ public class DesktopLauncher {
         //into the assets file and have them auto packed. this is good for editing assets
         TexturePacker.Settings settings = new TexturePacker.Settings();
         settings.pot = false;
-        TexturePacker.process(settings, "C:/Users/Vincent/Desktop/Android Workspace/Assets/ui", "D:/Vincent/Documents/Github/boxhead/android/assets/ui", "ui");
+        //TexturePacker.process(settings, "C:/Users/Vincent/Desktop/Android Workspace/Assets/ui", "D:/Vincent/Documents/Github/boxhead/android/assets/ui", "ui");
 
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

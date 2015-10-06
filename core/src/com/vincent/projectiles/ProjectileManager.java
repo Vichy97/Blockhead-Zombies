@@ -1,11 +1,13 @@
 package com.vincent.projectiles;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Pool;
 import com.vincent.World.ObjectManager;
+import com.vincent.game.MyGdxGame;
 
 import java.util.ArrayList;
 
@@ -52,6 +54,13 @@ public class ProjectileManager {
         bullet.spawn(position, speed, direction);
         projectiles.add(bullet);
         ObjectManager.addObject(bullet);
+    }
+
+    //method for writing to the log
+    private static void debug(String message) {
+        if (MyGdxGame.DEBUG) {
+            Gdx.app.log("Projectile Manager", message);
+        }
     }
 
     public void dispose() {
