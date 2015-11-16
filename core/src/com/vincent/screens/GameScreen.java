@@ -54,7 +54,7 @@ public class GameScreen implements Screen, InputProcessor {
     private boolean music = true;
     private boolean sound = true;
 
-    public boolean leftPressed, rightPressed, upPressed, downPressed;
+    public boolean leftPressed, rightPressed, upPressed, downPressed = false;
 
     private MyGdxGame game;
     private I18NBundle bundle;
@@ -93,7 +93,7 @@ public class GameScreen implements Screen, InputProcessor {
 
     //map fields
     private CustomTileMapRenderer tiledMapRenderer;
-    private TiledMap currentMap;
+    private TiledMap currentTileMap, currentObjectMap;
     private int mapWidth, mapHeight;
     private MapLayer tiles;
 
@@ -134,7 +134,7 @@ public class GameScreen implements Screen, InputProcessor {
 
     private Cloud[] cloudArray;
 
-    public GameScreen(MyGdxGame game, OrthographicCamera UICamera, Viewport UIViewport, OrthographicCamera gameCamera, Viewport gameViewport, I18NBundle bundle, TiledMap map) {
+    public GameScreen(MyGdxGame game, OrthographicCamera UICamera, Viewport UIViewport, OrthographicCamera gameCamera, Viewport gameViewport, I18NBundle bundle, TiledMap tileMap, TiledMap objectMap) {
         debug("constructor");
         this.game = game;
         this.UICamera = UICamera;
@@ -186,8 +186,9 @@ public class GameScreen implements Screen, InputProcessor {
         cloudTexture2 = AssetLoader.cloudTexture2;
         cloudTexture3 = AssetLoader.cloudTexture3;
 
-        currentMap = map;
-        tiles = currentMap.getLayers().get("tiles");
+        currentTileMap = tileMap;
+        currentObjectMap = objectMap;
+        tiles = currentTileMap.getLayers().get("tiles");
 
         spawnClouds();
 
@@ -198,7 +199,7 @@ public class GameScreen implements Screen, InputProcessor {
         debugRenderer = new Box2DDebugRenderer();
 
         mapBodyManager = new MapBodyManager(world, GameUtils.PIXELS_PER_METER, null, 0);
-        mapBodyManager.createPhysics(currentMap);
+        mapBodyManager.createPhysics(currentObjectMap);
     }
 
 
@@ -209,9 +210,9 @@ public class GameScreen implements Screen, InputProcessor {
 
         Texture[] textures = {boxhead_1, boxhead_2, boxhead_3, boxhead_4, boxhead_5, boxhead_6, boxhead_7, boxhead_8};
 
-        tiledMapRenderer = new CustomTileMapRenderer(currentMap);
+        tiledMapRenderer = new CustomTileMapRenderer(currentTileMap);
 
-        objectManager = new ObjectManager(tiledMapRenderer, currentMap.getLayers().get("objects").getObjects(), currentMap.getLayers().get("static objects").getObjects());
+        objectManager = new ObjectManager(tiledMapRenderer, currentObjectMap.getLayers().get("objects").getObjects(), currentObjectMap.getLayers().get("static objects").getObjects());
         entityManager = new EntityManager(world);
         projectileManager = new ProjectileManager(world);
         player = entityManager.spawnPlayer(textures, playerMaxSpeed, new Vector3(1984, 32, 0), touchpad1, projectileManager);
@@ -230,8 +231,9 @@ public class GameScreen implements Screen, InputProcessor {
 
         renderClouds(delta);
 
-       /* if (!paused) {
+        if (!paused) {
             if (upPressed) {
+                player.setTouchpad(false);
                 player.setMoving(true);
                 player.setDirection(1);
 
@@ -244,6 +246,7 @@ public class GameScreen implements Screen, InputProcessor {
             }
 
             else if (rightPressed) {
+                player.setTouchpad(false);
                 player.setMoving(true);
                 player.setDirection(3);
                 if (upPressed && !downPressed) {
@@ -252,15 +255,41 @@ public class GameScreen implements Screen, InputProcessor {
                 if (downPressed && !upPressed) {
                     player.setDirection(4);
                 }
-            } else {
-                player.setMoving(false);
-                player.setDirection(1);
             }
-        } */
 
-        tiledMapRenderer.getBatch().begin();
-        tiledMapRenderer.renderTileLayer((TiledMapTileLayer) tiles);
-        tiledMapRenderer.getBatch().end();
+            else if (downPressed) {
+                player.setTouchpad(false);
+                player.setMoving(true);
+                player.setDirection(5);
+                if (leftPressed && !rightPressed) {
+                    player.setDirection(6);
+                }
+                if (rightPressed && !leftPressed) {
+                    player.setDirection(4);
+                }
+            }
+
+            else if (leftPressed) {
+                player.setTouchpad(false);
+                player.setMoving(true);
+                player.setDirection(7);
+                if (downPressed && !upPressed) {
+                    player.setDirection(6);
+                }
+                if (upPressed && !downPressed) {
+                    player.setDirection(8);
+                }
+            }
+
+            else {
+                player.setTouchpad(true);
+                player.setMoving(false);
+            }
+        }
+
+       // tiledMapRenderer.getBatch().begin();
+        tiledMapRenderer.render();
+       // tiledMapRenderer.getBatch().end();
         objectManager.renderStaticObjects();
         if (!paused) {
             projectileManager.updateProjectiles();
@@ -302,6 +331,9 @@ public class GameScreen implements Screen, InputProcessor {
             stringBuilder.delete(0, stringBuilder.length());
             stringBuilder.append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
             font.draw(spriteBatch, stringBuilder.toString(), 50, screenHeight - 125);
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("playerPosition: ").append(player.getPosition());
+            font.draw(spriteBatch, stringBuilder.toString(), 50, screenHeight - 150);
             stringBuilder.delete(0, stringBuilder.length());
             spriteBatch.end();
         }
@@ -378,7 +410,7 @@ public class GameScreen implements Screen, InputProcessor {
         mainStage.dispose();
         touchpadStage.dispose();
         tiledMapRenderer.dispose();
-        currentMap.dispose();
+        currentTileMap.dispose();
         entityManager.dispose();
         objectManager.dispose();
         System.gc();
@@ -581,10 +613,11 @@ public class GameScreen implements Screen, InputProcessor {
         } else if (keycode == Input.Keys.RIGHT) {
             rightPressed = true;
         } else if (keycode == Input.Keys.DOWN) {
-            leftPressed = true;
-        } else if (keycode == Input.Keys.LEFT) {
             downPressed = true;
+        } else if (keycode == Input.Keys.LEFT) {
+            leftPressed = true;
         } else if (keycode == Input.Keys.SPACE) {
+            GameUtils.saveScreenshot();
         }
         return true;
     }

@@ -11,12 +11,12 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.maps.tiled.AtlasTmxMapLoader;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.vincent.game.MyGdxGame;
 import com.vincent.util.map.CustomAtlasTmxMapLoader;
+import com.vincent.util.map.CustomTmxMapLoader;
 import com.vincent.util.map.MapUtils;
 
 /**
@@ -36,7 +36,8 @@ public class AssetLoader {
     private static InternalFileHandleResolver fileHandleResolver;
 
     //loader for tiled maps
-    private static CustomAtlasTmxMapLoader mapLoader;
+    private static AtlasTmxMapLoader tileMapLoader;
+    private static CustomTmxMapLoader objectMapLoader;
     private static SoundLoader soundLoader;
 
     //atlas for ui elements
@@ -64,8 +65,8 @@ public class AssetLoader {
     public static Texture cloudTexture3;
     public static Texture bullet;
 
-
-    public static TiledMap map1, map2, map3, map4;
+    public static TiledMap map1TileMap;
+    public static TiledMap map1ObjectMap;
 
     //load all assets here, but note that calling manager.load only queues assets to load
     public static void load() {
@@ -73,14 +74,20 @@ public class AssetLoader {
 
         TextureLoader.TextureParameter param = new TextureLoader.TextureParameter();
         param.minFilter = Texture.TextureFilter.Linear;
+        param.magFilter = Texture.TextureFilter.Linear;
 
-        CustomAtlasTmxMapLoader.CustomAtlasTiledMapLoaderParameters tileParameters = new CustomAtlasTmxMapLoader.CustomAtlasTiledMapLoaderParameters();
+        AtlasTmxMapLoader.AtlasTiledMapLoaderParameters tileParameters = new AtlasTmxMapLoader.AtlasTiledMapLoaderParameters();
         tileParameters.textureMinFilter = Texture.TextureFilter.Linear;
+        tileParameters.textureMagFilter = Texture.TextureFilter.Linear;
 
+        CustomTmxMapLoader.CustomParameters objectParameters = new CustomTmxMapLoader.CustomParameters();
+        objectParameters.textureMinFilter = Texture.TextureFilter.Linear;
+        objectParameters.textureMagFilter = Texture.TextureFilter.Linear;
 
         manager = new AssetManager();
         fileHandleResolver = new InternalFileHandleResolver();
-        mapLoader = new CustomAtlasTmxMapLoader(fileHandleResolver);
+        tileMapLoader = new AtlasTmxMapLoader(fileHandleResolver);
+        objectMapLoader = new CustomTmxMapLoader(fileHandleResolver);
         soundLoader = new SoundLoader(fileHandleResolver);
 
 
@@ -98,13 +105,11 @@ public class AssetLoader {
         manager.load("bullet.png", Texture.class, param);
 
         manager.load("ui/ui.atlas", TextureAtlas.class);
-        manager.setLoader(TiledMap.class, mapLoader);
-        manager.load("maps/map1.tmx", TiledMap.class, tileParameters);
-        manager.load("maps/map2.tmx", TiledMap.class, tileParameters);
-        manager.load("maps/map3.tmx", TiledMap.class, tileParameters);
-        manager.load("maps/map4.tmx", TiledMap.class, tileParameters);
-
-
+        manager.setLoader(TiledMap.class, objectMapLoader);
+        manager.load("maps/map1Object.tmx", TiledMap.class, objectParameters);
+        manager.finishLoading(); //not sure if this should be here but it has issues with assigning two different loaders for a single assets type (this fixes that somehow)
+        manager.setLoader(TiledMap.class, tileMapLoader);
+        manager.load("maps/map1Tile.tmx", TiledMap.class, tileParameters);
     }
 
     //initialize the various resources after they are loaded
@@ -135,19 +140,10 @@ public class AssetLoader {
         cloudTexture3 = manager.get("cloud_3.png", Texture.class);
         bullet = manager.get("bullet.png", Texture.class);
 
-
-        map1 = manager.get("maps/map1.tmx");
-        map2 = manager.get("maps/map2.tmx");
-        map3 = manager.get("maps/map3.tmx");
-        map4 = manager.get("maps/map4.tmx");
-        MapUtils.correctMapObjects(map1.getLayers().get("objects"));
-        MapUtils.correctMapObjects(map1.getLayers().get("static objects"));
-        MapUtils.correctMapObjects(map2.getLayers().get("objects"));
-        MapUtils.correctMapObjects(map2.getLayers().get("static objects"));
-        MapUtils.correctMapObjects(map3.getLayers().get("objects"));
-        MapUtils.correctMapObjects(map3.getLayers().get("static objects"));
-        MapUtils.correctMapObjects(map4.getLayers().get("objects"));
-        MapUtils.correctMapObjects(map4.getLayers().get("static objects"));
+        map1TileMap = manager.get("maps/map1Tile.tmx");
+        map1ObjectMap = manager.get("maps/map1Object.tmx");
+        MapUtils.correctMapObjects(map1ObjectMap.getLayers().get("objects"));
+        MapUtils.correctMapObjects(map1ObjectMap.getLayers().get("static objects"));
     }
 
     //creates a bitmap font of the given size from the given .ttf file

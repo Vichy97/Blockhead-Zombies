@@ -27,6 +27,7 @@ public class Player extends Entity {
     private ProjectileManager projectileManager;
     private float reloadTime = 0;
     private Gun currentWeapon;
+    private boolean touchpad = true;
 
     public Player(Texture[] texture, float maxSpeed, Vector3 position, World world, Touchpad moveTouchpad, ProjectileManager projectileManager, BodyDef bodyDef, FixtureDef fixtureDef) {
         super();
@@ -62,10 +63,10 @@ public class Player extends Entity {
 
         int direction = GameUtils.getTouchpadEightDirection(moveTouchpad.getKnobPercentX(), moveTouchpad.getKnobPercentY());
 
-        if (direction!= -1) {
+        if (direction!= -1 && touchpad) {
             moving = true;
             this.direction = direction;
-        } else {
+        } else if (touchpad) {
             moving = false;
         }
 
@@ -79,5 +80,9 @@ public class Player extends Entity {
             currentWeapon.fire();
             reloadTime = 0;
         }
+    }
+
+    public void setTouchpad(boolean touchpad) {
+        this.touchpad = touchpad;
     }
 }

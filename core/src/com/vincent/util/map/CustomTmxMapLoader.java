@@ -1,17 +1,17 @@
 package com.vincent.util.map;
 
-import java.io.IOException;
-
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
+import com.badlogic.gdx.assets.loaders.TextureLoader;
+import com.badlogic.gdx.assets.loaders.TextureLoader.TextureParameter;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.ImageResolver;
+import com.badlogic.gdx.maps.ImageResolver.AssetManagerImageResolver;
+import com.badlogic.gdx.maps.ImageResolver.DirectImageResolver;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
@@ -32,157 +32,67 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.IntArray;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.XmlReader.Element;
+import java.io.IOException;
 
-/**
- * Created by Vincent on 7/19/2015.
- *
- * identical to the normal AtlasMapLoader except it uses CustomMapObjects rather than TextureMapObjects to make depth sorting easier
- *
- ****since this class no longer loads objects it is deprecated and no longer used (AtlasTMXMapLoader works just as well so there is no need for a custom class)
- */
-public class CustomAtlasTmxMapLoader extends BaseTmxMapLoader<CustomAtlasTmxMapLoader.CustomAtlasTiledMapLoaderParameters> {
+/** @brief synchronous loader for TMX maps created with the Tiled tool */
+public class CustomTmxMapLoader extends BaseTmxMapLoader<CustomTmxMapLoader.CustomParameters> {
 
-    public static class CustomAtlasTiledMapLoaderParameters extends BaseTmxMapLoader.Parameters {
-        /** force texture filters? **/
-        public boolean forceTextureFilters = false;
+    public static class CustomParameters extends BaseTmxMapLoader.Parameters {
+
     }
 
-    protected Array<Texture> trackedTextures = new Array<Texture>();
-
-    private interface AtlasResolver {
-
-        public TextureAtlas getAtlas (String name);
-
-        public static class DirectAtlasResolver implements AtlasResolver {
-
-            private final ObjectMap<String, TextureAtlas> atlases;
-
-            public DirectAtlasResolver (ObjectMap<String, TextureAtlas> atlases) {
-                this.atlases = atlases;
-            }
-
-            @Override
-            public TextureAtlas getAtlas (String name) {
-                return atlases.get(name);
-            }
-
-        }
-
-        public static class AssetManagerAtlasResolver implements AtlasResolver {
-            private final AssetManager assetManager;
-
-            public AssetManagerAtlasResolver (AssetManager assetManager) {
-                this.assetManager = assetManager;
-            }
-
-            @Override
-            public TextureAtlas getAtlas (String name) {
-                return assetManager.get(name, TextureAtlas.class);
-            }
-        }
-    }
-
-    public CustomAtlasTmxMapLoader () {
+    public CustomTmxMapLoader () {
         super(new InternalFileHandleResolver());
     }
 
-    public CustomAtlasTmxMapLoader (FileHandleResolver resolver) {
+    /** Creates loader
+     *
+     * @param resolver */
+    public CustomTmxMapLoader (FileHandleResolver resolver) {
         super(resolver);
     }
 
+    /** Loads the {@link TiledMap} from the given file. The file is resolved via the {@link FileHandleResolver} set in the
+     * constructor of this class. By default it will resolve to an internal file. The map will be loaded for a y-up coordinate
+     * system.
+     * @param fileName the filename
+     * @return the TiledMap */
     public TiledMap load (String fileName) {
-        return load(fileName, new CustomAtlasTiledMapLoaderParameters());
+        return load(fileName, new CustomTmxMapLoader.CustomParameters());
     }
 
-    @Override
-    public Array<AssetDescriptor> getDependencies (String fileName, FileHandle tmxFile, CustomAtlasTiledMapLoaderParameters parameter) {
-        Array<AssetDescriptor> dependencies = new Array<AssetDescriptor>();
+    /** Loads the {@link TiledMap} from the given file. The file is resolved via the {@link FileHandleResolver} set in the
+     * constructor of this class. By default it will resolve to an internal file.
+     * @param fileName the filename
+     * @param parameters specifies whether to use y-up, generate mip maps etc.
+     * @return the TiledMap */
+    public TiledMap load (String fileName, CustomTmxMapLoader.CustomParameters parameters) {
         try {
-            root = xml.parse(tmxFile);
-
-            Element properties = root.getChildByName("properties");
-            if (properties != null) {
-                for (Element property : properties.getChildrenByName("property")) {
-                    String name = property.getAttribute("name");
-                    String value = property.getAttribute("value");
-                    if (name.startsWith("atlas")) {
-                        FileHandle atlasHandle = getRelativeFileHandle(tmxFile, value);
-                        dependencies.add(new AssetDescriptor(atlasHandle, TextureAtlas.class));
-                    }
-                }
-            }
-        } catch (IOException e) {
-            throw new GdxRuntimeException("Unable to parse .tmx file.");
-        }
-        return dependencies;
-    }
-
-    public TiledMap load (String fileName, CustomAtlasTiledMapLoaderParameters parameter) {
-        try {
-            if (parameter != null) {
-                convertObjectToTileSpace = parameter.convertObjectToTileSpace;
-                flipY = parameter.flipY;
-            } else {
-                convertObjectToTileSpace = false;
-                flipY = true;
-            }
-
+            this.convertObjectToTileSpace = parameters.convertObjectToTileSpace;
+            this.flipY = parameters.flipY;
             FileHandle tmxFile = resolve(fileName);
             root = xml.parse(tmxFile);
-            ObjectMap<String, TextureAtlas> atlases = new ObjectMap<String, TextureAtlas>();
-            FileHandle atlasFile = loadAtlas(root, tmxFile);
-            if (atlasFile == null) {
-                throw new GdxRuntimeException("Couldn't load atlas");
+            ObjectMap<String, Texture> textures = new ObjectMap<String, Texture>();
+            Array<FileHandle> textureFiles = loadTilesets(root, tmxFile);
+            textureFiles.addAll(loadImages(root, tmxFile));
+
+            for (FileHandle textureFile : textureFiles) {
+                Texture texture = new Texture(textureFile, parameters.generateMipMaps);
+                texture.setFilter(parameters.textureMinFilter, parameters.textureMagFilter);
+                textures.put(textureFile.path(), texture);
             }
 
-            TextureAtlas atlas = new TextureAtlas(atlasFile);
-            atlases.put(atlasFile.path(), atlas);
-
-            AtlasResolver.DirectAtlasResolver atlasResolver = new AtlasResolver.DirectAtlasResolver(atlases);
-            TiledMap map = loadMap(root, tmxFile, atlasResolver);
-            map.setOwnedResources(atlases.values().toArray());
-            setTextureFilters(parameter.textureMinFilter, parameter.textureMagFilter);
+            DirectImageResolver imageResolver = new DirectImageResolver(textures);
+            TiledMap map = loadTilemap(root, tmxFile, imageResolver);
+            map.setOwnedResources(textures.values().toArray());
             return map;
         } catch (IOException e) {
             throw new GdxRuntimeException("Couldn't load tilemap '" + fileName + "'", e);
         }
     }
 
-    /** May return null. */
-    protected FileHandle loadAtlas (Element root, FileHandle tmxFile) throws IOException {
-        Element e = root.getChildByName("properties");
-
-        if (e != null) {
-            for (Element property : e.getChildrenByName("property")) {
-                String name = property.getAttribute("name", null);
-                String value = property.getAttribute("value", null);
-                if (name.equals("atlas")) {
-                    if (value == null) {
-                        value = property.getText();
-                    }
-
-                    if (value == null || value.length() == 0) {
-                        // keep trying until there are no more atlas properties
-                        continue;
-                    }
-
-                    return getRelativeFileHandle(tmxFile, value);
-                }
-            }
-        }
-        FileHandle atlasFile = tmxFile.sibling(tmxFile.nameWithoutExtension() + ".atlas");
-        return atlasFile.exists() ? atlasFile : null;
-    }
-
-    private void setTextureFilters (TextureFilter min, TextureFilter mag) {
-        for (Texture texture : trackedTextures) {
-            texture.setFilter(min, mag);
-        }
-        trackedTextures.clear();
-    }
-
     @Override
-    public void loadAsync (AssetManager manager, String fileName, FileHandle tmxFile, CustomAtlasTiledMapLoaderParameters parameter) {
+    public void loadAsync (AssetManager manager, String fileName, FileHandle tmxFile, CustomTmxMapLoader.CustomParameters parameter) {
         map = null;
 
         if (parameter != null) {
@@ -192,24 +102,53 @@ public class CustomAtlasTmxMapLoader extends BaseTmxMapLoader<CustomAtlasTmxMapL
             convertObjectToTileSpace = false;
             flipY = true;
         }
-
         try {
-            map = loadMap(root, tmxFile, new AtlasResolver.AssetManagerAtlasResolver(manager));
+            map = loadTilemap(root, tmxFile, new AssetManagerImageResolver(manager));
         } catch (Exception e) {
             throw new GdxRuntimeException("Couldn't load tilemap '" + fileName + "'", e);
         }
     }
 
     @Override
-    public TiledMap loadSync (AssetManager manager, String fileName, FileHandle file, CustomAtlasTiledMapLoaderParameters parameter) {
-        if (parameter != null) {
-            setTextureFilters(parameter.textureMinFilter, parameter.textureMagFilter);
-        }
-
+    public TiledMap loadSync (AssetManager manager, String fileName, FileHandle file, CustomTmxMapLoader.CustomParameters parameter) {
         return map;
     }
 
-    protected TiledMap loadMap (Element root, FileHandle tmxFile, AtlasResolver resolver) {
+    /** Retrieves TiledMap resource dependencies
+     *
+     * @param fileName
+     * @param parameter not used for now
+     * @return dependencies for the given .tmx file */
+    @Override
+    public Array<AssetDescriptor> getDependencies (String fileName, FileHandle tmxFile, CustomTmxMapLoader.CustomParameters parameter) {
+        Array<AssetDescriptor> dependencies = new Array<AssetDescriptor>();
+        try {
+            root = xml.parse(tmxFile);
+            boolean generateMipMaps = (parameter != null ? parameter.generateMipMaps : false);
+            TextureLoader.TextureParameter texParams = new TextureParameter();
+            texParams.genMipMaps = generateMipMaps;
+            if (parameter != null) {
+                texParams.minFilter = parameter.textureMinFilter;
+                texParams.magFilter = parameter.textureMagFilter;
+            }
+            for (FileHandle image : loadTilesets(root, tmxFile)) {
+                dependencies.add(new AssetDescriptor(image, Texture.class, texParams));
+            }
+            for (FileHandle image : loadImages(root, tmxFile)) {
+                dependencies.add(new AssetDescriptor(image, Texture.class, texParams));
+            }
+            return dependencies;
+        } catch (IOException e) {
+            throw new GdxRuntimeException("Couldn't load tilemap '" + fileName + "'", e);
+        }
+    }
+
+    /** Loads the map data, given the XML root element and an {@link ImageResolver} used to return the tileset Textures
+     * @param root the XML root element
+     * @param tmxFile the Filehandle of the tmx file
+     * @param imageResolver the {@link ImageResolver}
+     * @return the {@link TiledMap} */
+    protected TiledMap loadTilemap (Element root, FileHandle tmxFile, ImageResolver imageResolver) {
         TiledMap map = new TiledMap();
 
         String mapOrientation = root.getAttribute("orientation", null);
@@ -230,7 +169,6 @@ public class CustomAtlasTmxMapLoader extends BaseTmxMapLoader<CustomAtlasTmxMapL
         if (mapBackgroundColor != null) {
             mapProperties.put("backgroundcolor", mapBackgroundColor);
         }
-
         mapTileWidth = tileWidth;
         mapTileHeight = tileHeight;
         mapWidthInPixels = mapWidth * tileWidth;
@@ -245,23 +183,120 @@ public class CustomAtlasTmxMapLoader extends BaseTmxMapLoader<CustomAtlasTmxMapL
             }
         }
 
+        Element properties = root.getChildByName("properties");
+        if (properties != null) {
+            loadProperties(map.getProperties(), properties);
+        }
+        Array<Element> tilesets = root.getChildrenByName("tileset");
+        for (Element element : tilesets) {
+            loadTileSet(map, element, tmxFile, imageResolver);
+            root.removeChild(element);
+        }
         for (int i = 0, j = root.getChildCount(); i < j; i++) {
             Element element = root.getChild(i);
-            String elementName = element.getName();
-            if (elementName.equals("properties")) {
-                loadProperties(map.getProperties(), element);
-            } else if (elementName.equals("tileset")) {
-                loadTileset(map, element, tmxFile, resolver);
-            } else if (elementName.equals("layer")) {
+            String name = element.getName();
+            if (name.equals("layer")) {
                 loadTileLayer(map, element);
-            } else if (elementName.equals("objectgroup")) {
+            } else if (name.equals("objectgroup")) {
                 loadObjectGroup(map, element);
+            }
+            else if (name.equals("imagelayer")) {
+                loadImageLayer(map, element, tmxFile, imageResolver);
             }
         }
         return map;
     }
 
-    protected void loadTileset (TiledMap map, Element element, FileHandle tmxFile, AtlasResolver resolver) {
+    /** Loads the tilesets
+     * @param root the root XML element
+     * @return a list of filenames for images containing tiles
+     * @throws IOException */
+    protected Array<FileHandle> loadTilesets (Element root, FileHandle tmxFile) throws IOException {
+        Array<FileHandle> images = new Array<FileHandle>();
+        for (Element tileset : root.getChildrenByName("tileset")) {
+            String source = tileset.getAttribute("source", null);
+            if (source != null) {
+                FileHandle tsxFile = getRelativeFileHandle(tmxFile, source);
+                tileset = xml.parse(tsxFile);
+                Element imageElement = tileset.getChildByName("image");
+                if (imageElement != null) {
+                    String imageSource = tileset.getChildByName("image").getAttribute("source");
+                    FileHandle image = getRelativeFileHandle(tsxFile, imageSource);
+                    images.add(image);
+                } else {
+                    for (Element tile : tileset.getChildrenByName("tile")) {
+                        String imageSource = tile.getChildByName("image").getAttribute("source");
+                        FileHandle image = getRelativeFileHandle(tsxFile, imageSource);
+                        images.add(image);
+                    }
+                }
+            } else {
+                Element imageElement = tileset.getChildByName("image");
+                if (imageElement != null) {
+                    String imageSource = tileset.getChildByName("image").getAttribute("source");
+                    FileHandle image = getRelativeFileHandle(tmxFile, imageSource);
+                    images.add(image);
+                } else {
+                    for (Element tile : tileset.getChildrenByName("tile")) {
+                        String imageSource = tile.getChildByName("image").getAttribute("source");
+                        FileHandle image = getRelativeFileHandle(tmxFile, imageSource);
+                        images.add(image);
+                    }
+                }
+            }
+        }
+        return images;
+    }
+
+    /** Loads the images in image layers
+     * @param root the root XML element
+     * @return a list of filenames for images inside image layers
+     * @throws IOException */
+    protected Array<FileHandle> loadImages (Element root, FileHandle tmxFile) throws IOException {
+        Array<FileHandle> images = new Array<FileHandle>();
+
+        for (Element imageLayer : root.getChildrenByName("imagelayer")) {
+            Element image = imageLayer.getChildByName("image");
+            String source = image.getAttribute("source", null);
+
+            if (source != null) {
+                FileHandle handle = getRelativeFileHandle(tmxFile, source);
+
+                if (!images.contains(handle, false)) {
+                    images.add(handle);
+                }
+            }
+        }
+
+        return images;
+    }
+
+    /** Loads the specified tileset data, adding it to the collection of the specified map, given the XML element, the tmxFile and
+     * an {@link ImageResolver} used to retrieve the tileset Textures.
+     *
+     * <p>
+     * Default tileset's property keys that are loaded by default are:
+     * </p>
+     *
+     * <ul>
+     * <li><em>firstgid</em>, (int, defaults to 1) the first valid global id used for tile numbering</li>
+     * <li><em>imagesource</em>, (String, defaults to empty string) the tileset source image filename</li>
+     * <li><em>imagewidth</em>, (int, defaults to 0) the tileset source image width</li>
+     * <li><em>imageheight</em>, (int, defaults to 0) the tileset source image height</li>
+     * <li><em>tilewidth</em>, (int, defaults to 0) the tile width</li>
+     * <li><em>tileheight</em>, (int, defaults to 0) the tile height</li>
+     * <li><em>margin</em>, (int, defaults to 0) the tileset margin</li>
+     * <li><em>spacing</em>, (int, defaults to 0) the tileset spacing</li>
+     * </ul>
+     *
+     * <p>
+     * The values are extracted from the specified Tmx file, if a value can't be found then the default is used.
+     * </p>
+     * @param map the Map whose tilesets collection will be populated
+     * @param element the XML element identifying the tileset to load
+     * @param tmxFile the Filehandle of the tmx file
+     * @param imageResolver the {@link ImageResolver} */
+    protected void loadTileSet (TiledMap map, Element element, FileHandle tmxFile, ImageResolver imageResolver) {
         if (element.getName().equals("tileset")) {
             String name = element.get("name", null);
             int firstgid = element.getIntAttribute("firstgid", 1);
@@ -317,88 +352,54 @@ public class CustomAtlasTmxMapLoader extends BaseTmxMapLoader<CustomAtlasTmxMapL
                 }
             }
 
-            String atlasFilePath = map.getProperties().get("atlas", String.class);
-            if (atlasFilePath == null) {
-                FileHandle atlasFile = tmxFile.sibling(tmxFile.nameWithoutExtension() + ".atlas");
-                if (atlasFile.exists()) atlasFilePath = atlasFile.name();
-            }
-            if (atlasFilePath == null) {
-                throw new GdxRuntimeException("The map is missing the 'atlas' property");
-            }
-
-            // get the TextureAtlas for this tileset
-            FileHandle atlasHandle = getRelativeFileHandle(tmxFile, atlasFilePath);
-            atlasHandle = resolve(atlasHandle.path());
-            TextureAtlas atlas = resolver.getAtlas(atlasHandle.path());
-            String regionsName = atlasHandle.nameWithoutExtension();
-
-            for (Texture texture : atlas.getTextures()) {
-                trackedTextures.add(texture);
-            }
-
             TiledMapTileSet tileset = new TiledMapTileSet();
-            MapProperties props = tileset.getProperties();
             tileset.setName(name);
-            props.put("firstgid", firstgid);
-            props.put("imagesource", imageSource);
-            props.put("imagewidth", imageWidth);
-            props.put("imageheight", imageHeight);
-            props.put("tilewidth", tilewidth);
-            props.put("tileheight", tileheight);
-            props.put("margin", margin);
-            props.put("spacing", spacing);
+            tileset.getProperties().put("firstgid", firstgid);
+            if (image != null) {
+                TextureRegion texture = imageResolver.getImage(image.path());
 
-            if (imageSource != null && imageSource.length() > 0) {
-                int lastgid = firstgid + ((imageWidth / tilewidth) * (imageHeight / tileheight)) - 1;
-                for (AtlasRegion region : atlas.findRegions(regionsName)) {
-                    // handle unused tile ids
-                    if (region != null) {
-                        int tileid = region.index + 1;
-                        if (tileid >= firstgid && tileid <= lastgid) {
-                            StaticTiledMapTile tile = new StaticTiledMapTile(region);
-                            tile.setId(tileid);
-                            tile.setOffsetX(offsetX);
-                            tile.setOffsetY(flipY ? -offsetY : offsetY);
-                            tileset.putTile(tileid, tile);
-                        }
-                    }
-                }
-            }
+                MapProperties props = tileset.getProperties();
+                props.put("imagesource", imageSource);
+                props.put("imagewidth", imageWidth);
+                props.put("imageheight", imageHeight);
+                props.put("tilewidth", tilewidth);
+                props.put("tileheight", tileheight);
+                props.put("margin", margin);
+                props.put("spacing", spacing);
 
-            for (Element tileElement : element.getChildrenByName("tile")) {
-                int tileid = firstgid + tileElement.getIntAttribute("id", 0);
-                TiledMapTile tile = tileset.getTile(tileid);
-                if (tile == null) {
-                    Element imageElement = tileElement.getChildByName("image");
-                    if (imageElement != null) {
-                        // Is a tilemap with individual images.
-                        String regionName = imageElement.getAttribute("source");
-                        regionName = regionName.substring(0, regionName.lastIndexOf('.'));
-                        AtlasRegion region = atlas.findRegion(regionName);
-                        if (region == null) throw new GdxRuntimeException("Tileset region not found: " + regionName);
-                        tile = new StaticTiledMapTile(region);
-                        tile.setId(tileid);
+                int stopWidth = texture.getRegionWidth() - tilewidth;
+                int stopHeight = texture.getRegionHeight() - tileheight;
+
+                int id = firstgid;
+
+                for (int y = margin; y <= stopHeight; y += tileheight + spacing) {
+                    for (int x = margin; x <= stopWidth; x += tilewidth + spacing) {
+                        TextureRegion tileRegion = new TextureRegion(texture, x, y, tilewidth, tileheight);
+                        TiledMapTile tile = new StaticTiledMapTile(tileRegion);
+                        tile.setId(id);
                         tile.setOffsetX(offsetX);
                         tile.setOffsetY(flipY ? -offsetY : offsetY);
-                        tileset.putTile(tileid, tile);
+                        tileset.putTile(id++, tile);
                     }
                 }
-                if (tile != null) {
-                    String terrain = tileElement.getAttribute("terrain", null);
-                    if (terrain != null) {
-                        tile.getProperties().put("terrain", terrain);
+            } else {
+                Array<Element> tileElements = element.getChildrenByName("tile");
+                for (Element tileElement : tileElements) {
+                    Element imageElement = tileElement.getChildByName("image");
+                    if (imageElement != null) {
+                        imageSource = imageElement.getAttribute("source");
+                        imageWidth = imageElement.getIntAttribute("width", 0);
+                        imageHeight = imageElement.getIntAttribute("height", 0);
+                        image = getRelativeFileHandle(tmxFile, imageSource);
                     }
-                    String probability = tileElement.getAttribute("probability", null);
-                    if (probability != null) {
-                        tile.getProperties().put("probability", probability);
-                    }
-                    Element properties = tileElement.getChildByName("properties");
-                    if (properties != null) {
-                        loadProperties(tile.getProperties(), properties);
-                    }
+                    TextureRegion texture = imageResolver.getImage(image.path());
+                    TiledMapTile tile = new StaticTiledMapTile(texture);
+                    tile.setId(firstgid + tileElement.getIntAttribute("id"));
+                    tile.setOffsetX(offsetX);
+                    tile.setOffsetY(flipY ? -offsetY : offsetY);
+                    tileset.putTile(tile.getId(), tile);
                 }
             }
-
             Array<Element> tileElements = element.getChildrenByName("tile");
 
             Array<AnimatedTiledMapTile> animatedTiles = new Array<AnimatedTiledMapTile>();
@@ -530,5 +531,5 @@ public class CustomAtlasTmxMapLoader extends BaseTmxMapLoader<CustomAtlasTmxMapL
             layer.getObjects().add(object);
         }
     }
-}
 
+}

@@ -36,9 +36,6 @@ public class MapSelectScreen implements Screen {
     private BitmapFont textFont;
 
     private TextButton map1;
-    private TextButton map2;
-    private TextButton map3;
-    private TextButton map4;
 
     private Table table;
     private Stage stage;
@@ -69,54 +66,20 @@ public class MapSelectScreen implements Screen {
         //add the buttons and set their click listeners
         map1 = new TextButton("MAP 1", textButtonStyle);
         map1.pad(20);
-        map2 = new TextButton("MAP 2", textButtonStyle);
-        map2.pad(20);
-        map3 = new TextButton("MAP 3", textButtonStyle);
-        map3.pad(20);
-        map4 = new TextButton("MAP 4", textButtonStyle);
-        map4.pad(20);
 
         map1.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setCurrentMap(AssetLoader.map1);
+                game.setCurrentMap(AssetLoader.map1TileMap, AssetLoader.map1ObjectMap);
                 game.setScreen("game");
             }
         });
 
-        map2.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setCurrentMap(AssetLoader.map2);
-                game.setScreen("game");
-            }
-        });
-
-        map3.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setCurrentMap(AssetLoader.map3);
-                game.setScreen("game");
-            }
-        });
-
-        map4.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setCurrentMap(AssetLoader.map4);
-                game.setScreen("game");
-            }
-        });
 
         //add ui elements to the table then add that to the stage
         table.setBounds(0, 0, MyGdxGame.GAME_WIDTH, MyGdxGame.GAME_HEIGHT);
         table.add(map1).width(300).center();
         table.row();
-        table.add(map2).width(300).center();
-        table.row();
-        table.add(map3).width(300).center();
-        table.row();
-        table.add(map4).width(300).center();
         stage.addActor(table);
     }
 

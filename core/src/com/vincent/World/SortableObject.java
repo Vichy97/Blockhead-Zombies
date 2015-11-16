@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector3;
 /**
  * Created by Vincent on 8/18/2015.
  *
- * Everything that needs to be depth sorted
+ * Everything that needs to be depth sorted is a SortableObject
  * Using this makes me not need to subclass mapObject for everything
  * now everything (bullets, entities, objects etc..) are all SortableObjects
  *

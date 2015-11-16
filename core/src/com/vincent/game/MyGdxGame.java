@@ -39,7 +39,7 @@ public class MyGdxGame extends Game {
 
     private I18NBundle bundle;
 
-    private TiledMap currentMap;
+    private TiledMap currentTileMap, currentObjectMap;
 
     @Override
     public void create() {
@@ -57,7 +57,7 @@ public class MyGdxGame extends Game {
         FileHandle fileHandle = Gdx.files.internal("locales/Boxhead");
         bundle = I18NBundle.createBundle(fileHandle, Locale.getDefault());
 
-        Gdx.graphics.setVSync(true);
+        //Gdx.graphics.setVSync(true); //may cause stuttering? (only on pc not android)
         Gdx.graphics.setTitle(bundle.get("gameTitle"));
 
         //the first screen is the loading screen
@@ -65,7 +65,6 @@ public class MyGdxGame extends Game {
     }
 
     public void setScreen(String screen) {
-        System.gc();
         switch (screen) {
             case "loading": {
                 setScreen(new LoadingScreen(this));
@@ -77,17 +76,20 @@ public class MyGdxGame extends Game {
                 setScreen(new MapSelectScreen(this, UICamera, UIViewport, bundle));
                 break;
             } case "game": {
-                setScreen(new GameScreen(this, UICamera, UIViewport, gameCamera, gameViewport, bundle, currentMap));
+                setScreen(new GameScreen(this, UICamera, UIViewport, gameCamera, gameViewport, bundle, currentTileMap, currentObjectMap));
                 break;
             } default: {
                 debug("Incorrect Screen Name");
                 Gdx.app.exit();
             }
         }
+        //garbage collection when switching screens to avoid garbage collection during gameplay that could cause lag spikes
+        System.gc();
     }
 
-    public void setCurrentMap(TiledMap map) {
-        currentMap = map;
+    public void setCurrentMap(TiledMap tileMap, TiledMap objectMap) {
+        currentTileMap = tileMap;
+        currentObjectMap = objectMap;
     }
 
     //method for writing to the log
