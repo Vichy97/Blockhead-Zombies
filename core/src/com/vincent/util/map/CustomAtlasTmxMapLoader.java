@@ -38,7 +38,10 @@ import com.badlogic.gdx.utils.XmlReader.Element;
  *
  * identical to the normal AtlasMapLoader except it uses CustomMapObjects rather than TextureMapObjects to make depth sorting easier
  *
- ****since this class no longer loads objects it is deprecated and no longer used (AtlasTMXMapLoader works just as well so there is no need for a custom class)
+ *******************************************************
+ * since this class no longer loads objects it is deprecated
+ * and no longer used (AtlasTMXMapLoader works just as well so there is no need for a custom class)
+ ********************************************************
  */
 public class CustomAtlasTmxMapLoader extends BaseTmxMapLoader<CustomAtlasTmxMapLoader.CustomAtlasTiledMapLoaderParameters> {
 

@@ -15,7 +15,6 @@ import com.badlogic.gdx.maps.tiled.AtlasTmxMapLoader;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.vincent.game.MyGdxGame;
-import com.vincent.util.map.CustomAtlasTmxMapLoader;
 import com.vincent.util.map.CustomTmxMapLoader;
 import com.vincent.util.map.MapUtils;
 

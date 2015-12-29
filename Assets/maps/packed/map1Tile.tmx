@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><map height="60" nextobjectid="357" orientation="isometric" renderorder="right-down" tileheight="64" tilewidth="128" version="1.0" width="60"><properties><property name="atlas" value="../tilesets/packed.atlas"/></properties>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><map height="60" nextobjectid="357" orientation="isometric" renderorder="right-down" tileheight="64" tilewidth="128" version="1.0" width="60"><properties><property name="atlas" value="tileset/packed.atlas"/></properties>
  <tileset firstgid="1" name="tiles" tilecount="32" tileheight="64" tilewidth="128">
   <image height="512" source="../../tilesets/tiles.png" width="512"/>
  </tileset>
