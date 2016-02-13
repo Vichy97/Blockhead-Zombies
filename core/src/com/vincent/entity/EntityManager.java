@@ -35,14 +35,14 @@ public class EntityManager {
         entities = new ArrayList<>();
     }
 
-    public void updateEntities(float delta) {
+    public void updateEntities(float delta, float alpha) {
         for (int i = 0; i < entities.size(); i++) {
-            entities.get(i).update(delta);
+            entities.get(i).update(delta, alpha);
         }
     }
 
-    public Player spawnPlayer(Texture[] texture, float maxSpeed, Vector3 position, Touchpad moveTouchpad, ProjectileManager projectileManager) {
-        Player player = new Player(texture, maxSpeed, position, world, moveTouchpad, projectileManager, bodyDef, fixtureDef);
+    public Player spawnPlayer(float maxSpeed, Vector3 position, Touchpad moveTouchpad, ProjectileManager projectileManager) {
+        Player player = new Player(maxSpeed, position, world, moveTouchpad, projectileManager, bodyDef, fixtureDef);
         entities.add(player);
         ObjectManager.addObject(player);
         return player;

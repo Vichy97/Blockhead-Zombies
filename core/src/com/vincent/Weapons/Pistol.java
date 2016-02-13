@@ -29,6 +29,6 @@ public class Pistol extends Gun {
         } else {
             speed = bulletSpeed;
         }
-        projectileManager.spawnBullet(speed, entity.getPosition(), entity.getDirection());
+        projectileManager.spawnBullet(speed, entity.getPosition(), entity.getDirection(), entity.getAngle());
     }
 }

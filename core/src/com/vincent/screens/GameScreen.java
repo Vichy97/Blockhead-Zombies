@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -102,14 +101,6 @@ public class GameScreen implements Screen, InputProcessor {
     //player fields
     private float playerMaxSpeed = 5;
     private Player player;
-    private Texture boxhead_1;
-    private Texture boxhead_2;
-    private Texture boxhead_3;
-    private Texture boxhead_4;
-    private Texture boxhead_5;
-    private Texture boxhead_6;
-    private Texture boxhead_7;
-    private Texture boxhead_8;
     private Texture cloudTexture1;
     private Texture cloudTexture2;
     private Texture cloudTexture3;
@@ -174,14 +165,6 @@ public class GameScreen implements Screen, InputProcessor {
         font.setColor(Color.BLACK);
         spriteBatch = new SpriteBatch();
 
-        boxhead_1 = AssetLoader.boxhead_1;
-        boxhead_2 = AssetLoader.boxhead_2;
-        boxhead_3 = AssetLoader.boxhead_3;
-        boxhead_4 = AssetLoader.boxhead_4;
-        boxhead_5 = AssetLoader.boxhead_5;
-        boxhead_6 = AssetLoader.boxhead_6;
-        boxhead_7 = AssetLoader.boxhead_7;
-        boxhead_8 = AssetLoader.boxhead_8;
         cloudTexture1 = AssetLoader.cloudTexture1;
         cloudTexture2 = AssetLoader.cloudTexture2;
         cloudTexture3 = AssetLoader.cloudTexture3;
@@ -208,14 +191,12 @@ public class GameScreen implements Screen, InputProcessor {
     public void show() {
         debug("show");
 
-        Texture[] textures = {boxhead_1, boxhead_2, boxhead_3, boxhead_4, boxhead_5, boxhead_6, boxhead_7, boxhead_8};
-
         tiledMapRenderer = new CustomTileMapRenderer(currentTileMap);
 
         objectManager = new ObjectManager(tiledMapRenderer, currentObjectMap.getLayers().get("objects").getObjects(), currentObjectMap.getLayers().get("static objects").getObjects());
         entityManager = new EntityManager(world);
         projectileManager = new ProjectileManager(world);
-        player = entityManager.spawnPlayer(textures, playerMaxSpeed, new Vector3(1984, 32, 0), touchpad1, projectileManager);
+        player = entityManager.spawnPlayer(playerMaxSpeed, new Vector3(1984, 32, 0), touchpad1, projectileManager);
 
         Gdx.graphics.setContinuousRendering(true);
     }
@@ -282,8 +263,10 @@ public class GameScreen implements Screen, InputProcessor {
             }
 
             else {
-                player.setTouchpad(true);
-                player.setMoving(false);
+                if (player.getTouchpad() != true) {
+                    player.setTouchpad(true);
+                    player.setMoving(false);
+                }
             }
         }
 
@@ -291,29 +274,26 @@ public class GameScreen implements Screen, InputProcessor {
         tiledMapRenderer.render();
        // tiledMapRenderer.getBatch().end();
         objectManager.renderStaticObjects();
-        if (!paused) {
-            projectileManager.updateProjectiles();
-            objectManager.sortObjects();
-            objectManager.renderObjects();
-            entityManager.updateEntities(delta);
-        } else {
-            objectManager.renderObjects();
-        }
 
-        gameCamera.position.set((int)player.getEntityX(), (int)player.getEntityY(), 0);
+        gameCamera.position.set((int) player.getEntityX(), (int) player.getEntityY(), 0);
 
         debugMatrix = gameCamera.combined.scale(GameUtils.PIXELS_PER_METER, GameUtils.PIXELS_PER_METER, 0);
         if (MyGdxGame.DEBUG) {
             debugRenderer.render(world, debugMatrix);
         }
 
+        gameCamera.update();
+
         if (!paused) {
+            projectileManager.updateProjectiles();
+            objectManager.sortObjects();
+            objectManager.renderObjects();
             stepWorld(delta);
             bodyManager.deactivateBodies();
             bodyManager.activateBodies();
+        } else {
+            objectManager.renderObjects();
         }
-
-        gameCamera.update();
 
         if (MyGdxGame.DEBUG) {
             spriteBatch.begin();
@@ -334,6 +314,9 @@ public class GameScreen implements Screen, InputProcessor {
             stringBuilder.delete(0, stringBuilder.length());
             stringBuilder.append("playerPosition: ").append(player.getPosition());
             font.draw(spriteBatch, stringBuilder.toString(), 50, screenHeight - 150);
+            stringBuilder.delete(0, stringBuilder.length());
+            stringBuilder.append("Moving: ").append(player.getMoving());
+            font.draw(spriteBatch, stringBuilder.toString(), 50, screenHeight - 175);
             stringBuilder.delete(0, stringBuilder.length());
             spriteBatch.end();
         }
@@ -564,6 +547,7 @@ public class GameScreen implements Screen, InputProcessor {
         mainStage.addActor(menuButton);
     }
 
+    //box2d physics step
     private void stepWorld(float delta) {
         double frameTime = Math.min(delta, 0.25);
 
@@ -572,6 +556,7 @@ public class GameScreen implements Screen, InputProcessor {
         while (accumulator >= step) {
             world.step(step, 6, 2);
             accumulator -= step;
+            entityManager.updateEntities(delta, (float)(accumulator / step));
         }
     }
 

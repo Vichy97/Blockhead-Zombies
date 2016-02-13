@@ -1,0 +1,61 @@
+
+right_anim.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+frame
+  rotate: false
+  xy: 1, 1
+  size: 93, 148
+  orig: 93, 148
+  offset: 0, 0
+  index: 1
+frame
+  rotate: false
+  xy: 96, 1
+  size: 93, 148
+  orig: 93, 148
+  offset: 0, 0
+  index: 2
+frame
+  rotate: false
+  xy: 191, 1
+  size: 93, 148
+  orig: 93, 148
+  offset: 0, 0
+  index: 3
+frame
+  rotate: false
+  xy: 286, 1
+  size: 93, 148
+  orig: 93, 148
+  offset: 0, 0
+  index: 4
+frame
+  rotate: false
+  xy: 381, 1
+  size: 93, 148
+  orig: 93, 148
+  offset: 0, 0
+  index: 5
+frame
+  rotate: false
+  xy: 476, 1
+  size: 93, 148
+  orig: 93, 148
+  offset: 0, 0
+  index: 6
+frame
+  rotate: false
+  xy: 571, 1
+  size: 93, 148
+  orig: 93, 148
+  offset: 0, 0
+  index: 7
+frame
+  rotate: false
+  xy: 666, 1
+  size: 93, 148
+  orig: 93, 148
+  offset: 0, 0
+  index: 8

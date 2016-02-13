@@ -106,7 +106,7 @@ public class Bullet implements SortableObject, Pool.Poolable{
         pool.free(this);
     }
 
-    public void spawn(Vector3 position, float speed, int direction) {
+    public void spawn(Vector3 position, float speed, int direction, float angle) {
         this.position.set(position);
         this.speed = speed;
 
@@ -121,48 +121,48 @@ public class Bullet implements SortableObject, Pool.Poolable{
             BodyManager.addBodyToActive(body);
         }
 
-        fire();
+        fire(angle);
     }
 
-    public void fire() {
+    public void fire(float angle) {
         switch (direction) {
             case 1: {
                 body.setLinearVelocity(0, speed);
                 break;
             } case 2: {
                 body.setTransform(body.getPosition(), MathUtils.degreesToRadians * -22.5f);
-                sprite.setRotation(-22.5f);
+                sprite.setRotation(angle);
                 body.setLinearVelocity(-diagonalSpeed.x, -diagonalSpeed.y);
                 break;
             } case 3: {
                 body.setLinearVelocity(speed, 0);
                 body.setTransform(body.getPosition(),MathUtils.degreesToRadians *  -90f);
-                sprite.setRotation(-90f);
+                sprite.setRotation(angle);
                 break;
             } case 4: {
                 body.setLinearVelocity(-diagonalSpeed.x, diagonalSpeed.y);
                 body.setTransform(body.getPosition(), MathUtils.degreesToRadians * -112.5f);
-                sprite.setRotation(-112.5f);
+                sprite.setRotation(angle);
                 break;
             } case 5: {
                 body.setLinearVelocity(0, -speed);
                 body.setTransform(body.getPosition(), MathUtils.degreesToRadians * 180f);
-                sprite.setRotation(180f);
+                sprite.setRotation(angle);
                 break;
             } case 6: {
                 body.setLinearVelocity(diagonalSpeed.x, diagonalSpeed.y);
                 body.setTransform(body.getPosition(), MathUtils.degreesToRadians * 112.5f);
-                sprite.setRotation(112.5f);
+                sprite.setRotation(angle);
                 break;
             } case 7: {
                 body.setLinearVelocity(-speed, 0);
                 body.setTransform(body.getPosition(),MathUtils.degreesToRadians *  90f);
-                sprite.setRotation(90f);
+                sprite.setRotation(angle);
                 break;
             } case 8: {
                 body.setLinearVelocity(diagonalSpeed.x, -diagonalSpeed.y);
                 body.setTransform(body.getPosition(), MathUtils.degreesToRadians * 22.5f);
-                sprite.setRotation(22.5f);
+                sprite.setRotation(angle);
                 break;
             } default: {
                 break;

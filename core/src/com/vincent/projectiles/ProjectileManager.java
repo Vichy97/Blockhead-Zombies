@@ -49,9 +49,9 @@ public class ProjectileManager {
         }
     }
 
-    public void spawnBullet(float speed, Vector3 position, int direction) {
+    public void spawnBullet(float speed, Vector3 position, int direction, float angle) {
         Bullet bullet = bulletPool.obtain();
-        bullet.spawn(position, speed, direction);
+        bullet.spawn(position, speed, direction, angle);
         projectiles.add(bullet);
         ObjectManager.addObject(bullet);
     }

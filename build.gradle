@@ -67,7 +67,6 @@ project(":android") {
 
 project(":ios") {
     apply plugin: "java"
-    apply plugin: "robovm"
 
     configurations { natives }
 
