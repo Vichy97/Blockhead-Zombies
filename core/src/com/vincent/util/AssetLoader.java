@@ -63,6 +63,10 @@ public class AssetLoader {
     public static Animation playerUp;
     public static Animation playerLeft;
     public static Animation playerRight;
+    public static Animation playerDownRight;
+    public static Animation playerUpRight;
+    public static Animation playerUpLeft;
+
 
     public static TiledMap map1TileMap;
     public static TiledMap map1ObjectMap;
@@ -99,6 +103,9 @@ public class AssetLoader {
         manager.load("entities/player/left/left_anim.atlas", TextureAtlas.class);
         manager.load("entities/player/up/up_anim.atlas", TextureAtlas.class);
         manager.load("entities/player/right/right_anim.atlas", TextureAtlas.class);
+        manager.load("entities/player/down_right/down_right_anim.atlas", TextureAtlas.class);
+        manager.load("entities/player/up_right/up_right_anim.atlas", TextureAtlas.class);
+        manager.load("entities/player/up_left/up_left_anim.atlas", TextureAtlas.class);
 
         manager.load("ui/ui.atlas", TextureAtlas.class);
         manager.setLoader(TiledMap.class, objectMapLoader);
@@ -134,11 +141,18 @@ public class AssetLoader {
         TextureAtlas playerLeftAnim = manager.get("entities/player/left/left_anim.atlas", TextureAtlas.class);
         TextureAtlas playerRightAnim = manager.get("entities/player/right/right_anim.atlas", TextureAtlas.class);
         TextureAtlas playerUpAnim = manager.get("entities/player/up/up_anim.atlas", TextureAtlas.class);
+        TextureAtlas playerDownRightAnim = manager.get("entities/player/down_right/down_right_anim.atlas", TextureAtlas.class);
+        TextureAtlas playerUpRightAnim = manager.get("entities/player/up_right/up_right_anim.atlas", TextureAtlas.class);
+        TextureAtlas playerUpLeftAnim = manager.get("entities/player/up_left/up_left_anim.atlas", TextureAtlas.class);
+
         playerDownLeft = new Animation(.065f, playerDownLeftAnim.getRegions());
         playerLeft = new Animation(.065f, playerLeftAnim.getRegions());
         playerDown = new Animation(.065f, playerDownAnim.getRegions());
         playerUp = new Animation(.065f, playerUpAnim.getRegions());
         playerRight = new Animation(.065f, playerRightAnim.getRegions());
+        playerDownRight = new Animation(.065f, playerDownRightAnim.getRegions());
+        playerUpRight = new Animation(.065f, playerUpRightAnim.getRegions());
+        playerUpLeft = new Animation(.065f, playerUpLeftAnim.getRegions());
 
         map1TileMap = manager.get("maps/map1Tile.tmx");
         map1ObjectMap = manager.get("maps/map1Object.tmx");

@@ -112,8 +112,8 @@ public class GameScreen implements Screen, InputProcessor {
     private World world;
     private Box2DDebugRenderer debugRenderer;
     //how often the world physics should update
-    public final float step = 1f/60f;
-    private double accumulator = 0;
+    public final float step = 1f/240f;
+    private double accumulator = 0d;
     //box2d is measured in meters so we use this and the debug matrix to convert
     private Matrix4 debugMatrix;
 
@@ -127,6 +127,7 @@ public class GameScreen implements Screen, InputProcessor {
 
     public GameScreen(MyGdxGame game, OrthographicCamera UICamera, Viewport UIViewport, OrthographicCamera gameCamera, Viewport gameViewport, I18NBundle bundle, TiledMap tileMap, TiledMap objectMap) {
         debug("constructor");
+        
         this.game = game;
         this.UICamera = UICamera;
         this.UIViewport = UIViewport;
@@ -213,6 +214,7 @@ public class GameScreen implements Screen, InputProcessor {
         renderClouds(delta);
 
         if (!paused) {
+
             if (upPressed) {
                 player.setTouchpad(false);
                 player.setMoving(true);
@@ -288,7 +290,7 @@ public class GameScreen implements Screen, InputProcessor {
             projectileManager.updateProjectiles();
             objectManager.sortObjects();
             objectManager.renderObjects();
-            stepWorld(delta);
+            stepWorld(Gdx.graphics.getDeltaTime());
             bodyManager.deactivateBodies();
             bodyManager.activateBodies();
         } else {
@@ -549,8 +551,7 @@ public class GameScreen implements Screen, InputProcessor {
 
     //box2d physics step
     private void stepWorld(float delta) {
-        double frameTime = Math.min(delta, 0.25);
-
+        float frameTime = Math.min(delta, 0.25f);
         accumulator += frameTime;
 
         while (accumulator >= step) {

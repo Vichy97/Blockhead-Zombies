@@ -173,8 +173,8 @@ public class Entity implements SortableObject {
         position.x = (body.getPosition().x * GameUtils.PIXELS_PER_METER) + offset.x;
         position.y = (body.getPosition().y * GameUtils.PIXELS_PER_METER) + offset.y;
 
-        interpolatedPosition.x = position.x * alpha + position.x * (1.0f - alpha);
-        interpolatedPosition.y = position.y * alpha + position.y * (1.0f - alpha);
+        interpolatedPosition.x = position.x;// * alpha + interpolatedPosition.x * (1.0f - alpha);
+        interpolatedPosition.y = position.y;// * alpha + interpolatedPosition.y * (1.0f - alpha);
 
         tilePosition = MapUtils.worldToTile(position.x, position.y);
     }

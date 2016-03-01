@@ -109,8 +109,14 @@ public class Player extends Entity {
             case 1: {
                 batch.draw(AssetLoader.playerUp.getKeyFrame(animationCounter, true), interpolatedPosition.x, interpolatedPosition.y);
                 break;
+            } case 2: {
+                batch.draw(AssetLoader.playerUpRight.getKeyFrame(animationCounter, true), interpolatedPosition.x, interpolatedPosition.y);
+                break;
             } case 3: {
                 batch.draw(AssetLoader.playerRight.getKeyFrame(animationCounter, true), interpolatedPosition.x, interpolatedPosition.y);
+                break;
+            } case 4: {
+                batch.draw(AssetLoader.playerDownRight.getKeyFrame(animationCounter, true), interpolatedPosition.x, interpolatedPosition.y);
                 break;
             } case 5: {
                 batch.draw(AssetLoader.playerDown.getKeyFrame(animationCounter, true), interpolatedPosition.x, interpolatedPosition.y);
@@ -120,6 +126,10 @@ public class Player extends Entity {
                 break;
             } case 7: {
                 batch.draw(AssetLoader.playerLeft.getKeyFrame(animationCounter, true), interpolatedPosition.x, interpolatedPosition.y);
+                break;
+            } case 8: {
+                batch.draw(AssetLoader.playerUpLeft.getKeyFrame(animationCounter, true), interpolatedPosition.x, interpolatedPosition.y);
+                break;
             }
         }
 

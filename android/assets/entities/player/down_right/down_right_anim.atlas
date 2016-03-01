@@ -1,0 +1,61 @@
+
+down_right_anim.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+frame
+  rotate: false
+  xy: 1, 1
+  size: 113, 153
+  orig: 113, 153
+  offset: 0, 0
+  index: 1
+frame
+  rotate: false
+  xy: 116, 1
+  size: 113, 153
+  orig: 113, 153
+  offset: 0, 0
+  index: 2
+frame
+  rotate: false
+  xy: 231, 1
+  size: 113, 153
+  orig: 113, 153
+  offset: 0, 0
+  index: 3
+frame
+  rotate: false
+  xy: 346, 1
+  size: 113, 153
+  orig: 113, 153
+  offset: 0, 0
+  index: 4
+frame
+  rotate: false
+  xy: 461, 1
+  size: 113, 153
+  orig: 113, 153
+  offset: 0, 0
+  index: 5
+frame
+  rotate: false
+  xy: 576, 1
+  size: 113, 153
+  orig: 113, 153
+  offset: 0, 0
+  index: 6
+frame
+  rotate: false
+  xy: 691, 1
+  size: 113, 153
+  orig: 113, 153
+  offset: 0, 0
+  index: 7
+frame
+  rotate: false
+  xy: 806, 1
+  size: 113, 153
+  orig: 113, 153
+  offset: 0, 0
+  index: 8

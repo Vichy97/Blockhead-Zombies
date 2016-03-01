@@ -19,6 +19,7 @@ import java.util.Locale;
 
 public class MyGdxGame extends Game {
 
+    //whether debug logs will be written and other debug info such as collision boxes will be drawn
     public static final boolean DEBUG = false;
 
     //width and height of the game. note these are not the size of the actual screen
@@ -33,12 +34,17 @@ public class MyGdxGame extends Game {
 
     //reuse the viewports and camera through all the states
     private OrthographicCamera UICamera, gameCamera;
-    //viewport for the game. you might want to experiment with
-    //different viewports based on your game type or style
+
+    /*
+    * viewport for the game. you might want to experiment with
+    * different viewports based on your game type or style
+    */
     private Viewport UIViewport, gameViewport;
 
+    //I18NBundles handle localization for different countries
     private I18NBundle bundle;
 
+    //maps are drawn in parts. all of the tiles first then all of the objects
     private TiledMap currentTileMap, currentObjectMap;
 
     @Override
@@ -64,6 +70,10 @@ public class MyGdxGame extends Game {
         setScreen("loading");
     }
 
+    /*
+    * Screens are similar to fragments or activities. each one is a different "page" of the game
+    * such as menu or score screen
+    */
     public void setScreen(String screen) {
         switch (screen) {
             case "loading": {
