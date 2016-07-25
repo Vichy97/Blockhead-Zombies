@@ -1,0 +1,61 @@
+
+down_left_anim.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+frame
+  rotate: false
+  xy: 1, 1
+  size: 112, 153
+  orig: 112, 153
+  offset: 0, 0
+  index: 1
+frame
+  rotate: false
+  xy: 115, 1
+  size: 112, 153
+  orig: 112, 153
+  offset: 0, 0
+  index: 2
+frame
+  rotate: false
+  xy: 229, 1
+  size: 112, 153
+  orig: 112, 153
+  offset: 0, 0
+  index: 3
+frame
+  rotate: false
+  xy: 343, 1
+  size: 112, 153
+  orig: 112, 153
+  offset: 0, 0
+  index: 4
+frame
+  rotate: false
+  xy: 457, 1
+  size: 112, 153
+  orig: 112, 153
+  offset: 0, 0
+  index: 5
+frame
+  rotate: false
+  xy: 571, 1
+  size: 112, 153
+  orig: 112, 153
+  offset: 0, 0
+  index: 6
+frame
+  rotate: false
+  xy: 685, 1
+  size: 112, 153
+  orig: 112, 153
+  offset: 0, 0
+  index: 7
+frame
+  rotate: false
+  xy: 799, 1
+  size: 112, 153
+  orig: 112, 153
+  offset: 0, 0
+  index: 8

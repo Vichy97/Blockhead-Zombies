@@ -1,9 +1,9 @@
 apply plugin: "java"
 
-sourceCompatibility = 1.7
+sourceCompatibility = 1.6
 sourceSets.main.java.srcDirs = [ "src/" ]
 
-project.ext.mainClassName = "DesktopLauncher"
+project.ext.mainClassName = "com.starcat.boxhead.desktop.DesktopLauncher"
 project.ext.assetsDir = new File("../android/assets");
 
 task run(dependsOn: classes, type: JavaExec) {
