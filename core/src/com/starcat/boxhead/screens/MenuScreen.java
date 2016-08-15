@@ -2,6 +2,7 @@ package com.starcat.boxhead.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -24,7 +25,7 @@ public class MenuScreen implements Screen {
 
     private MyGdxGame game;
 
-    private OrthographicCamera camera;
+    private Camera camera;
     private Viewport viewport;
 
     private Stage stage;
@@ -122,7 +123,6 @@ public class MenuScreen implements Screen {
 
 
 
-    //method for writing to the log
     private void debug(String message) {
         if (MyGdxGame.DEBUG) {
             Gdx.app.log("Menu Screen", message);

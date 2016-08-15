@@ -5,15 +5,33 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelCache;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
+import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.physics.bullet.Bullet;
+import com.badlogic.gdx.physics.bullet.DebugDrawer;
+import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionDispatcher;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
+import com.badlogic.gdx.physics.bullet.collision.btDbvtBroadphase;
+import com.badlogic.gdx.physics.bullet.collision.btDefaultCollisionConfiguration;
+import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
+import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
+import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -23,8 +41,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.starcat.boxhead.entity.EntityManager;
 import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.objects.Cloud;
+import com.starcat.boxhead.objects.Map;
 import com.starcat.boxhead.utils.AssetLoader;
 
 /**
@@ -32,6 +52,7 @@ import com.starcat.boxhead.utils.AssetLoader;
  */
 public class GameScreen implements Screen, InputProcessor {
 
+    private  CameraInputController controller;
     private boolean paused = false;
     private boolean music = true;
     private boolean sound = true;
@@ -40,9 +61,8 @@ public class GameScreen implements Screen, InputProcessor {
 
     private MyGdxGame game;
     private I18NBundle bundle;
-    private InputMultiplexer inputMultiplexer;
 
-    private OrthographicCamera UICamera, gameCamera;
+    private Camera UICamera, gameCamera;
     private Viewport UIViewport, gameViewport;
     //pixel dimensions of the physical screen
     private int screenWidth;
@@ -53,6 +73,7 @@ public class GameScreen implements Screen, InputProcessor {
 
     private float aspectRatio;
 
+    private InputMultiplexer inputMultiplexer;
     private Stage stage;
     private Table pauseTable, playTable;
 
@@ -62,15 +83,32 @@ public class GameScreen implements Screen, InputProcessor {
 
     private SpriteBatch spriteBatch;
     private ModelBatch modelBatch, shadowBatch;
+    private ModelCache modelCache, shadowCache;
 
     private Environment environment;
-    private DirectionalShadowLight shadowLight;
+    private DirectionalShadowLight sunlight;
+
+    private btCollisionShape mapBaseCollisionShape;
+    private btCollisionObject mapObjectsCollisionObject;
+
+    private Map currentMap;
 
     private Cloud[] cloudArray;
 
+    private FPSLogger fpsLogger;
+
+    private btDiscreteDynamicsWorld dynamicsWorld;
+    private DebugDrawer debugDrawer;
+    private btDbvtBroadphase broadphase;
+    private btSequentialImpulseConstraintSolver constraintSolver;
+    private btCollisionDispatcher dispatcher;
+    private btDefaultCollisionConfiguration collisionConfig;
+    private EntityManager entityManager;
+    private btCollisionShape mapObjectsCollisionShape;
+    private btCollisionObject mapBaseCollisionObject;
 
 
-    public GameScreen(MyGdxGame game, OrthographicCamera UICamera, Viewport UIViewport, OrthographicCamera gameCamera, Viewport gameViewport, I18NBundle bundle) {
+    public GameScreen(MyGdxGame game, OrthographicCamera UICamera, Viewport UIViewport, PerspectiveCamera gameCamera, Viewport gameViewport, I18NBundle bundle) {
         debug("constructor");
 
         this.game = game;
@@ -87,28 +125,20 @@ public class GameScreen implements Screen, InputProcessor {
         screenHeight = Gdx.graphics.getHeight();
 
         initUI();
+        initWorld();
+        initLightingAndCameras();
+        initPhysics();
 
-        gameViewport.apply();
-        
-        gameCamera.rotate(-30, 1, 0, 0);
-        gameCamera.rotate(225, 0, 1, 0);
-        gameCamera.position.set(0, 10, 0);
-        gameCamera.near = 1f;
-        gameCamera.far = 100;
-        gameCamera.update();
+        entityManager.spawnPlayer(new Vector3(10, 10, 10));
+        entityManager.spawnPlayer(new Vector3(10, 30, 10));
+        entityManager.spawnPlayer(new Vector3(10, 50, 10));
+        entityManager.spawnPlayer(new Vector3(10, 70, 10));
+        entityManager.spawnPlayer(new Vector3(10, 90, 10));
+        entityManager.spawnPlayer(new Vector3(10, 110, 10));
+
+        fpsLogger = new FPSLogger();
 
         spriteBatch = new SpriteBatch();
-        modelBatch = new ModelBatch();
-        shadowBatch = new ModelBatch(new DepthShaderProvider());
-
-        environment = new Environment();
-        shadowLight = new DirectionalShadowLight(1024, 1024, 30f, 30f, 1f, 100f);
-        shadowLight.set(0.5f, 0.5f, 0.5f, 1f, -.9f, .5f);
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, .2f, .2f, .2f, 1f));
-        environment.add(shadowLight);
-        environment.shadowMap = shadowLight;
-
-        spawnClouds();
     }
 
 
@@ -129,17 +159,31 @@ public class GameScreen implements Screen, InputProcessor {
 
         renderClouds(delta);
 
+        if (!paused) {
+            dynamicsWorld.stepSimulation(delta);
+        }
+
         modelBatch.begin(gameCamera);
-        modelBatch.render(AssetLoader.mapInstance, environment);
+        modelBatch.render(modelCache, environment);
+        entityManager.render(modelBatch, environment);
         modelBatch.end();
 
-        shadowLight.begin(Vector3.Zero, gameCamera.direction);
-        shadowBatch.begin(shadowLight.getCamera());
-        shadowBatch.render(AssetLoader.mapInstance);
+        sunlight.begin(Vector3.Zero, gameCamera.direction);
+        shadowBatch.begin(sunlight.getCamera());
+        shadowBatch.render(shadowCache);
+        entityManager.render(shadowBatch, environment);
         shadowBatch.end();
-        shadowLight.end();
+        sunlight.end();
 
         Gdx.gl.glClearColor(40f / 255f, 175f / 255f, 230f / 255f, 1f);
+
+        if (MyGdxGame.DEBUG && !paused) {
+           // debugDrawer.begin(gameCamera);
+            //dynamicsWorld.debugDrawWorld();
+            //debugDrawer.end();
+
+            fpsLogger.log();
+        }
 
         UIViewport.apply();
         UICamera.update();
@@ -190,10 +234,21 @@ public class GameScreen implements Screen, InputProcessor {
     public void dispose() {
         debug("dispose");
 
+        mapBaseCollisionShape.dispose();
+        mapObjectsCollisionShape.dispose();
+
+        dynamicsWorld.dispose();
+        collisionConfig.dispose();
+        broadphase.dispose();
+        dispatcher.dispose();
+        constraintSolver.dispose();
+
         modelBatch.dispose();
         shadowBatch.dispose();
+
         spriteBatch.dispose();
         stage.dispose();
+
         System.gc();
     }
 
@@ -201,6 +256,8 @@ public class GameScreen implements Screen, InputProcessor {
 
     private void initUI() {
         debug("initUI");
+
+        controller = new CameraInputController(gameCamera);
 
         pauseButton = new ImageButton(AssetLoader.uiSkin.getDrawable("pause"));
         pauseButton.addListener(pauseButtonListener);
@@ -248,8 +305,88 @@ public class GameScreen implements Screen, InputProcessor {
 
         inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(stage);
+        inputMultiplexer.addProcessor(controller);
         inputMultiplexer.addProcessor(this);
         Gdx.input.setInputProcessor(inputMultiplexer);
+    }
+
+    private void initLightingAndCameras() {
+        debug("initLightingAndCameras");
+
+        gameViewport.apply();
+
+        gameCamera.rotate(-30, 1, 0, 0);
+        gameCamera.rotate(225, 0, 1, 0);
+        gameCamera.position.set(0, 10, 0);
+        gameCamera.near = 1;
+        gameCamera.far = 200;
+        gameCamera.update();
+
+        environment = new Environment();
+        sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 50f, 50f, 1, 50);
+        sunlight.set(currentMap.getTimeOfDay().sunlightColor, currentMap.getTimeOfDay().sunlightDirection);
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, currentMap.getTimeOfDay().ambientColor));
+        environment.add(sunlight);
+        environment.shadowMap = sunlight;
+
+        Gdx.gl20.glCullFace(GL20.GL_BACK);
+    }
+
+    private void initPhysics() {
+        debug("initPhysics");
+
+        Bullet.init();
+
+        BoundingBox boundingBox = new BoundingBox();
+        currentMap.base.calculateBoundingBox(boundingBox);
+
+        debugDrawer = new DebugDrawer();
+        debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
+
+        mapBaseCollisionShape = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(.5f));
+        mapBaseCollisionObject = new btCollisionObject();
+        mapBaseCollisionObject.setCollisionShape(mapBaseCollisionShape);
+        mapBaseCollisionObject.setWorldTransform(currentMap.base.transform);
+
+        mapObjectsCollisionShape = Bullet.obtainStaticNodeShape(currentMap.objects.nodes);
+        mapObjectsCollisionObject = new btCollisionObject();
+        mapObjectsCollisionObject.setCollisionShape(mapObjectsCollisionShape);
+        mapObjectsCollisionObject.setWorldTransform(currentMap.objects.transform);
+
+        collisionConfig = new btDefaultCollisionConfiguration();
+        dispatcher = new btCollisionDispatcher(collisionConfig);
+        broadphase = new btDbvtBroadphase();
+        constraintSolver = new btSequentialImpulseConstraintSolver();
+        dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, constraintSolver, collisionConfig);
+        dynamicsWorld.setGravity(new Vector3(0, -10f, 0));
+        dynamicsWorld.setDebugDrawer(debugDrawer);
+
+        dynamicsWorld.addCollisionObject(mapBaseCollisionObject);
+        dynamicsWorld.addCollisionObject(mapObjectsCollisionObject);
+
+        entityManager = new EntityManager(dynamicsWorld);
+    }
+
+    private void initWorld() {
+        currentMap = AssetLoader.map;
+
+        modelBatch = new ModelBatch();
+        shadowBatch = new ModelBatch(new DepthShaderProvider());
+
+        modelCache = new ModelCache();
+        modelCache.begin();
+        modelCache.add(currentMap.base);
+        modelCache.add(currentMap.objects);
+        modelCache.add(currentMap.doodads);
+        modelCache.end();
+
+        shadowCache = new ModelCache();
+        shadowCache.begin();
+        shadowCache.add(currentMap.objects);
+        shadowCache.add(currentMap.doodads);
+        shadowCache.end();
+
+        spawnClouds();
     }
 
     private void spawnClouds() {
@@ -273,6 +410,8 @@ public class GameScreen implements Screen, InputProcessor {
             aCloudArray.render(spriteBatch);
         }
     }
+
+
 
     private static void debug(String message) {
         if (MyGdxGame.DEBUG) {

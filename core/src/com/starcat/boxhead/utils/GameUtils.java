@@ -2,8 +2,6 @@ package com.starcat.boxhead.utils;
 
 /**
  * Created by Vincent on 6/30/2015.
- *
- * random static utility methods and fields for things like screenshots
  */
 public class GameUtils {
 

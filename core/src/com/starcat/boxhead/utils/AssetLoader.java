@@ -12,11 +12,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.starcat.boxhead.game.MyGdxGame;
+import com.starcat.boxhead.objects.Map;
 
 /**
  * Created by Vincent on 2/10/2015.
@@ -40,17 +40,17 @@ public class AssetLoader {
     private static TextureAtlas ui;
     public static Skin uiSkin;
 
-    private static Model map;
-    public static ModelInstance mapInstance;
+    public static Map map;
+    public static Model mapBase, mapObjects, mapDoodads;
+    public static Model boxhead, tree;
 
     public static Texture cloudTexture1;
     public static Texture cloudTexture2;
     public static Texture cloudTexture3;
 
 
-
     public static void load() {
-        Gdx.app.log("AssetLoader", "load");
+        debug("load");
 
         TextureLoader.TextureParameter param = new TextureLoader.TextureParameter();
         param.minFilter = Texture.TextureFilter.Linear;
@@ -65,8 +65,12 @@ public class AssetLoader {
         manager.load("cloud_3.png", Texture.class, param);
 
         manager.load("ui/ui.atlas", TextureAtlas.class);
-        manager.load("maps/test_scene.g3db", Model.class);
+        manager.load("maps/test_scene_base.g3db", Model.class);
+        manager.load("maps/test_scene_objects.g3db", Model.class);
+        manager.load("maps/test_scene_doodads.g3db", Model.class);
 
+        manager.load("objects/boxhead.g3db", Model.class);
+        manager.load("objects/tree_02.g3db", Model.class);
     }
 
     public static boolean update() {
@@ -75,7 +79,7 @@ public class AssetLoader {
     }
 
     public static void initAssets() {
-        Gdx.app.log("AssetLoader", "init");
+        debug("initAssets");
 
         largeFont = createFont("DroidSans.ttf", Gdx.graphics.getHeight() / 10, Color.WHITE);
         smallFont = createFont("DroidSans.ttf", Gdx.graphics.getHeight() / 15, Color.WHITE);
@@ -86,8 +90,13 @@ public class AssetLoader {
         uiSkin.get("small", TextButton.TextButtonStyle.class).font = smallFont;
         uiSkin.get("default", CheckBox.CheckBoxStyle.class).font = smallFont;
 
-        map = manager.get("maps/test_scene.g3db", Model.class);
-        mapInstance = new ModelInstance(map);
+        mapBase = manager.get("maps/test_scene_base.g3db", Model.class);
+        mapObjects = manager.get("maps/test_scene_objects.g3db", Model.class);
+        mapDoodads = manager.get("maps/test_scene_doodads.g3db", Model.class);
+        map = new Map(mapBase, mapObjects, mapDoodads);
+
+        boxhead = manager.get("objects/boxhead.g3db", Model.class);
+        tree = manager.get("objects/tree_02.g3db", Model.class);
 
         cloudTexture1 = manager.get("cloud_1.png", Texture.class);
         cloudTexture2 = manager.get("cloud_2.png", Texture.class);

@@ -3,7 +3,9 @@ package com.starcat.boxhead.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -17,13 +19,14 @@ import java.util.Locale;
 
 public class MyGdxGame extends Game {
 
-	public static final boolean DEBUG = false;
+	public static final boolean DEBUG = true;
 
 	public static final int GAME_WIDTH = 1920;
 	public static final int GAME_HEIGHT = 1080;
 	public static float ASPECT_RATIO;
 
-	private OrthographicCamera UICamera, gameCamera;
+	private OrthographicCamera UICamera;
+	private PerspectiveCamera gameCamera;
 	private Viewport UIViewport, gameViewport;
 
 	//I18NBundles handle localization for different countries
@@ -38,7 +41,7 @@ public class MyGdxGame extends Game {
 		ASPECT_RATIO = (float)Gdx.graphics.getHeight() / (float)Gdx.graphics.getWidth();
 
 		UICamera = new OrthographicCamera(GAME_HEIGHT/ASPECT_RATIO, GAME_HEIGHT);
-		gameCamera = new OrthographicCamera(GAME_HEIGHT/ASPECT_RATIO, GAME_HEIGHT);
+		gameCamera = new PerspectiveCamera(45, GAME_HEIGHT/ASPECT_RATIO, GAME_HEIGHT);
 
 		UIViewport = new ScreenViewport(UICamera);
 		gameViewport = new FillViewport(GAME_WIDTH / 75, GAME_HEIGHT / 75, gameCamera);
