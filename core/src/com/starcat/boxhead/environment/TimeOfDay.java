@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector3;
 /**
  * Created by Vincent on 8/14/2016.
  */
-public class TimeOfDay {
+public abstract class TimeOfDay {
     public Color skyColor;
     public Color ambientColor;
     public Color sunlightColor;

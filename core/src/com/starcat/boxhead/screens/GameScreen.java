@@ -42,10 +42,12 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.starcat.boxhead.entity.EntityManager;
+import com.starcat.boxhead.entity.Player;
 import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.objects.Cloud;
 import com.starcat.boxhead.objects.Map;
 import com.starcat.boxhead.utils.AssetLoader;
+import com.starcat.boxhead.utils.GameUtils;
 
 /**
  * Created by Vincent on 6/19/2015.
@@ -103,9 +105,10 @@ public class GameScreen implements Screen, InputProcessor {
     private btSequentialImpulseConstraintSolver constraintSolver;
     private btCollisionDispatcher dispatcher;
     private btDefaultCollisionConfiguration collisionConfig;
-    private EntityManager entityManager;
     private btCollisionShape mapObjectsCollisionShape;
     private btCollisionObject mapBaseCollisionObject;
+
+    private Player player;
 
 
     public GameScreen(MyGdxGame game, OrthographicCamera UICamera, Viewport UIViewport, PerspectiveCamera gameCamera, Viewport gameViewport, I18NBundle bundle) {
@@ -129,12 +132,7 @@ public class GameScreen implements Screen, InputProcessor {
         initLightingAndCameras();
         initPhysics();
 
-        entityManager.spawnPlayer(new Vector3(10, 10, 10));
-        entityManager.spawnPlayer(new Vector3(10, 30, 10));
-        entityManager.spawnPlayer(new Vector3(10, 50, 10));
-        entityManager.spawnPlayer(new Vector3(10, 70, 10));
-        entityManager.spawnPlayer(new Vector3(10, 90, 10));
-        entityManager.spawnPlayer(new Vector3(10, 110, 10));
+        player = EntityManager.spawnPlayer(new Vector3(10, 1.54f, 10), .055f);
 
         fpsLogger = new FPSLogger();
 
@@ -160,30 +158,39 @@ public class GameScreen implements Screen, InputProcessor {
         renderClouds(delta);
 
         if (!paused) {
-            dynamicsWorld.stepSimulation(delta);
+            dynamicsWorld.stepSimulation(delta, 5, 1f / 60f);
+        }
+
+        int touchPadEightDirection = GameUtils.getTouchpadEightDirection(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
+        if (player.getDirection() != touchPadEightDirection) {
+            player.setDirection(touchPadEightDirection);
         }
 
         modelBatch.begin(gameCamera);
         modelBatch.render(modelCache, environment);
-        entityManager.render(modelBatch, environment);
+        EntityManager.render(modelBatch, environment);
         modelBatch.end();
 
         sunlight.begin(Vector3.Zero, gameCamera.direction);
         shadowBatch.begin(sunlight.getCamera());
         shadowBatch.render(shadowCache);
-        entityManager.render(shadowBatch, environment);
+        EntityManager.render(shadowBatch, environment);
         shadowBatch.end();
         sunlight.end();
+
+        if (!paused) {
+            EntityManager.update(delta);
+        }
 
         Gdx.gl.glClearColor(40f / 255f, 175f / 255f, 230f / 255f, 1f);
 
         if (MyGdxGame.DEBUG && !paused) {
-           // debugDrawer.begin(gameCamera);
-            //dynamicsWorld.debugDrawWorld();
-            //debugDrawer.end();
-
-            fpsLogger.log();
+            debugDrawer.begin(gameCamera);
+            dynamicsWorld.debugDrawWorld();
+            debugDrawer.end();
         }
+
+        fpsLogger.log();
 
         UIViewport.apply();
         UICamera.update();
@@ -237,6 +244,7 @@ public class GameScreen implements Screen, InputProcessor {
         mapBaseCollisionShape.dispose();
         mapObjectsCollisionShape.dispose();
 
+        EntityManager.dispose();
         dynamicsWorld.dispose();
         collisionConfig.dispose();
         broadphase.dispose();
@@ -346,7 +354,7 @@ public class GameScreen implements Screen, InputProcessor {
         mapBaseCollisionShape = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(.5f));
         mapBaseCollisionObject = new btCollisionObject();
         mapBaseCollisionObject.setCollisionShape(mapBaseCollisionShape);
-        mapBaseCollisionObject.setWorldTransform(currentMap.base.transform);
+        mapBaseCollisionObject.setWorldTransform(currentMap.base.transform.translate(0, -.05f, 0));
 
         mapObjectsCollisionShape = Bullet.obtainStaticNodeShape(currentMap.objects.nodes);
         mapObjectsCollisionObject = new btCollisionObject();
@@ -364,7 +372,7 @@ public class GameScreen implements Screen, InputProcessor {
         dynamicsWorld.addCollisionObject(mapBaseCollisionObject);
         dynamicsWorld.addCollisionObject(mapObjectsCollisionObject);
 
-        entityManager = new EntityManager(dynamicsWorld);
+        EntityManager.setDynamicsWorld(dynamicsWorld);
     }
 
     private void initWorld() {
@@ -432,6 +440,7 @@ public class GameScreen implements Screen, InputProcessor {
         } else if (keycode == Input.Keys.LEFT) {
             leftPressed = true;
         } else if (keycode == Input.Keys.SPACE) {
+            player.fire();
         }
         return true;
     }
@@ -457,7 +466,8 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
+        player.fire();
+        return true;
     }
 
     @Override
@@ -501,8 +511,8 @@ public class GameScreen implements Screen, InputProcessor {
     private ClickListener pauseButtonListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            pause();
-
+            //pause();
+            player.fire();
         }
     };
 

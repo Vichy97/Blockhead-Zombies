@@ -42,7 +42,9 @@ public class AssetLoader {
 
     public static Map map;
     public static Model mapBase, mapObjects, mapDoodads;
-    public static Model boxhead, tree;
+    public static Model boxhead;
+    public static Model pistol;
+    public static Model pistolBullet;
 
     public static Texture cloudTexture1;
     public static Texture cloudTexture2;
@@ -69,12 +71,15 @@ public class AssetLoader {
         manager.load("maps/test_scene_objects.g3db", Model.class);
         manager.load("maps/test_scene_doodads.g3db", Model.class);
 
-        manager.load("objects/boxhead.g3db", Model.class);
-        manager.load("objects/tree_02.g3db", Model.class);
+        manager.load("objects/boxhead.g3dj", Model.class);
+
+        manager.load("objects/pistol.g3db", Model.class);
+        manager.load("objects/pistol_bullet.g3db", Model.class);
     }
 
     public static boolean update() {
         debug("update");
+
         return manager.update();
     }
 
@@ -90,17 +95,19 @@ public class AssetLoader {
         uiSkin.get("small", TextButton.TextButtonStyle.class).font = smallFont;
         uiSkin.get("default", CheckBox.CheckBoxStyle.class).font = smallFont;
 
+        cloudTexture1 = manager.get("cloud_1.png", Texture.class);
+        cloudTexture2 = manager.get("cloud_2.png", Texture.class);
+        cloudTexture3 = manager.get("cloud_3.png", Texture.class);
+
         mapBase = manager.get("maps/test_scene_base.g3db", Model.class);
         mapObjects = manager.get("maps/test_scene_objects.g3db", Model.class);
         mapDoodads = manager.get("maps/test_scene_doodads.g3db", Model.class);
         map = new Map(mapBase, mapObjects, mapDoodads);
 
-        boxhead = manager.get("objects/boxhead.g3db", Model.class);
-        tree = manager.get("objects/tree_02.g3db", Model.class);
+        boxhead = manager.get("objects/boxhead.g3dj", Model.class);
 
-        cloudTexture1 = manager.get("cloud_1.png", Texture.class);
-        cloudTexture2 = manager.get("cloud_2.png", Texture.class);
-        cloudTexture3 = manager.get("cloud_3.png", Texture.class);
+        pistol = manager.get("objects/pistol.g3db", Model.class);
+        pistolBullet = manager.get("objects/pistol_bullet.g3db", Model.class);
     }
 
     //creates a freetype bitmap font

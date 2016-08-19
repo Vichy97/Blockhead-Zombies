@@ -48,4 +48,8 @@ public class GameUtils {
             return -1;
         }
     }
+
+    public static float getTouchpadAngle(float touchpadPercentX, float touchpadPercentY) {
+        return (float)(180 + Math.atan2(touchpadPercentY, touchpadPercentX) * 180.0d / Math.PI);
+    }
 }
