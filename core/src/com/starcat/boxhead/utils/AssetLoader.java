@@ -67,14 +67,14 @@ public class AssetLoader {
         manager.load("cloud_3.png", Texture.class, param);
 
         manager.load("ui/ui.atlas", TextureAtlas.class);
-        manager.load("maps/test_scene_base.g3db", Model.class);
-        manager.load("maps/test_scene_objects.g3db", Model.class);
-        manager.load("maps/test_scene_doodads.g3db", Model.class);
+        manager.load("maps/test_scene/test_scene_base.g3db", Model.class);
+        manager.load("maps/test_scene/test_scene_objects.g3db", Model.class);
+        manager.load("maps/test_scene/test_scene_doodads.g3db", Model.class);
 
-        manager.load("objects/boxhead.g3dj", Model.class);
+        manager.load("objects/entities/boxhead.g3dj", Model.class);
 
-        manager.load("objects/pistol.g3db", Model.class);
-        manager.load("objects/pistol_bullet.g3db", Model.class);
+        manager.load("objects/weapons/pistol.g3db", Model.class);
+        manager.load("objects/projectiles/pistol_bullet.g3db", Model.class);
     }
 
     public static boolean update() {
@@ -99,15 +99,15 @@ public class AssetLoader {
         cloudTexture2 = manager.get("cloud_2.png", Texture.class);
         cloudTexture3 = manager.get("cloud_3.png", Texture.class);
 
-        mapBase = manager.get("maps/test_scene_base.g3db", Model.class);
-        mapObjects = manager.get("maps/test_scene_objects.g3db", Model.class);
-        mapDoodads = manager.get("maps/test_scene_doodads.g3db", Model.class);
+        mapBase = manager.get("maps/test_scene/test_scene_base.g3db", Model.class);
+        mapObjects = manager.get("maps/test_scene/test_scene_objects.g3db", Model.class);
+        mapDoodads = manager.get("maps/test_scene/test_scene_doodads.g3db", Model.class);
         map = new Map(mapBase, mapObjects, mapDoodads);
 
-        boxhead = manager.get("objects/boxhead.g3dj", Model.class);
+        boxhead = manager.get("objects/entities/boxhead.g3dj", Model.class);
 
-        pistol = manager.get("objects/pistol.g3db", Model.class);
-        pistolBullet = manager.get("objects/pistol_bullet.g3db", Model.class);
+        pistol = manager.get("objects/weapons/pistol.g3db", Model.class);
+        pistolBullet = manager.get("objects/projectiles/pistol_bullet.g3db", Model.class);
     }
 
     //creates a freetype bitmap font

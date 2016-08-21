@@ -1,4 +1,4 @@
-package com.starcat.boxhead.objects;
+package com.starcat.boxhead.objects.weapons;
 
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -23,7 +23,8 @@ public abstract class Gun {
     }
 
     public void setTransform(Matrix4 transform) {
-        modelInstance.transform.set(transform.translate(translation));
+        modelInstance.transform.set(transform);
+        modelInstance.transform.translate(translation);
     }
 
     public float getDamage() {

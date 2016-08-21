@@ -4,12 +4,14 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
-import com.starcat.boxhead.entity.Entity;
+import com.badlogic.gdx.utils.Pool;
+import com.starcat.boxhead.objects.entities.Entity;
+import com.starcat.boxhead.utils.Flags;
 
 /**
  * Created by Vincent on 8/17/2016.
  */
-public class Bullet extends Entity {
+public class Bullet extends Entity implements Pool.Poolable {
 
     private Vector3 speed;
 
@@ -17,10 +19,9 @@ public class Bullet extends Entity {
         speed = new Vector3();
     }
 
-    public void init(Matrix4 transform, ModelInstance modelInstance, btRigidBody.btRigidBodyConstructionInfo constructionInfo, int direction, float velocity) {
-        super.init(transform, modelInstance, constructionInfo);
+    public void init(Matrix4 transform, ModelInstance modelInstance, btRigidBody rigidBody, int direction, float velocity) {
+        super.init(transform, modelInstance, rigidBody);
 
-        rigidBody.setWorldTransform(transform);
         speed.set(velocity, 0, velocity);
 
         switch (direction) {
@@ -54,7 +55,14 @@ public class Bullet extends Entity {
         super.update(delta);
 
         rigidBody.translate(speed);
-        speed.scl(.97f);
+
+        if ((position.x > 50 || position.x < -50) || (position.z > 50 || position.z < -50)) {
+            rigidBody.setUserValue(Flags.SHOULD_POOL_FLAG);
+        }
     }
 
+    @Override
+    public void reset() {
+        rigidBody.setUserValue(0);
+    }
 }

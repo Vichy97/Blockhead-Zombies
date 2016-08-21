@@ -9,12 +9,10 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
@@ -41,12 +39,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.starcat.boxhead.entity.EntityManager;
-import com.starcat.boxhead.entity.Player;
+import com.starcat.boxhead.objects.entities.EntityManager;
+import com.starcat.boxhead.objects.entities.Player;
 import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.objects.Cloud;
 import com.starcat.boxhead.objects.Map;
+import com.starcat.boxhead.physics.MyContactListener;
 import com.starcat.boxhead.utils.AssetLoader;
+import com.starcat.boxhead.utils.Flags;
 import com.starcat.boxhead.utils.GameUtils;
 
 /**
@@ -54,7 +54,7 @@ import com.starcat.boxhead.utils.GameUtils;
  */
 public class GameScreen implements Screen, InputProcessor {
 
-    private  CameraInputController controller;
+    private  CameraInputController cameraInputController;
     private boolean paused = false;
     private boolean music = true;
     private boolean sound = true;
@@ -109,9 +109,10 @@ public class GameScreen implements Screen, InputProcessor {
     private btCollisionObject mapBaseCollisionObject;
 
     private Player player;
+    private MyContactListener contactListener;
 
 
-    public GameScreen(MyGdxGame game, OrthographicCamera UICamera, Viewport UIViewport, PerspectiveCamera gameCamera, Viewport gameViewport, I18NBundle bundle) {
+    public GameScreen(MyGdxGame game, OrthographicCamera UICamera, Viewport UIViewport, OrthographicCamera gameCamera, Viewport gameViewport, I18NBundle bundle) {
         debug("constructor");
 
         this.game = game;
@@ -158,29 +159,35 @@ public class GameScreen implements Screen, InputProcessor {
         renderClouds(delta);
 
         if (!paused) {
-            dynamicsWorld.stepSimulation(delta, 5, 1f / 60f);
+            dynamicsWorld.stepSimulation(Gdx.graphics.getDeltaTime(), 5, 1f / 120f);
         }
 
         int touchPadEightDirection = GameUtils.getTouchpadEightDirection(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
-        if (player.getDirection() != touchPadEightDirection) {
+        if (!player.isMoving()) {
             player.setDirection(touchPadEightDirection);
+        } else if (player.getDirection() != touchPadEightDirection) {
+            player.setDirection(touchPadEightDirection);
+        }
+
+        if (!paused) {
+            EntityManager.update(Gdx.graphics.getDeltaTime());
         }
 
         modelBatch.begin(gameCamera);
         modelBatch.render(modelCache, environment);
-        EntityManager.render(modelBatch, environment);
+        EntityManager.renderEntities(modelBatch, environment);
+        EntityManager.renderBullets(modelBatch, environment);
         modelBatch.end();
 
         sunlight.begin(Vector3.Zero, gameCamera.direction);
         shadowBatch.begin(sunlight.getCamera());
         shadowBatch.render(shadowCache);
-        EntityManager.render(shadowBatch, environment);
+        EntityManager.renderEntities(shadowBatch, environment);
         shadowBatch.end();
         sunlight.end();
 
-        if (!paused) {
-            EntityManager.update(delta);
-        }
+        Vector3 position = player.getPosition();
+        gameCamera.position.set(position.x - 10, 10, position.z - 10);
 
         Gdx.gl.glClearColor(40f / 255f, 175f / 255f, 230f / 255f, 1f);
 
@@ -265,7 +272,7 @@ public class GameScreen implements Screen, InputProcessor {
     private void initUI() {
         debug("initUI");
 
-        controller = new CameraInputController(gameCamera);
+        cameraInputController = new CameraInputController(gameCamera);
 
         pauseButton = new ImageButton(AssetLoader.uiSkin.getDrawable("pause"));
         pauseButton.addListener(pauseButtonListener);
@@ -313,7 +320,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(stage);
-        inputMultiplexer.addProcessor(controller);
+        //inputMultiplexer.addProcessor(cameraInputController);
         inputMultiplexer.addProcessor(this);
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
@@ -360,6 +367,8 @@ public class GameScreen implements Screen, InputProcessor {
         mapObjectsCollisionObject = new btCollisionObject();
         mapObjectsCollisionObject.setCollisionShape(mapObjectsCollisionShape);
         mapObjectsCollisionObject.setWorldTransform(currentMap.objects.transform);
+        mapObjectsCollisionObject.setContactCallbackFlag(Flags.OBJECT_FLAG);
+        mapObjectsCollisionObject.setContactCallbackFilter(0);
 
         collisionConfig = new btDefaultCollisionConfiguration();
         dispatcher = new btCollisionDispatcher(collisionConfig);
@@ -373,6 +382,8 @@ public class GameScreen implements Screen, InputProcessor {
         dynamicsWorld.addCollisionObject(mapObjectsCollisionObject);
 
         EntityManager.setDynamicsWorld(dynamicsWorld);
+
+        contactListener = new MyContactListener();
     }
 
     private void initWorld() {
@@ -511,8 +522,7 @@ public class GameScreen implements Screen, InputProcessor {
     private ClickListener pauseButtonListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            //pause();
-            player.fire();
+            pause();
         }
     };
 

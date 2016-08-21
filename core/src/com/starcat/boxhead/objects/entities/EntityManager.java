@@ -1,0 +1,164 @@
+package com.starcat.boxhead.objects.entities;
+
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.physics.bullet.collision.Collision;
+import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
+import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.badlogic.gdx.utils.Pool;
+import com.starcat.boxhead.objects.Bullet;
+import com.starcat.boxhead.utils.AssetLoader;
+import com.starcat.boxhead.utils.Flags;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+/**
+ * Created by Vincent on 8/12/2016.
+ */
+public class EntityManager {
+
+    private static btDiscreteDynamicsWorld dynamicsWorld;
+    private static ArrayList<Entity> entities = new ArrayList<Entity>();
+    private static ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+    private static btRigidBody.btRigidBodyConstructionInfo constructionInfo = new btRigidBody.btRigidBodyConstructionInfo(1, null, null, Vector3.Zero);
+    private static Vector3 tempVec3 = new Vector3();
+    private static Vector3 linearFactor = Vector3.X.add(Vector3.Z);
+    private static Vector3 angularFactor = Vector3.Y;
+    private static BoundingBox boundingBox = new BoundingBox();
+    private static Pool<Bullet> bulletPool = new Pool<Bullet>() {
+        @Override
+        protected Bullet newObject() {
+            return new Bullet();
+        }
+    };
+    private static Pool<Entity> entityPool = new Pool<Entity>() {
+        @Override
+        protected Entity newObject() {
+            return new Entity();
+        }
+    };
+
+    public static void setDynamicsWorld(btDiscreteDynamicsWorld world) {
+        dynamicsWorld = world;
+    }
+
+    public static void update(float delta) {
+        Iterator<Entity> entityIterator = entities.iterator();
+
+        while(entityIterator.hasNext()) {
+            Entity entity = entityIterator.next();
+            if (entity.getRigidBody().getUserValue() == Flags.SHOULD_POOL_FLAG) {
+                entityPool.free(entity);
+                entityIterator.remove();
+            } else {
+                entity.update(delta);
+            }
+        }
+
+        Iterator<Bullet> bulletIterator = bullets.iterator();
+
+        while(bulletIterator.hasNext()) {
+            Bullet bullet = bulletIterator.next();
+            if (bullet.getRigidBody().getUserValue() == Flags.SHOULD_POOL_FLAG) {
+                bulletPool.free(bullet);
+                bulletIterator.remove();
+            } else {
+                bullet.update(delta);
+            }
+        }
+    }
+
+    public static void renderEntities(ModelBatch modelBatch, Environment environment) {
+        for (Entity entity : entities) {
+            entity.render(modelBatch, environment);
+        }
+    }
+
+    public static void renderBullets(ModelBatch modelBatch, Environment environment) {
+        for (Bullet bullet : bullets) {
+            bullet.render(modelBatch, environment);
+        }
+    }
+
+    public static Entity spawnEntitiy(Vector3 position, ModelInstance modelInstance) {
+        modelInstance.calculateBoundingBox(boundingBox);
+        btCollisionShape collisionShape = new btBoxShape(boundingBox.getDimensions(tempVec3).scl(.5f));
+        constructionInfo.setCollisionShape(collisionShape);
+        btRigidBody rigidBody = new btRigidBody(constructionInfo);
+        rigidBody.setAngularFactor(angularFactor);
+        rigidBody.setLinearFactor(linearFactor);
+        rigidBody.setContactCallbackFlag(Flags.ENTITY_FLAG);
+        rigidBody.setActivationState(Collision.DISABLE_DEACTIVATION);
+
+        Entity entity = new Entity();
+        entity.init(position, modelInstance, rigidBody);
+
+        dynamicsWorld.addRigidBody(rigidBody);
+        entities.add(entity);
+
+        return entity;
+    }
+
+    public static Player spawnPlayer(Vector3 position, float maxSpeed) {
+        AssetLoader.boxhead.calculateBoundingBox(boundingBox);
+        btCollisionShape collisionShape = new btBoxShape(boundingBox.getDimensions(tempVec3).scl(.5f));
+        constructionInfo.setCollisionShape(collisionShape);
+        btRigidBody rigidBody = new btRigidBody(constructionInfo);
+        rigidBody.setAngularFactor(angularFactor);
+        rigidBody.setLinearFactor(linearFactor);
+        rigidBody.setContactCallbackFlag(Flags.ENTITY_FLAG);
+        rigidBody.setActivationState(Collision.DISABLE_DEACTIVATION);
+
+        Player player = new Player();
+        player.init(position, maxSpeed, rigidBody);
+
+        dynamicsWorld.addRigidBody(rigidBody);
+        entities.add(player);
+
+        return player;
+    }
+
+    public static Bullet spawnBullet(Matrix4 transform, ModelInstance modelInstance, int direction, float velocity) {
+        Bullet bullet = bulletPool.obtain();
+
+        btRigidBody rigidBody;
+        if (bullet.rigidBody == null) {
+            modelInstance.calculateBoundingBox(boundingBox);
+            btCollisionShape collisionShape = new btBoxShape(boundingBox.getDimensions(tempVec3).scl(.5f));
+            constructionInfo.setCollisionShape(collisionShape);
+            rigidBody = new btRigidBody(constructionInfo);
+            rigidBody.setCollisionFlags(rigidBody.getCollisionFlags() | btRigidBody.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+            rigidBody.setContactCallbackFlag(Flags.BULLET_FLAG);
+            rigidBody.setContactCallbackFilter(Flags.OBJECT_FLAG);
+            rigidBody.setActivationState(Collision.DISABLE_DEACTIVATION);
+        } else {
+            rigidBody = bullet.rigidBody;
+        }
+        rigidBody.setAngularFactor(angularFactor);
+        rigidBody.setLinearFactor(linearFactor);
+
+        if (bullet.rigidBody == null) {
+            dynamicsWorld.addRigidBody(rigidBody);
+        }
+
+        bullet.init(transform, modelInstance, rigidBody, direction, velocity);
+
+        bullets.add(bullet);
+
+        return bullet;
+    }
+
+    public static void dispose() {
+        constructionInfo.dispose();
+        for (int i = 0; i < entities.size(); i++) {
+            entities.get(i).dispose();
+        }
+    }
+}

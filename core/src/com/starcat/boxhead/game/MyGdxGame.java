@@ -26,7 +26,7 @@ public class MyGdxGame extends Game {
 	public static float ASPECT_RATIO;
 
 	private OrthographicCamera UICamera;
-	private PerspectiveCamera gameCamera;
+	private OrthographicCamera gameCamera;
 	private Viewport UIViewport, gameViewport;
 
 	//I18NBundles handle localization for different countries
@@ -41,7 +41,7 @@ public class MyGdxGame extends Game {
 		ASPECT_RATIO = (float)Gdx.graphics.getHeight() / (float)Gdx.graphics.getWidth();
 
 		UICamera = new OrthographicCamera(GAME_HEIGHT/ASPECT_RATIO, GAME_HEIGHT);
-		gameCamera = new PerspectiveCamera(45, GAME_HEIGHT/ASPECT_RATIO, GAME_HEIGHT);
+		gameCamera = new OrthographicCamera(GAME_HEIGHT/ASPECT_RATIO, GAME_HEIGHT);
 
 		UIViewport = new ScreenViewport(UICamera);
 		gameViewport = new FillViewport(GAME_WIDTH / 75, GAME_HEIGHT / 75, gameCamera);
