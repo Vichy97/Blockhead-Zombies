@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 public class Evening extends TimeOfDay{
 
     public Evening() {
+        skyColor = new Color(110f / 255f, 145f / 255f, 185f / 255f, 1f);
         ambientColor = new Color(.2f, .1f, .1f, 1);
         sunlightColor = new Color(.5f, .4f, .4f, 1);
         sunlightDirection = new Vector3(1f, -.5f, .4f);

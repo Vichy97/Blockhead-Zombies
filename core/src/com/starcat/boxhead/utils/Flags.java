@@ -4,8 +4,10 @@ package com.starcat.boxhead.utils;
  * Created by Vincent on 8/19/2016.
  */
 public class Flags {
-    public static final int OBJECT_FLAG = 1;
-    public static final int ENTITY_FLAG = 2;
-    public static final int BULLET_FLAG = 4;
-    public static final int SHOULD_POOL_FLAG = 8;
+    public static final int OBJECT_FLAG = 1 << 2;
+    public static final int ENTITY_FLAG = 1 << 3;
+    public static final int BULLET_FLAG = 1 << 4;
+    public static final int BULLET_CASING_FLAG = 1 << 5;
+    public static final int SHOULD_POOL_FLAG = 1 << 6;
+
 }

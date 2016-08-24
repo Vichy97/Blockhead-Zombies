@@ -134,6 +134,7 @@ public class MenuScreen implements Screen {
     private ClickListener playListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
+            AssetLoader.button_click.play();
             game.setScreen("game");
         }
     };
@@ -141,6 +142,7 @@ public class MenuScreen implements Screen {
     private ClickListener exitListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
+            AssetLoader.button_click.play();
             Gdx.app.exit();
         }
     };

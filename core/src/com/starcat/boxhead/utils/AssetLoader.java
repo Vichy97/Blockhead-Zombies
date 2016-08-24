@@ -5,6 +5,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.SoundLoader;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -34,8 +35,6 @@ public class AssetLoader {
     private static AssetManager manager;
     private static InternalFileHandleResolver fileHandleResolver;
 
-    private static SoundLoader soundLoader;
-
     private static BitmapFont largeFont, smallFont;
     private static TextureAtlas ui;
     public static Skin uiSkin;
@@ -45,10 +44,16 @@ public class AssetLoader {
     public static Model boxhead;
     public static Model pistol;
     public static Model pistolBullet;
+    public static Model pistolBulletCasing;
 
     public static Texture cloudTexture1;
     public static Texture cloudTexture2;
     public static Texture cloudTexture3;
+    public static Texture starTexture1;
+    public static Texture starTexture2;
+
+    public static Sound button_click;
+
 
 
     public static void load() {
@@ -60,11 +65,12 @@ public class AssetLoader {
 
         manager = new AssetManager();
         fileHandleResolver = new InternalFileHandleResolver();
-        soundLoader = new SoundLoader(fileHandleResolver);
 
         manager.load("cloud_1.png", Texture.class, param);
         manager.load("cloud_2.png", Texture.class, param);
         manager.load("cloud_3.png", Texture.class, param);
+        manager.load("starBig.png", Texture.class, param);
+        manager.load("starSmall.png", Texture.class, param);
 
         manager.load("ui/ui.atlas", TextureAtlas.class);
         manager.load("maps/test_scene/test_scene_base.g3db", Model.class);
@@ -75,6 +81,9 @@ public class AssetLoader {
 
         manager.load("objects/weapons/pistol.g3db", Model.class);
         manager.load("objects/projectiles/pistol_bullet.g3db", Model.class);
+        manager.load("objects/projectiles/pistol_bullet_casing.g3db", Model.class);
+
+        manager.load("audio/ui/button_click.ogg", Sound.class);
     }
 
     public static boolean update() {
@@ -98,6 +107,8 @@ public class AssetLoader {
         cloudTexture1 = manager.get("cloud_1.png", Texture.class);
         cloudTexture2 = manager.get("cloud_2.png", Texture.class);
         cloudTexture3 = manager.get("cloud_3.png", Texture.class);
+        starTexture1 = manager.get("starBig.png", Texture.class);
+        starTexture2 = manager.get("starSmall.png", Texture.class);
 
         mapBase = manager.get("maps/test_scene/test_scene_base.g3db", Model.class);
         mapObjects = manager.get("maps/test_scene/test_scene_objects.g3db", Model.class);
@@ -108,6 +119,9 @@ public class AssetLoader {
 
         pistol = manager.get("objects/weapons/pistol.g3db", Model.class);
         pistolBullet = manager.get("objects/projectiles/pistol_bullet.g3db", Model.class);
+        pistolBulletCasing = manager.get("objects/projectiles/pistol_bullet_casing.g3db", Model.class);
+
+        button_click = manager.get("audio/ui/button_click.ogg", Sound.class);
     }
 
     //creates a freetype bitmap font

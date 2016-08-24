@@ -9,10 +9,15 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.collision.Collision;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
+import com.badlogic.gdx.physics.bullet.collision.btCylinderShape;
+import com.badlogic.gdx.physics.bullet.collision.btCylinderShapeX;
+import com.badlogic.gdx.physics.bullet.collision.btCylinderShapeZ;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.badlogic.gdx.physics.bullet.linearmath.btVector3;
 import com.badlogic.gdx.utils.Pool;
 import com.starcat.boxhead.objects.Bullet;
+import com.starcat.boxhead.objects.BulletCasing;
 import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.utils.Flags;
 
@@ -27,10 +32,13 @@ public class EntityManager {
     private static btDiscreteDynamicsWorld dynamicsWorld;
     private static ArrayList<Entity> entities = new ArrayList<Entity>();
     private static ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+    private static ArrayList<BulletCasing> bulletCasings = new ArrayList<BulletCasing>();
     private static btRigidBody.btRigidBodyConstructionInfo constructionInfo = new btRigidBody.btRigidBodyConstructionInfo(1, null, null, Vector3.Zero);
     private static Vector3 tempVec3 = new Vector3();
     private static Vector3 linearFactor = Vector3.X.add(Vector3.Z);
     private static Vector3 angularFactor = Vector3.Y;
+    private static Vector3 localInertia = new Vector3();
+    private static btVector3 btLocalInertia = new btVector3();
     private static BoundingBox boundingBox = new BoundingBox();
     private static Pool<Bullet> bulletPool = new Pool<Bullet>() {
         @Override
@@ -84,6 +92,9 @@ public class EntityManager {
     public static void renderBullets(ModelBatch modelBatch, Environment environment) {
         for (Bullet bullet : bullets) {
             bullet.render(modelBatch, environment);
+        }
+        for (BulletCasing bulletCasing : bulletCasings) {
+            bulletCasing.render(modelBatch, environment);
         }
     }
 
@@ -154,6 +165,33 @@ public class EntityManager {
 
         return bullet;
     }
+
+    public static BulletCasing spawnBulletCasing(Matrix4 transform, ModelInstance modelInstance, Vector3 expulsionImpulse) {
+        BulletCasing bulletCasing = new BulletCasing();
+
+        btRigidBody rigidBody;
+        modelInstance.calculateBoundingBox(boundingBox);
+        btCollisionShape collisionShape = new btBoxShape(boundingBox.getDimensions(tempVec3).scl(.5f));
+        constructionInfo.setCollisionShape(collisionShape);
+        constructionInfo.setMass(1f);
+        collisionShape.calculateLocalInertia(1f, localInertia);
+        btLocalInertia.setValue(localInertia.x, localInertia.y, localInertia.z);
+        constructionInfo.setLocalInertia(btLocalInertia);
+        rigidBody = new btRigidBody(constructionInfo);
+        rigidBody.setRestitution(.5f);
+        rigidBody.setCollisionFlags(rigidBody.getCollisionFlags() | btRigidBody.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
+        rigidBody.setContactCallbackFlag(Flags.BULLET_CASING_FLAG);
+        rigidBody.setContactCallbackFilter(Flags.OBJECT_FLAG);
+
+        dynamicsWorld.addRigidBody(rigidBody);
+
+        bulletCasing.init(transform, modelInstance, rigidBody, expulsionImpulse);
+
+        bulletCasings.add(bulletCasing);
+
+        return bulletCasing;
+    }
+
 
     public static void dispose() {
         constructionInfo.dispose();

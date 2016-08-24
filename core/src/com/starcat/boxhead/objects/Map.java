@@ -3,6 +3,8 @@ package com.starcat.boxhead.objects;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.starcat.boxhead.environment.Afternoon;
+import com.starcat.boxhead.environment.Evening;
+import com.starcat.boxhead.environment.Night;
 import com.starcat.boxhead.environment.TimeOfDay;
 
 /**

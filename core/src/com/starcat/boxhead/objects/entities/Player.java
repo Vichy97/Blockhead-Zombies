@@ -73,7 +73,7 @@ public class Player extends Entity {
         moving = true;
         switch (direction) {
             case 1: {
-                speed.rotate(rotationVector, 45 -currentRotationAngle);
+                speed.rotate(rotationVector, 45 - currentRotationAngle);
                 rotation.set(rotationVector, 45 - currentRotationAngle);
                 rigidBody.setWorldTransform(rigidBody.getWorldTransform().rotate(rotation));
                 currentRotationAngle = 45;
@@ -130,6 +130,10 @@ public class Player extends Entity {
 
     public int getDirection() {
         return direction;
+    }
+
+    public float getCurrentRotationAngle() {
+        return currentRotationAngle;
     }
 
     public float getMaxSpeed() {

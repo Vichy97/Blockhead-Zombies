@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -39,6 +40,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.starcat.boxhead.environment.Afternoon;
+import com.starcat.boxhead.environment.Evening;
+import com.starcat.boxhead.environment.Night;
+import com.starcat.boxhead.objects.Star;
 import com.starcat.boxhead.objects.entities.EntityManager;
 import com.starcat.boxhead.objects.entities.Player;
 import com.starcat.boxhead.game.MyGdxGame;
@@ -66,14 +71,6 @@ public class GameScreen implements Screen, InputProcessor {
 
     private Camera UICamera, gameCamera;
     private Viewport UIViewport, gameViewport;
-    //pixel dimensions of the physical screen
-    private int screenWidth;
-    private int screenHeight;
-    //height of the game used for the viewports
-    private int gameWidth;
-    private int gameHeight;
-
-    private float aspectRatio;
 
     private InputMultiplexer inputMultiplexer;
     private Stage stage;
@@ -96,6 +93,7 @@ public class GameScreen implements Screen, InputProcessor {
     private Map currentMap;
 
     private Cloud[] cloudArray;
+    private Star[] stars;
 
     private FPSLogger fpsLogger;
 
@@ -112,6 +110,7 @@ public class GameScreen implements Screen, InputProcessor {
     private MyContactListener contactListener;
 
 
+
     public GameScreen(MyGdxGame game, OrthographicCamera UICamera, Viewport UIViewport, OrthographicCamera gameCamera, Viewport gameViewport, I18NBundle bundle) {
         debug("constructor");
 
@@ -121,12 +120,6 @@ public class GameScreen implements Screen, InputProcessor {
         this.gameCamera = gameCamera;
         this.gameViewport = gameViewport;
         this.bundle = bundle;
-
-        gameWidth = MyGdxGame.GAME_WIDTH;
-        gameHeight = MyGdxGame.GAME_HEIGHT;
-        aspectRatio = MyGdxGame.ASPECT_RATIO;
-        screenWidth = Gdx.graphics.getWidth();
-        screenHeight = Gdx.graphics.getHeight();
 
         initUI();
         initWorld();
@@ -156,18 +149,48 @@ public class GameScreen implements Screen, InputProcessor {
         gameViewport.apply();
         gameCamera.update();
 
-        renderClouds(delta);
+        if (currentMap.getTimeOfDay() instanceof Night) {
+            renderStars();
+        } else {
+            renderClouds(delta);
+        }
 
         if (!paused) {
             dynamicsWorld.stepSimulation(Gdx.graphics.getDeltaTime(), 5, 1f / 120f);
         }
 
-        int touchPadEightDirection = GameUtils.getTouchpadEightDirection(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
-        if (!player.isMoving()) {
-            player.setDirection(touchPadEightDirection);
-        } else if (player.getDirection() != touchPadEightDirection) {
-            player.setDirection(touchPadEightDirection);
+
+        int direction;
+        if (upPressed) {
+            if (leftPressed) {
+                direction = 8;
+            } else if (rightPressed) {
+                direction = 2;
+            } else {
+                direction = 1;
+            }
+        } else if (downPressed) {
+            if (leftPressed) {
+                direction = 6;
+            } else if (rightPressed) {
+                direction = 4;
+            } else {
+                direction = 5;
+            }
+        } else if (leftPressed) {
+            direction = 7;
+        } else if (rightPressed) {
+            direction = 3;
+        } else {
+            direction = GameUtils.getTouchpadEightDirection(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
         }
+
+        if (!player.isMoving()) {
+            player.setDirection(direction);
+        } else if (player.getDirection() != direction) {
+            player.setDirection(direction);
+        }
+
 
         if (!paused) {
             EntityManager.update(Gdx.graphics.getDeltaTime());
@@ -189,7 +212,7 @@ public class GameScreen implements Screen, InputProcessor {
         Vector3 position = player.getPosition();
         gameCamera.position.set(position.x - 10, 10, position.z - 10);
 
-        Gdx.gl.glClearColor(40f / 255f, 175f / 255f, 230f / 255f, 1f);
+        Gdx.gl.glClearColor(currentMap.getTimeOfDay().skyColor.r, currentMap.getTimeOfDay().skyColor.g, currentMap.getTimeOfDay().skyColor.b, 1);
 
         if (MyGdxGame.DEBUG && !paused) {
             debugDrawer.begin(gameCamera);
@@ -272,7 +295,7 @@ public class GameScreen implements Screen, InputProcessor {
     private void initUI() {
         debug("initUI");
 
-        cameraInputController = new CameraInputController(gameCamera);
+        //cameraInputController = new CameraInputController(gameCamera);
 
         pauseButton = new ImageButton(AssetLoader.uiSkin.getDrawable("pause"));
         pauseButton.addListener(pauseButtonListener);
@@ -294,6 +317,7 @@ public class GameScreen implements Screen, InputProcessor {
         menuButton.setVisible(false);
 
         touchpad = new Touchpad(0, AssetLoader.uiSkin);
+
 
 
         UIViewport.apply();
@@ -356,12 +380,13 @@ public class GameScreen implements Screen, InputProcessor {
         currentMap.base.calculateBoundingBox(boundingBox);
 
         debugDrawer = new DebugDrawer();
-        debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
+        debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_DrawWireframe);
 
         mapBaseCollisionShape = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(.5f));
         mapBaseCollisionObject = new btCollisionObject();
         mapBaseCollisionObject.setCollisionShape(mapBaseCollisionShape);
         mapBaseCollisionObject.setWorldTransform(currentMap.base.transform.translate(0, -.05f, 0));
+        mapBaseCollisionObject.setRestitution(.5f);
 
         mapObjectsCollisionShape = Bullet.obtainStaticNodeShape(currentMap.objects.nodes);
         mapObjectsCollisionObject = new btCollisionObject();
@@ -375,7 +400,7 @@ public class GameScreen implements Screen, InputProcessor {
         broadphase = new btDbvtBroadphase();
         constraintSolver = new btSequentialImpulseConstraintSolver();
         dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, constraintSolver, collisionConfig);
-        dynamicsWorld.setGravity(new Vector3(0, -10f, 0));
+        dynamicsWorld.setGravity(new Vector3(0, -9.8f, 0));
         dynamicsWorld.setDebugDrawer(debugDrawer);
 
         dynamicsWorld.addCollisionObject(mapBaseCollisionObject);
@@ -406,6 +431,7 @@ public class GameScreen implements Screen, InputProcessor {
         shadowCache.end();
 
         spawnClouds();
+        spawnStars();
     }
 
     private void spawnClouds() {
@@ -418,6 +444,35 @@ public class GameScreen implements Screen, InputProcessor {
             } else {
                 cloudArray[i] = new Cloud(1920 - i * 350, AssetLoader.cloudTexture3);
             }
+        }
+    }
+
+    private void spawnStars() {
+        stars = new Star[18];
+        stars[0] = new Star(105, 1000, AssetLoader.starTexture2);
+        stars[1] = new Star(540, 1040, AssetLoader.starTexture2);
+        stars[2] = new Star(1045, 980, AssetLoader.starTexture2);
+        stars[3] = new Star(380, 800, AssetLoader.starTexture2);
+        stars[4] = new Star(1000, 650, AssetLoader.starTexture2);
+        stars[5] = new Star(1450, 450, AssetLoader.starTexture2);
+        stars[6] = new Star(1820, 350, AssetLoader.starTexture2);
+        stars[7] = new Star(580, 200, AssetLoader.starTexture2);
+        stars[8] = new Star(1485, 100, AssetLoader.starTexture2);
+
+        stars[9] = new Star(250, 900, AssetLoader.starTexture1);
+        stars[10] = new Star(800, 840, AssetLoader.starTexture1);
+        stars[11] = new Star(1300, 800, AssetLoader.starTexture1);
+        stars[12] = new Star(1580, 1000, AssetLoader.starTexture1);
+        stars[13] = new Star(600, 460, AssetLoader.starTexture1);
+        stars[14] = new Star(1200, 260, AssetLoader.starTexture1);
+        stars[15] = new Star(240, 280, AssetLoader.starTexture1);
+        stars[16] = new Star(170, 540, AssetLoader.starTexture2);
+        stars[17] = new Star(1730, 840, AssetLoader.starTexture2);
+    }
+
+    private void renderStars() {
+        for (Star star : stars) {
+                star.render(spriteBatch);
         }
     }
 
@@ -452,6 +507,32 @@ public class GameScreen implements Screen, InputProcessor {
             leftPressed = true;
         } else if (keycode == Input.Keys.SPACE) {
             player.fire();
+        } else if (keycode == Input.Keys.BACKSPACE) {
+            GameUtils.takeScreenshot();
+        } else if (keycode == Input.Keys.NUM_1) {
+            currentMap.setTimeOfDay(new Afternoon());
+            environment = new Environment();
+            sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 50f, 50f, 1, 50);
+            sunlight.set(currentMap.getTimeOfDay().sunlightColor, currentMap.getTimeOfDay().sunlightDirection);
+            environment.set(new ColorAttribute(ColorAttribute.AmbientLight, currentMap.getTimeOfDay().ambientColor));
+            environment.add(sunlight);
+            environment.shadowMap = sunlight;
+        } else if (keycode == Input.Keys.NUM_2) {
+            currentMap.setTimeOfDay(new Evening());
+            environment = new Environment();
+            sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 50f, 50f, 1, 50);
+            sunlight.set(currentMap.getTimeOfDay().sunlightColor, currentMap.getTimeOfDay().sunlightDirection);
+            environment.set(new ColorAttribute(ColorAttribute.AmbientLight, currentMap.getTimeOfDay().ambientColor));
+            environment.add(sunlight);
+            environment.shadowMap = sunlight;
+        } else if (keycode == Input.Keys.NUM_3) {
+            currentMap.setTimeOfDay(new Night());
+            environment = new Environment();
+            sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 50f, 50f, 1, 50);
+            sunlight.set(currentMap.getTimeOfDay().sunlightColor, currentMap.getTimeOfDay().sunlightDirection);
+            environment.set(new ColorAttribute(ColorAttribute.AmbientLight, currentMap.getTimeOfDay().ambientColor));
+            environment.add(sunlight);
+            environment.shadowMap = sunlight;
         }
         return true;
     }
@@ -506,6 +587,7 @@ public class GameScreen implements Screen, InputProcessor {
     private ClickListener playButtonListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
+            AssetLoader.button_click.play();
             playButton.setVisible(false);
             pauseButton.setVisible(true);
             musicButton.setVisible(false);
@@ -522,6 +604,7 @@ public class GameScreen implements Screen, InputProcessor {
     private ClickListener pauseButtonListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
+            AssetLoader.button_click.play();
             pause();
         }
     };
@@ -529,6 +612,7 @@ public class GameScreen implements Screen, InputProcessor {
     private ClickListener musicButtonListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
+            AssetLoader.button_click.play();
             music = false;
         }
     };
@@ -536,6 +620,7 @@ public class GameScreen implements Screen, InputProcessor {
     private ClickListener soundButtonListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
+            AssetLoader.button_click.play();
             sound = false;
         }
     };
@@ -543,6 +628,7 @@ public class GameScreen implements Screen, InputProcessor {
     private ClickListener menuButtonListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
+            AssetLoader.button_click.play();
             game.setScreen("menu");
         }
     };

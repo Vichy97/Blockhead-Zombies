@@ -44,7 +44,7 @@ public class MyGdxGame extends Game {
 		gameCamera = new OrthographicCamera(GAME_HEIGHT/ASPECT_RATIO, GAME_HEIGHT);
 
 		UIViewport = new ScreenViewport(UICamera);
-		gameViewport = new FillViewport(GAME_WIDTH / 75, GAME_HEIGHT / 75, gameCamera);
+		gameViewport = new FillViewport(GAME_WIDTH / 100, GAME_HEIGHT / 100, gameCamera);
 
 		FileHandle fileHandle = Gdx.files.internal("locales/Boxhead");
 		bundle = I18NBundle.createBundle(fileHandle, Locale.getDefault());
