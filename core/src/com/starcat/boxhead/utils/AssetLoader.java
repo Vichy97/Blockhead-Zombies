@@ -13,9 +13,12 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.utils.I18NBundle;
 import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.objects.Map;
 
@@ -33,7 +36,8 @@ import com.starcat.boxhead.objects.Map;
 public class AssetLoader {
 
     private static AssetManager manager;
-    private static InternalFileHandleResolver fileHandleResolver;
+
+    public static I18NBundle i18NBundle;
 
     private static BitmapFont largeFont, smallFont;
     private static TextureAtlas ui;
@@ -53,6 +57,7 @@ public class AssetLoader {
     public static Texture starTexture2;
 
     public static Sound button_click;
+    public static Sound pistolSound;
 
 
 
@@ -64,7 +69,8 @@ public class AssetLoader {
         param.magFilter = Texture.TextureFilter.Linear;
 
         manager = new AssetManager();
-        fileHandleResolver = new InternalFileHandleResolver();
+
+        manager.load("locales/Boxhead", I18NBundle.class);
 
         manager.load("cloud_1.png", Texture.class, param);
         manager.load("cloud_2.png", Texture.class, param);
@@ -73,7 +79,7 @@ public class AssetLoader {
         manager.load("starSmall.png", Texture.class, param);
 
         manager.load("ui/ui.atlas", TextureAtlas.class);
-        manager.load("maps/test_scene/test_scene_base.g3db", Model.class);
+        manager.load("maps/test_scene/test_scene_base.g3dj", Model.class);
         manager.load("maps/test_scene/test_scene_objects.g3db", Model.class);
         manager.load("maps/test_scene/test_scene_doodads.g3db", Model.class);
 
@@ -84,6 +90,7 @@ public class AssetLoader {
         manager.load("objects/projectiles/pistol_bullet_casing.g3db", Model.class);
 
         manager.load("audio/ui/button_click.ogg", Sound.class);
+        manager.load("audio/guns/pistol.ogg", Sound.class);
     }
 
     public static boolean update() {
@@ -94,6 +101,8 @@ public class AssetLoader {
 
     public static void initAssets() {
         debug("initAssets");
+
+        i18NBundle = manager.get("locales/Boxhead");
 
         largeFont = createFont("DroidSans.ttf", Gdx.graphics.getHeight() / 10, Color.WHITE);
         smallFont = createFont("DroidSans.ttf", Gdx.graphics.getHeight() / 15, Color.WHITE);
@@ -110,7 +119,7 @@ public class AssetLoader {
         starTexture1 = manager.get("starBig.png", Texture.class);
         starTexture2 = manager.get("starSmall.png", Texture.class);
 
-        mapBase = manager.get("maps/test_scene/test_scene_base.g3db", Model.class);
+        mapBase = manager.get("maps/test_scene/test_scene_base.g3dj", Model.class);
         mapObjects = manager.get("maps/test_scene/test_scene_objects.g3db", Model.class);
         mapDoodads = manager.get("maps/test_scene/test_scene_doodads.g3db", Model.class);
         map = new Map(mapBase, mapObjects, mapDoodads);
@@ -122,6 +131,21 @@ public class AssetLoader {
         pistolBulletCasing = manager.get("objects/projectiles/pistol_bullet_casing.g3db", Model.class);
 
         button_click = manager.get("audio/ui/button_click.ogg", Sound.class);
+        pistolSound = manager.get("audio/guns/pistol.ogg", Sound.class);
+
+        for (int i = 0; i < mapBase.nodes.size; i++) {
+            String id = mapBase.nodes.get(i).id;
+            ModelInstance instance = new ModelInstance(mapBase, id);
+            Node node = instance.getNode(id);
+
+            instance.transform.set(node.globalTransform);
+            node.translation.set(0, 0, 0);
+            node.scale.set(1, 1, 1);
+            node.rotation.idt();
+            instance.calculateTransforms();
+
+        }
+
     }
 
     //creates a freetype bitmap font

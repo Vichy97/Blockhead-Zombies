@@ -44,6 +44,8 @@ public class Player extends Entity {
     @Override
     public void update(float delta) {
         super.update(delta);
+        rigidBody.setAngularVelocity(Vector3.Zero);
+        rigidBody.setLinearVelocity(Vector3.Zero);
 
         if (moving) {
             currentWeapon.setTransform(modelInstance.transform);

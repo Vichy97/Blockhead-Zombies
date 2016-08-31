@@ -36,7 +36,7 @@ public class MenuScreen implements Screen {
 
 
 
-    public MenuScreen(final MyGdxGame game, OrthographicCamera camera, Viewport viewport, I18NBundle bundle) {
+    public MenuScreen(final MyGdxGame game, OrthographicCamera camera, Viewport viewport) {
         debug("constructor");
 
         this.game = game;
@@ -47,9 +47,9 @@ public class MenuScreen implements Screen {
         table = new Table();
         table.setFillParent(true);
 
-        play = new TextButton(bundle.get("play"), AssetLoader.uiSkin, "large");
+        play = new TextButton(AssetLoader.i18NBundle.get("play"), AssetLoader.uiSkin, "large");
         play.addListener(playListener);
-        exit = new TextButton(bundle.get("exit"), AssetLoader.uiSkin, "large");
+        exit = new TextButton(AssetLoader.i18NBundle.get("exit"), AssetLoader.uiSkin, "large");
         exit.addListener(exitListener);
 
         table.add(play).width(Gdx.graphics.getWidth() / 6).height(Gdx.graphics.getHeight() / 6);

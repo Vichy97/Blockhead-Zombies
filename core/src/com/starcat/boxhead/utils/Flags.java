@@ -4,6 +4,7 @@ package com.starcat.boxhead.utils;
  * Created by Vincent on 8/19/2016.
  */
 public class Flags {
+    public static final int GROUND_FLAG = 1 << 7;
     public static final int OBJECT_FLAG = 1 << 2;
     public static final int ENTITY_FLAG = 1 << 3;
     public static final int BULLET_FLAG = 1 << 4;

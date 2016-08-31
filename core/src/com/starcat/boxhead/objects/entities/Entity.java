@@ -61,6 +61,10 @@ public class Entity implements Disposable {
         modelBatch.render(modelInstance, environment);
     }
 
+    public void render(ModelBatch modelBatch) {
+        modelBatch.render(modelInstance);
+    }
+
     public btRigidBody getRigidBody() {
         return rigidBody;
     }

@@ -29,9 +29,6 @@ public class MyGdxGame extends Game {
 	private OrthographicCamera gameCamera;
 	private Viewport UIViewport, gameViewport;
 
-	//I18NBundles handle localization for different countries
-	private I18NBundle bundle;
-
 
 
 	@Override
@@ -45,11 +42,6 @@ public class MyGdxGame extends Game {
 
 		UIViewport = new ScreenViewport(UICamera);
 		gameViewport = new FillViewport(GAME_WIDTH / 100, GAME_HEIGHT / 100, gameCamera);
-
-		FileHandle fileHandle = Gdx.files.internal("locales/Boxhead");
-		bundle = I18NBundle.createBundle(fileHandle, Locale.getDefault());
-
-		Gdx.graphics.setTitle(bundle.get("gameTitle"));
 
 		setScreen("loading");
 	}
@@ -68,9 +60,9 @@ public class MyGdxGame extends Game {
 		if (screen.equals("loading")) {
 			setScreen(new LoadingScreen(this));
 		} else if(screen.equals("menu")) {
-			setScreen(new MenuScreen(this, UICamera, UIViewport, bundle));
+			setScreen(new MenuScreen(this, UICamera, UIViewport));
 		} else if(screen.equals("game")) {
-			setScreen(new GameScreen(this, UICamera, UIViewport, gameCamera, gameViewport, bundle));
+			setScreen(new GameScreen(this, UICamera, UIViewport, gameCamera, gameViewport));
 		} else {
 			debug("Incorrect Screen Name");
 			Gdx.app.exit();

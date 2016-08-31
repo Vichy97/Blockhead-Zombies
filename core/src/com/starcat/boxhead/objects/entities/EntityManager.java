@@ -9,9 +9,6 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.collision.Collision;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
-import com.badlogic.gdx.physics.bullet.collision.btCylinderShape;
-import com.badlogic.gdx.physics.bullet.collision.btCylinderShapeX;
-import com.badlogic.gdx.physics.bullet.collision.btCylinderShapeZ;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btVector3;
@@ -52,6 +49,14 @@ public class EntityManager {
             return new Entity();
         }
     };
+    private static Pool<btRigidBody> bulletCasingCollisionPool = new Pool<btRigidBody>() {
+        @Override
+        protected btRigidBody newObject() {
+            return new btRigidBody(constructionInfo);
+        }
+    };
+
+
 
     public static void setDynamicsWorld(btDiscreteDynamicsWorld world) {
         dynamicsWorld = world;
@@ -59,7 +64,6 @@ public class EntityManager {
 
     public static void update(float delta) {
         Iterator<Entity> entityIterator = entities.iterator();
-
         while(entityIterator.hasNext()) {
             Entity entity = entityIterator.next();
             if (entity.getRigidBody().getUserValue() == Flags.SHOULD_POOL_FLAG) {
@@ -81,6 +85,17 @@ public class EntityManager {
                 bullet.update(delta);
             }
         }
+
+        Iterator<BulletCasing> bulletCasingIterator = bulletCasings.iterator();
+
+        while(bulletCasingIterator.hasNext()) {
+            BulletCasing bulletCasing = bulletCasingIterator.next();
+            if (!bulletCasing.getRigidBody().isActive()) {
+                dynamicsWorld.removeRigidBody(bulletCasing.getRigidBody());
+                bulletCasingCollisionPool.free(bulletCasing.getRigidBody());
+            }
+        }
+
     }
 
     public static void renderEntities(ModelBatch modelBatch, Environment environment) {
@@ -91,7 +106,7 @@ public class EntityManager {
 
     public static void renderBullets(ModelBatch modelBatch, Environment environment) {
         for (Bullet bullet : bullets) {
-            bullet.render(modelBatch, environment);
+            bullet.render(modelBatch);
         }
         for (BulletCasing bulletCasing : bulletCasings) {
             bulletCasing.render(modelBatch, environment);
@@ -130,7 +145,7 @@ public class EntityManager {
         Player player = new Player();
         player.init(position, maxSpeed, rigidBody);
 
-        dynamicsWorld.addRigidBody(rigidBody);
+        dynamicsWorld.addRigidBody(rigidBody, (short)Flags.ENTITY_FLAG, (short)(Flags.ENTITY_FLAG | Flags.BULLET_FLAG | Flags.OBJECT_FLAG));
         entities.add(player);
 
         return player;
@@ -156,7 +171,7 @@ public class EntityManager {
         rigidBody.setLinearFactor(linearFactor);
 
         if (bullet.rigidBody == null) {
-            dynamicsWorld.addRigidBody(rigidBody);
+            dynamicsWorld.addRigidBody(rigidBody, (short)Flags.BULLET_FLAG, (short)(Flags.OBJECT_FLAG | Flags.ENTITY_FLAG));
         }
 
         bullet.init(transform, modelInstance, rigidBody, direction, velocity);
@@ -183,7 +198,7 @@ public class EntityManager {
         rigidBody.setContactCallbackFlag(Flags.BULLET_CASING_FLAG);
         rigidBody.setContactCallbackFilter(Flags.OBJECT_FLAG);
 
-        dynamicsWorld.addRigidBody(rigidBody);
+        dynamicsWorld.addRigidBody(rigidBody, (short)Flags.BULLET_CASING_FLAG, (short)(Flags.GROUND_FLAG | Flags.BULLET_CASING_FLAG | Flags.OBJECT_FLAG));
 
         bulletCasing.init(transform, modelInstance, rigidBody, expulsionImpulse);
 

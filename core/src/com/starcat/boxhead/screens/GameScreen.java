@@ -14,8 +14,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
+import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.math.Vector3;
@@ -54,20 +56,18 @@ import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.utils.Flags;
 import com.starcat.boxhead.utils.GameUtils;
 
+import java.util.ArrayList;
+
 /**
  * Created by Vincent on 6/19/2015.
  */
 public class GameScreen implements Screen, InputProcessor {
 
-    private  CameraInputController cameraInputController;
     private boolean paused = false;
-    private boolean music = true;
-    private boolean sound = true;
 
     public boolean leftPressed, rightPressed, upPressed, downPressed = false;
 
     private MyGdxGame game;
-    private I18NBundle bundle;
 
     private Camera UICamera, gameCamera;
     private Viewport UIViewport, gameViewport;
@@ -81,8 +81,9 @@ public class GameScreen implements Screen, InputProcessor {
     private Touchpad touchpad;
 
     private SpriteBatch spriteBatch;
+
     private ModelBatch modelBatch, shadowBatch;
-    private ModelCache modelCache, shadowCache;
+    private ArrayList<ModelInstance> modelInstances, shadowInstances;
 
     private Environment environment;
     private DirectionalShadowLight sunlight;
@@ -105,13 +106,13 @@ public class GameScreen implements Screen, InputProcessor {
     private btDefaultCollisionConfiguration collisionConfig;
     private btCollisionShape mapObjectsCollisionShape;
     private btCollisionObject mapBaseCollisionObject;
-
-    private Player player;
     private MyContactListener contactListener;
 
+    private Player player;
 
 
-    public GameScreen(MyGdxGame game, OrthographicCamera UICamera, Viewport UIViewport, OrthographicCamera gameCamera, Viewport gameViewport, I18NBundle bundle) {
+
+    public GameScreen(MyGdxGame game, OrthographicCamera UICamera, Viewport UIViewport, OrthographicCamera gameCamera, Viewport gameViewport) {
         debug("constructor");
 
         this.game = game;
@@ -119,7 +120,6 @@ public class GameScreen implements Screen, InputProcessor {
         this.UIViewport = UIViewport;
         this.gameCamera = gameCamera;
         this.gameViewport = gameViewport;
-        this.bundle = bundle;
 
         initUI();
         initWorld();
@@ -156,9 +156,8 @@ public class GameScreen implements Screen, InputProcessor {
         }
 
         if (!paused) {
-            dynamicsWorld.stepSimulation(Gdx.graphics.getDeltaTime(), 5, 1f / 120f);
+            dynamicsWorld.stepSimulation(Gdx.graphics.getDeltaTime(), 5, 1f / 65f);
         }
-
 
         int direction;
         if (upPressed) {
@@ -191,20 +190,24 @@ public class GameScreen implements Screen, InputProcessor {
             player.setDirection(direction);
         }
 
-
         if (!paused) {
             EntityManager.update(Gdx.graphics.getDeltaTime());
         }
 
         modelBatch.begin(gameCamera);
-        modelBatch.render(modelCache, environment);
+        for (int i = 0; i < modelInstances.size(); i++) {
+            debug(modelInstances.size() + "");
+            if (isVisible(modelInstances.get(i))) {
+                modelBatch.render(modelInstances.get(i), environment);
+            }
+        }
         EntityManager.renderEntities(modelBatch, environment);
         EntityManager.renderBullets(modelBatch, environment);
         modelBatch.end();
 
         sunlight.begin(Vector3.Zero, gameCamera.direction);
         shadowBatch.begin(sunlight.getCamera());
-        shadowBatch.render(shadowCache);
+        shadowBatch.render(shadowInstances);
         EntityManager.renderEntities(shadowBatch, environment);
         shadowBatch.end();
         sunlight.end();
@@ -290,12 +293,22 @@ public class GameScreen implements Screen, InputProcessor {
         System.gc();
     }
 
+    private Vector3 instancePosition = new Vector3();
+    private Vector3 dimensions = new Vector3();
+    private BoundingBox boundingBox = new BoundingBox();
+    private float radius;
+    private boolean isVisible(ModelInstance instance) {
+        instance.transform.getTranslation(instancePosition);
+        instance.calculateBoundingBox(boundingBox);
+        boundingBox.getDimensions(dimensions);
+        radius = dimensions.len();
+        return gameCamera.frustum.sphereInFrustum(instancePosition, radius);
+    }
+
 
 
     private void initUI() {
         debug("initUI");
-
-        //cameraInputController = new CameraInputController(gameCamera);
 
         pauseButton = new ImageButton(AssetLoader.uiSkin.getDrawable("pause"));
         pauseButton.addListener(pauseButtonListener);
@@ -312,7 +325,7 @@ public class GameScreen implements Screen, InputProcessor {
         soundButton.addListener(soundButtonListener);
         soundButton.setVisible(false);
 
-        menuButton = new TextButton(bundle.get("menu"), AssetLoader.uiSkin, "small");
+        menuButton = new TextButton(AssetLoader.i18NBundle.get("menu"), AssetLoader.uiSkin, "small");
         menuButton.addListener(menuButtonListener);
         menuButton.setVisible(false);
 
@@ -344,7 +357,6 @@ public class GameScreen implements Screen, InputProcessor {
 
         inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(stage);
-        //inputMultiplexer.addProcessor(cameraInputController);
         inputMultiplexer.addProcessor(this);
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
@@ -403,8 +415,8 @@ public class GameScreen implements Screen, InputProcessor {
         dynamicsWorld.setGravity(new Vector3(0, -9.8f, 0));
         dynamicsWorld.setDebugDrawer(debugDrawer);
 
-        dynamicsWorld.addCollisionObject(mapBaseCollisionObject);
-        dynamicsWorld.addCollisionObject(mapObjectsCollisionObject);
+        dynamicsWorld.addCollisionObject(mapBaseCollisionObject, (short)Flags.GROUND_FLAG, (short)(Flags.OBJECT_FLAG | Flags.ENTITY_FLAG |Flags.BULLET_CASING_FLAG));
+        //dynamicsWorld.addCollisionObject(mapObjectsCollisionObject, (short)Flags.OBJECT_FLAG, (short)(Flags.BULLET_CASING_FLAG | Flags.ENTITY_FLAG | Flags.BULLET_FLAG));
 
         EntityManager.setDynamicsWorld(dynamicsWorld);
 
@@ -417,18 +429,22 @@ public class GameScreen implements Screen, InputProcessor {
         modelBatch = new ModelBatch();
         shadowBatch = new ModelBatch(new DepthShaderProvider());
 
-        modelCache = new ModelCache();
-        modelCache.begin();
-        modelCache.add(currentMap.base);
-        modelCache.add(currentMap.objects);
-        modelCache.add(currentMap.doodads);
-        modelCache.end();
+        modelInstances = new ArrayList<ModelInstance>();
+        for (int i = 0; i < AssetLoader.mapBase.nodes.size; i++) {
+            String id = AssetLoader.mapBase.nodes.get(i).id;
+            ModelInstance instance = new ModelInstance(AssetLoader.mapBase, id);
+            Node node = instance.getNode(id);
 
-        shadowCache = new ModelCache();
-        shadowCache.begin();
-        shadowCache.add(currentMap.objects);
-        shadowCache.add(currentMap.doodads);
-        shadowCache.end();
+            instance.transform.set(node.globalTransform);
+            node.translation.set(0, 0, 0);
+            node.scale.set(1, 1, 1);
+            node.rotation.idt();
+            instance.calculateTransforms();
+
+            modelInstances.add(instance);
+        }
+
+        shadowInstances = new ArrayList<ModelInstance>();
 
         spawnClouds();
         spawnStars();
@@ -613,7 +629,6 @@ public class GameScreen implements Screen, InputProcessor {
         @Override
         public void clicked(InputEvent event, float x, float y) {
             AssetLoader.button_click.play();
-            music = false;
         }
     };
 
@@ -621,7 +636,6 @@ public class GameScreen implements Screen, InputProcessor {
         @Override
         public void clicked(InputEvent event, float x, float y) {
             AssetLoader.button_click.play();
-            sound = false;
         }
     };
 
