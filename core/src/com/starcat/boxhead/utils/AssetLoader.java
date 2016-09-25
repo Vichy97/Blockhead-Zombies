@@ -16,6 +16,7 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.I18NBundle;
@@ -80,8 +81,8 @@ public class AssetLoader {
 
         manager.load("ui/ui.atlas", TextureAtlas.class);
         manager.load("maps/test_scene/test_scene_base.g3dj", Model.class);
-        manager.load("maps/test_scene/test_scene_objects.g3db", Model.class);
-        manager.load("maps/test_scene/test_scene_doodads.g3db", Model.class);
+        manager.load("maps/test_scene/test_scene_objects.g3dj", Model.class);
+        manager.load("maps/test_scene/test_scene_doodads.g3dj", Model.class);
 
         manager.load("objects/entities/boxhead.g3dj", Model.class);
 
@@ -112,6 +113,7 @@ public class AssetLoader {
         uiSkin.get("large", TextButton.TextButtonStyle.class).font = largeFont;
         uiSkin.get("small", TextButton.TextButtonStyle.class).font = smallFont;
         uiSkin.get("default", CheckBox.CheckBoxStyle.class).font = smallFont;
+        uiSkin.get("default", Label.LabelStyle.class).font = smallFont;
 
         cloudTexture1 = manager.get("cloud_1.png", Texture.class);
         cloudTexture2 = manager.get("cloud_2.png", Texture.class);
@@ -120,8 +122,8 @@ public class AssetLoader {
         starTexture2 = manager.get("starSmall.png", Texture.class);
 
         mapBase = manager.get("maps/test_scene/test_scene_base.g3dj", Model.class);
-        mapObjects = manager.get("maps/test_scene/test_scene_objects.g3db", Model.class);
-        mapDoodads = manager.get("maps/test_scene/test_scene_doodads.g3db", Model.class);
+        mapObjects = manager.get("maps/test_scene/test_scene_objects.g3dj", Model.class);
+        mapDoodads = manager.get("maps/test_scene/test_scene_doodads.g3dj", Model.class);
         map = new Map(mapBase, mapObjects, mapDoodads);
 
         boxhead = manager.get("objects/entities/boxhead.g3dj", Model.class);

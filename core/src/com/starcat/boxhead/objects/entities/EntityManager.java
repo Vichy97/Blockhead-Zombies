@@ -63,6 +63,7 @@ public class EntityManager {
     }
 
     public static void update(float delta) {
+
         Iterator<Entity> entityIterator = entities.iterator();
         while(entityIterator.hasNext()) {
             Entity entity = entityIterator.next();
@@ -75,7 +76,6 @@ public class EntityManager {
         }
 
         Iterator<Bullet> bulletIterator = bullets.iterator();
-
         while(bulletIterator.hasNext()) {
             Bullet bullet = bulletIterator.next();
             if (bullet.getRigidBody().getUserValue() == Flags.SHOULD_POOL_FLAG) {
@@ -85,7 +85,7 @@ public class EntityManager {
                 bullet.update(delta);
             }
         }
-
+        /*
         Iterator<BulletCasing> bulletCasingIterator = bulletCasings.iterator();
 
         while(bulletCasingIterator.hasNext()) {
@@ -95,7 +95,7 @@ public class EntityManager {
                 bulletCasingCollisionPool.free(bulletCasing.getRigidBody());
             }
         }
-
+        */
     }
 
     public static void renderEntities(ModelBatch modelBatch, Environment environment) {

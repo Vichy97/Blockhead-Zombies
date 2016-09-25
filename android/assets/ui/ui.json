@@ -4,6 +4,11 @@
       down: button, up: button
     }
   },
+  com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
+    default: {
+
+    }
+  },
   com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
     default: {
       checkboxOn: button, checkboxOff: button
