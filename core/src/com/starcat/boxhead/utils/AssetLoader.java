@@ -46,7 +46,7 @@ public class AssetLoader {
 
     public static Map map;
     public static Model mapBase, mapObjects, mapDoodads;
-    public static Model boxhead;
+    public static Model boxhead, zombie;
     public static Model pistol;
     public static Model pistolBullet;
     public static Model pistolBulletCasing;
@@ -56,6 +56,7 @@ public class AssetLoader {
     public static Texture cloudTexture3;
     public static Texture starTexture1;
     public static Texture starTexture2;
+    public static Texture skinAdventurer;
 
     public static Sound button_click;
     public static Sound pistolSound;
@@ -85,10 +86,13 @@ public class AssetLoader {
         manager.load("maps/test_scene/test_scene_doodads.g3dj", Model.class);
 
         manager.load("objects/entities/boxhead.g3dj", Model.class);
+        manager.load("objects/entities/zombie.g3dj", Model.class);
 
         manager.load("objects/weapons/pistol.g3db", Model.class);
         manager.load("objects/projectiles/pistol_bullet.g3db", Model.class);
         manager.load("objects/projectiles/pistol_bullet_casing.g3db", Model.class);
+
+        manager.load("objects/entities/skin_exclusiveZombie.png", Texture.class);
 
         manager.load("audio/ui/button_click.ogg", Sound.class);
         manager.load("audio/guns/pistol.ogg", Sound.class);
@@ -127,6 +131,9 @@ public class AssetLoader {
         map = new Map(mapBase, mapObjects, mapDoodads);
 
         boxhead = manager.get("objects/entities/boxhead.g3dj", Model.class);
+        zombie = manager.get("objects/entities/zombie.g3dj", Model.class);
+
+        skinAdventurer = manager.get("objects/entities/skin_exclusiveZombie.png", Texture.class);
 
         pistol = manager.get("objects/weapons/pistol.g3db", Model.class);
         pistolBullet = manager.get("objects/projectiles/pistol_bullet.g3db", Model.class);
@@ -147,7 +154,6 @@ public class AssetLoader {
             instance.calculateTransforms();
 
         }
-
     }
 
     //creates a freetype bitmap font

@@ -17,9 +17,9 @@ public class Pistol extends Gun {
     public Pistol(Player player) {
         this.player = player;
         modelInstance = new ModelInstance(AssetLoader.pistol);
-        translation = new Vector3(-.4f, .53f, .88f);
-        bulletTranslation = new Vector3(-.4f, .667f, 1f);
-        bulletCasingTranslation = new Vector3(-.4f, .667f, .845f);
+        translation = new Vector3(-.3f, .35f, .6f);
+        bulletTranslation = new Vector3(-.3f, .487f, .75f);
+        bulletCasingTranslation = new Vector3(-.3f, .487f, .567f);
         bulletCasingExpulsionImpulse = new Vector3(-2, 2, .2f);
         bulletSpeed = .1f;
         reloadTime = .1f;

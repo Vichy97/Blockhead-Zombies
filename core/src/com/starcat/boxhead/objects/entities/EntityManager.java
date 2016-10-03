@@ -151,6 +151,26 @@ public class EntityManager {
         return player;
     }
 
+    public static Enemy spawnEnemy(Vector3 position) {
+        AssetLoader.zombie.calculateBoundingBox(boundingBox);
+        btCollisionShape collisionShape = new btBoxShape(boundingBox.getDimensions(tempVec3).scl(.5f));
+        constructionInfo.setCollisionShape(collisionShape);
+        btRigidBody rigidBody = new btRigidBody(constructionInfo);
+        rigidBody.setAngularFactor(angularFactor);
+        rigidBody.setLinearFactor(linearFactor);
+        rigidBody.setContactCallbackFlag(Flags.ENTITY_FLAG);
+        rigidBody.setActivationState(Collision.DISABLE_DEACTIVATION);
+
+        Enemy enemy = new Enemy();
+        enemy.init(position, new ModelInstance(AssetLoader.zombie), rigidBody);
+
+        dynamicsWorld.addRigidBody(rigidBody, (short)Flags.ENTITY_FLAG, (short)(Flags.ENTITY_FLAG | Flags.BULLET_FLAG | Flags.OBJECT_FLAG));
+        entities.add(enemy);
+
+        return enemy;
+    }
+
+
     public static Bullet spawnBullet(Matrix4 transform, ModelInstance modelInstance, int direction, float velocity) {
         Bullet bullet = bulletPool.obtain();
 

@@ -5,6 +5,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ai.steer.Steerable;
+import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
@@ -14,6 +16,7 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
@@ -47,6 +50,7 @@ import com.starcat.boxhead.environment.Evening;
 import com.starcat.boxhead.environment.Night;
 import com.starcat.boxhead.objects.GameObject;
 import com.starcat.boxhead.objects.Star;
+import com.starcat.boxhead.objects.entities.Enemy;
 import com.starcat.boxhead.objects.entities.EntityManager;
 import com.starcat.boxhead.objects.entities.Player;
 import com.starcat.boxhead.game.MyGdxGame;
@@ -86,7 +90,7 @@ public class GameScreen implements Screen, InputProcessor {
 
     private SpriteBatch spriteBatch;
 
-    private ModelCache modelCache;
+    private ModelCache modelCache, shadowCache;
     private ModelBatch modelBatch, shadowBatch;
     private ArrayList<GameObject> modelInstances, shadowInstances;
     private int visibleModelInstanceCount = 0;
@@ -115,6 +119,9 @@ public class GameScreen implements Screen, InputProcessor {
     private MyContactListener contactListener;
 
     private Player player;
+    private Enemy enemy;
+
+    private Arrive<Vector3> arrive;
 
 
 
@@ -132,7 +139,16 @@ public class GameScreen implements Screen, InputProcessor {
         initLightingAndCameras();
         initPhysics();
 
-        player = EntityManager.spawnPlayer(new Vector3(10, 1.54f, 10), .055f);
+        player = EntityManager.spawnPlayer(new Vector3(10, 1.3f, 10), .055f);
+        enemy = EntityManager.spawnEnemy(new Vector3(20, 1.3f, 20));
+        TextureAttribute textureAttribute1 = new TextureAttribute(TextureAttribute.Diffuse, AssetLoader.skinAdventurer);
+        enemy.getModelInstance().materials.get(0).set(textureAttribute1);
+
+        arrive = new Arrive<Vector3>(enemy, player).setEnabled(true)
+                .setTimeToTarget(.01f)
+                .setArrivalTolerance(1.5f)
+                .setDecelerationRadius(0);
+        enemy.setBehavior(arrive);
 
         fpsLogger = new FPSLogger();
 
@@ -163,7 +179,7 @@ public class GameScreen implements Screen, InputProcessor {
         }
 
         if (!paused) {
-            dynamicsWorld.stepSimulation(Gdx.graphics.getDeltaTime(), 5, 1f / 65f);
+            dynamicsWorld.stepSimulation(delta, 10, 1f/75f);
         }
 
         int direction;
@@ -197,32 +213,34 @@ public class GameScreen implements Screen, InputProcessor {
             player.setDirection(direction);
         }
 
-        if (!paused) {
-            EntityManager.update(Gdx.graphics.getDeltaTime());
-        }
-
         visibleModelInstanceCount = 0;
         modelBatch.begin(gameCamera);
-        for(GameObject object : modelInstances) {
+        /*for(GameObject object : modelInstances) {
             if (isVisible(object)) {
                 modelBatch.render(object, environment);
                 visibleModelInstanceCount++;
             }
-        }
+        }*/
+        modelBatch.render(modelCache, environment);
         EntityManager.renderEntities(modelBatch, environment);
         EntityManager.renderBullets(modelBatch, environment);
         modelBatch.end();
 
         sunlight.begin(Vector3.Zero, gameCamera.direction);
         shadowBatch.begin(sunlight.getCamera());
-        for(GameObject object : shadowInstances) {
+        /*for(GameObject object : shadowInstances) {
             if (isVisible(object)) {
                 shadowBatch.render(object, environment);
             }
-        }
+        }*/
+        shadowBatch.render(shadowCache);
         EntityManager.renderEntities(shadowBatch, environment);
         shadowBatch.end();
         sunlight.end();
+
+        if (!paused) {
+            EntityManager.update(Gdx.graphics.getDeltaTime());
+        }
 
         Vector3 position = player.getPosition();
         gameCamera.position.set(position.x - 10, 10, position.z - 10);
@@ -239,7 +257,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         stringBuilder.setLength(0);
         stringBuilder.append(" FPS: ").append(Gdx.graphics.getFramesPerSecond());
-        stringBuilder.append(" Visible: ").append(visibleModelInstanceCount);
+        stringBuilder.append("currentRotation").append(enemy.getCurrentRotation());
         debugLabel.setText(stringBuilder);
 
         UIViewport.apply();
@@ -385,7 +403,7 @@ public class GameScreen implements Screen, InputProcessor {
         gameCamera.update();
 
         environment = new Environment();
-        sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 50f, 50f, 1, 50);
+        sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 70f, 70f, 1, 75);
         sunlight.set(currentMap.getTimeOfDay().sunlightColor, currentMap.getTimeOfDay().sunlightDirection);
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, currentMap.getTimeOfDay().ambientColor));
         environment.add(sunlight);
@@ -403,7 +421,7 @@ public class GameScreen implements Screen, InputProcessor {
         currentMap.base.calculateBoundingBox(boundingBox);
 
         debugDrawer = new DebugDrawer();
-        debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_DrawWireframe);
+        debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
 
         mapBaseCollisionShape = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(.5f));
         mapBaseCollisionObject = new btCollisionObject();
@@ -427,7 +445,7 @@ public class GameScreen implements Screen, InputProcessor {
         dynamicsWorld.setDebugDrawer(debugDrawer);
 
         dynamicsWorld.addCollisionObject(mapBaseCollisionObject, (short)Flags.GROUND_FLAG, (short)(Flags.OBJECT_FLAG | Flags.ENTITY_FLAG |Flags.BULLET_CASING_FLAG));
-        dynamicsWorld.addCollisionObject(mapObjectsCollisionObject, (short)Flags.OBJECT_FLAG, (short)(Flags.BULLET_CASING_FLAG | Flags.ENTITY_FLAG | Flags.BULLET_FLAG));
+        //dynamicsWorld.addCollisionObject(mapObjectsCollisionObject, (short)Flags.OBJECT_FLAG, (short)(Flags.BULLET_CASING_FLAG | Flags.ENTITY_FLAG | Flags.BULLET_FLAG));
 
         EntityManager.setDynamicsWorld(dynamicsWorld);
 
@@ -438,6 +456,7 @@ public class GameScreen implements Screen, InputProcessor {
         currentMap = AssetLoader.map;
 
         modelCache = new ModelCache();
+        shadowCache = new ModelCache();
 
         DefaultShader.Config config = new DefaultShader.Config();
         config.numDirectionalLights = 1;
@@ -449,6 +468,9 @@ public class GameScreen implements Screen, InputProcessor {
 
         modelInstances = new ArrayList<GameObject>();
         shadowInstances = new ArrayList<GameObject>();
+
+        modelCache.begin();
+        shadowCache.begin();
         for (int i = 0; i < AssetLoader.mapBase.nodes.size; i++) {
             String id = AssetLoader.mapBase.nodes.get(i).id;
             GameObject instance = new GameObject(AssetLoader.mapBase, id);
@@ -460,7 +482,8 @@ public class GameScreen implements Screen, InputProcessor {
             node.rotation.idt();
             instance.calculateTransforms();
 
-            modelInstances.add(instance);
+            //modelInstances.add(instance);
+            modelCache.add(instance);
         }
 
         for (int i = 0; i < AssetLoader.mapObjects.nodes.size; i++) {
@@ -474,8 +497,10 @@ public class GameScreen implements Screen, InputProcessor {
             node.rotation.idt();
             instance.calculateTransforms();
 
-            modelInstances.add(instance);
-            shadowInstances.add(instance);
+            //modelInstances.add(instance);
+            //shadowInstances.add(instance);
+            modelCache.add(instance);
+            shadowCache.add(instance);
         }
 
         for (int i = 0; i < AssetLoader.mapDoodads.nodes.size; i++) {
@@ -489,9 +514,13 @@ public class GameScreen implements Screen, InputProcessor {
             node.rotation.idt();
             instance.calculateTransforms();
 
-            modelInstances.add(instance);
-            shadowInstances.add(instance);
+            //modelInstances.add(instance);
+            //shadowInstances.add(instance);
+            modelCache.add(instance);
+            shadowCache.add(instance);
         }
+        modelCache.end();
+        shadowCache.end();
 
         spawnClouds();
         spawnStars();
