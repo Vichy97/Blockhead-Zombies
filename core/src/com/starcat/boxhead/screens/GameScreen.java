@@ -5,6 +5,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ai.GdxAI;
+import com.badlogic.gdx.ai.Timepiece;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.graphics.Camera;
@@ -180,6 +182,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         if (!paused) {
             dynamicsWorld.stepSimulation(delta, 10, 1f/75f);
+            GdxAI.getTimepiece().update(delta);
         }
 
         int direction;

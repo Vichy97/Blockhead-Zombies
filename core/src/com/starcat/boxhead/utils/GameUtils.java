@@ -30,11 +30,21 @@ public class GameUtils {
     }
 
     public static int getTouchpadEightDirection(float touchpadPercentX, float touchpadPercentY) {
-        float angle = (float)(180 + Math.atan2(touchpadPercentY, touchpadPercentX) * 180.0d / Math.PI);
+        float angle = getTouchpadAngle(touchpadPercentX, touchpadPercentY);
 
         if (touchpadPercentX == 0 && touchpadPercentY == 0) {
             return -1;
-        } else if (angle > 247.5 && angle <= 292.5) {
+        } else {
+            return getDirectionFromAngle(angle);
+        }
+    }
+
+    public static float getTouchpadAngle(float touchpadPercentX, float touchpadPercentY) {
+        return (float)(180 + Math.atan2(touchpadPercentY, touchpadPercentX) * 180.0d / Math.PI);
+    }
+
+    public static int getDirectionFromAngle(float angle) {
+        if (angle > 247.5 && angle <= 292.5) {
             return 1;
         } else if (angle > 202.5 && angle <= 247.5) {
             return 2;
@@ -53,10 +63,6 @@ public class GameUtils {
         } else {
             return -1;
         }
-    }
-
-    public static float getTouchpadAngle(float touchpadPercentX, float touchpadPercentY) {
-        return (float)(180 + Math.atan2(touchpadPercentY, touchpadPercentX) * 180.0d / Math.PI);
     }
 
     public static void takeScreenshot() {
