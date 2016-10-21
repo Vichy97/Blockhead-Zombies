@@ -7,6 +7,7 @@ import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
@@ -40,7 +41,9 @@ public class Entity implements Steerable<Vector3>, Disposable {
     protected SteeringBehavior<Vector3> behavior;
     protected SteeringAcceleration<Vector3> steeringOutput;
     protected Timer timer;
+
     protected boolean canChangeDirection = true;
+    protected boolean moving = false;
 
     public Entity() {
         rotation = new Quaternion();
@@ -50,7 +53,7 @@ public class Entity implements Steerable<Vector3>, Disposable {
 
         this.maxLinearSpeed = 50;
         this.maxLinearAcceleration = 100;
-        this.maxAngularSpeed = 10;
+        this.maxAngularSpeed = 50;
         this.maxAngularAcceleration = 100;
 
         this.tagged = false;
@@ -62,7 +65,7 @@ public class Entity implements Steerable<Vector3>, Disposable {
             public void run() {
                 canChangeDirection = true;
             }
-        }, 1, 1);
+        }, .5f, .5f);
     }
 
     public void init(Vector3 position, ModelInstance modelInstance,  btRigidBody rigidBody) {
@@ -96,52 +99,60 @@ public class Entity implements Steerable<Vector3>, Disposable {
             behavior.calculateSteering(steeringOutput);
             applySteering(delta);
         }
+
+        updateAnimations(delta);
+    }
+
+    protected void updateAnimations(float delta) {
+
     }
 
     public void applySteering(float delta) {
-        boolean anyAcceleration  = false;
 
         if(!steeringOutput.linear.isZero()) {
-                Vector3 speed = temp.set(maxLinearSpeed, 0, maxLinearSpeed);
-                float angle = (int)(vectorToAngle(steeringOutput.linear) / delta + 180);
-                float targetAngle = 0;
+            Vector3 speed = temp.set(maxLinearSpeed, 0, maxLinearSpeed);
+            float angle = (int)(vectorToAngle(steeringOutput.linear) / delta + 180);
+            float targetAngle = 0;
+            moving = true;
 
-                if(canChangeDirection) {
-                    direction = GameUtils.getDirectionFromAngle(angle);
-                    canChangeDirection = false;
-                }
+            if(canChangeDirection) {
+                direction = GameUtils.getDirectionFromAngle(angle);
+                canChangeDirection = false;
+            }
 
-                switch(direction) {
-                    case 1: {
-                        targetAngle = 135;
-                        break;
-                    } case 2: {
-                        targetAngle = 90;
-                        break;
-                    } case 3: {
-                        targetAngle = 45;
-                        break;
-                    } case 4: {
-                        targetAngle = 360;
-                        break;
-                    } case 5: {
-                        targetAngle = 315;
-                        break;
-                    } case 6: {
-                        targetAngle = 270;
-                        break;
-                    } case 7: {
-                        targetAngle = 225;
-                        break;
-                    } case 8: {
-                        targetAngle = 180;
-                        break;
-                    }
+            switch(direction) {
+                case 1: {
+                    targetAngle = 135;
+                    break;
+                } case 2: {
+                    targetAngle = 90;
+                    break;
+                } case 3: {
+                    targetAngle = 45;
+                    break;
+                } case 4: {
+                    targetAngle = 360;
+                    break;
+                } case 5: {
+                    targetAngle = 315;
+                    break;
+                } case 6: {
+                    targetAngle = 270;
+                    break;
+                } case 7: {
+                    targetAngle = 225;
+                    break;
+                } case 8: {
+                    targetAngle = 180;
+                    break;
                 }
-                speed.rotate(rotationVector, targetAngle);
-                rigidBody.setLinearVelocity(speed.scl(delta));
-                setOrientation(targetAngle);
-                currentRotationAngle = targetAngle;
+            }
+            speed.rotate(rotationVector, targetAngle);
+            rigidBody.setLinearVelocity(speed.scl(delta));
+            setOrientation(targetAngle);
+            currentRotationAngle = targetAngle;
+        } else {
+            moving = false;
         }
 
     }

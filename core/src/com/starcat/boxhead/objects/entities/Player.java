@@ -1,11 +1,9 @@
 package com.starcat.boxhead.objects.entities;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.starcat.boxhead.objects.weapons.Gun;
@@ -17,14 +15,12 @@ import com.starcat.boxhead.utils.AssetLoader;
  */
 public class Player extends Entity {
 
-    private AnimationController walkAnimationController;
     private Gun currentWeapon;
     private Vector3 speed;
     private float maxSpeed;
     private float currentRotationAngle = 0;
     private int direction = 2;
-    private boolean moving = false;
-    Vector3 vector3 = new Vector3();
+    private AnimationController walkAnimationController;
 
 
 
@@ -35,10 +31,10 @@ public class Player extends Entity {
         speed = new Vector3(maxSpeed, 0, maxSpeed);
         speed.rotate(rotationVector, -45);
 
-        walkAnimationController = new AnimationController(modelInstance);
-
         currentWeapon = new Pistol(this);
         currentWeapon.setTransform(modelInstance.transform);
+
+        walkAnimationController = new AnimationController(modelInstance);
     }
 
     @Override
@@ -50,10 +46,17 @@ public class Player extends Entity {
         if (moving) {
             currentWeapon.setTransform(modelInstance.transform);
             rigidBody.translate(speed);
-            walkAnimationController.update(delta);
         }
+    }
 
-        modelInstance.transform.getTranslation(vector3);
+    @Override
+    protected void updateAnimations(float delta) {
+        if(!moving) {
+            walkAnimationController.setAnimation(null);
+        } else {
+            walkAnimationController.setAnimation("walk", -1).speed = .35f;
+        }
+        walkAnimationController.update(delta);
     }
 
     @Override
@@ -71,7 +74,6 @@ public class Player extends Entity {
             this.direction = direction;
         }
 
-        walkAnimationController.setAnimation("walk", -1).speed = .35f;
         moving = true;
         switch (direction) {
             case 1: {
@@ -123,8 +125,6 @@ public class Player extends Entity {
                 currentRotationAngle = 90;
                 break;
             } default: {
-                walkAnimationController.setAnimation(null);
-                walkAnimationController.update(Gdx.graphics.getDeltaTime());
                 moving = false;
             }
         }

@@ -6,8 +6,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ai.GdxAI;
-import com.badlogic.gdx.ai.Timepiece;
-import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.FPSLogger;
@@ -52,7 +50,7 @@ import com.starcat.boxhead.environment.Evening;
 import com.starcat.boxhead.environment.Night;
 import com.starcat.boxhead.objects.GameObject;
 import com.starcat.boxhead.objects.Star;
-import com.starcat.boxhead.objects.entities.Enemy;
+import com.starcat.boxhead.objects.entities.Entity;
 import com.starcat.boxhead.objects.entities.EntityManager;
 import com.starcat.boxhead.objects.entities.Player;
 import com.starcat.boxhead.game.MyGdxGame;
@@ -121,7 +119,7 @@ public class GameScreen implements Screen, InputProcessor {
     private MyContactListener contactListener;
 
     private Player player;
-    private Enemy enemy;
+    private Entity enemy;
 
     private Arrive<Vector3> arrive;
 
@@ -142,7 +140,7 @@ public class GameScreen implements Screen, InputProcessor {
         initPhysics();
 
         player = EntityManager.spawnPlayer(new Vector3(10, 1.3f, 10), .055f);
-        enemy = EntityManager.spawnEnemy(new Vector3(20, 1.3f, 20));
+        enemy = EntityManager.spawnZombie(new Vector3(20, 1.3f, 20));
         TextureAttribute textureAttribute1 = new TextureAttribute(TextureAttribute.Diffuse, AssetLoader.skinAdventurer);
         enemy.getModelInstance().materials.get(0).set(textureAttribute1);
 
@@ -260,7 +258,6 @@ public class GameScreen implements Screen, InputProcessor {
 
         stringBuilder.setLength(0);
         stringBuilder.append(" FPS: ").append(Gdx.graphics.getFramesPerSecond());
-        stringBuilder.append("currentRotation").append(enemy.getCurrentRotation());
         debugLabel.setText(stringBuilder);
 
         UIViewport.apply();
@@ -448,7 +445,7 @@ public class GameScreen implements Screen, InputProcessor {
         dynamicsWorld.setDebugDrawer(debugDrawer);
 
         dynamicsWorld.addCollisionObject(mapBaseCollisionObject, (short)Flags.GROUND_FLAG, (short)(Flags.OBJECT_FLAG | Flags.ENTITY_FLAG |Flags.BULLET_CASING_FLAG));
-        //dynamicsWorld.addCollisionObject(mapObjectsCollisionObject, (short)Flags.OBJECT_FLAG, (short)(Flags.BULLET_CASING_FLAG | Flags.ENTITY_FLAG | Flags.BULLET_FLAG));
+        dynamicsWorld.addCollisionObject(mapObjectsCollisionObject, (short)Flags.OBJECT_FLAG, (short)(Flags.BULLET_CASING_FLAG | Flags.ENTITY_FLAG | Flags.BULLET_FLAG));
 
         EntityManager.setDynamicsWorld(dynamicsWorld);
 

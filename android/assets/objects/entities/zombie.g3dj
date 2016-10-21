@@ -331,7 +331,7 @@
 	], 
 	"animations": [
 		{
-			"id": "Take 001", 
+			"id": "walk",
 			"bones": [
 				{
 					"boneId": "LegLeft1", 
