@@ -6,7 +6,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ai.GdxAI;
-import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
@@ -16,7 +15,6 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
@@ -50,9 +48,7 @@ import com.starcat.boxhead.environment.Evening;
 import com.starcat.boxhead.environment.Night;
 import com.starcat.boxhead.objects.GameObject;
 import com.starcat.boxhead.objects.Star;
-import com.starcat.boxhead.objects.entities.Entity;
 import com.starcat.boxhead.objects.entities.EntityManager;
-import com.starcat.boxhead.objects.entities.Player;
 import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.objects.Cloud;
 import com.starcat.boxhead.objects.Map;
@@ -118,11 +114,6 @@ public class GameScreen implements Screen, InputProcessor {
     private btCollisionObject mapBaseCollisionObject;
     private MyContactListener contactListener;
 
-    private Player player;
-    private Entity enemy;
-
-    private Arrive<Vector3> arrive;
-
 
 
     public GameScreen(MyGdxGame game, OrthographicCamera UICamera, Viewport UIViewport, OrthographicCamera gameCamera, Viewport gameViewport) {
@@ -139,16 +130,8 @@ public class GameScreen implements Screen, InputProcessor {
         initLightingAndCameras();
         initPhysics();
 
-        player = EntityManager.spawnPlayer(new Vector3(10, 1.3f, 10), .055f);
-        enemy = EntityManager.spawnZombie(new Vector3(20, 1.3f, 20));
-        TextureAttribute textureAttribute1 = new TextureAttribute(TextureAttribute.Diffuse, AssetLoader.skinAdventurer);
-        enemy.getModelInstance().materials.get(0).set(textureAttribute1);
-
-        arrive = new Arrive<Vector3>(enemy, player).setEnabled(true)
-                .setTimeToTarget(.01f)
-                .setArrivalTolerance(1.5f)
-                .setDecelerationRadius(0);
-        enemy.setBehavior(arrive);
+        EntityManager.spawnPlayer(new Vector3(10, 1.3f, 10), .055f);
+        EntityManager.spawnZombie(new Vector3(15, 1.3f, 15));
 
         fpsLogger = new FPSLogger();
 
@@ -208,10 +191,10 @@ public class GameScreen implements Screen, InputProcessor {
             direction = GameUtils.getTouchpadEightDirection(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
         }
 
-        if (!player.isMoving()) {
-            player.setDirection(direction);
-        } else if (player.getDirection() != direction) {
-            player.setDirection(direction);
+        if (!EntityManager.getPlayer().isMoving()) {
+            EntityManager.getPlayer().setDirection(direction);
+        } else if (EntityManager.getPlayer().getDirection() != direction) {
+            EntityManager.getPlayer().setDirection(direction);
         }
 
         visibleModelInstanceCount = 0;
@@ -243,7 +226,7 @@ public class GameScreen implements Screen, InputProcessor {
             EntityManager.update(Gdx.graphics.getDeltaTime());
         }
 
-        Vector3 position = player.getPosition();
+        Vector3 position = EntityManager.getPlayer().getPosition();
         gameCamera.position.set(position.x - 10, 10, position.z - 10);
 
         Gdx.gl.glClearColor(currentMap.getTimeOfDay().skyColor.r, currentMap.getTimeOfDay().skyColor.g, currentMap.getTimeOfDay().skyColor.b, 1);
@@ -598,7 +581,7 @@ public class GameScreen implements Screen, InputProcessor {
         } else if (keycode == Input.Keys.LEFT) {
             leftPressed = true;
         } else if (keycode == Input.Keys.SPACE) {
-            player.fire();
+            EntityManager.getPlayer().fire();
         } else if (keycode == Input.Keys.BACKSPACE) {
             GameUtils.takeScreenshot();
         } else if (keycode == Input.Keys.NUM_1) {
@@ -650,7 +633,7 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        player.fire();
+        EntityManager.getPlayer().fire();
         return true;
     }
 

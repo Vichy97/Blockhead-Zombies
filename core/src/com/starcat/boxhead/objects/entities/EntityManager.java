@@ -1,5 +1,6 @@
 package com.starcat.boxhead.objects.entities;
 
+import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -13,8 +14,6 @@ import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btVector3;
 import com.badlogic.gdx.utils.Pool;
-import com.starcat.boxhead.objects.Bullet;
-import com.starcat.boxhead.objects.BulletCasing;
 import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.utils.Flags;
 import com.starcat.boxhead.utils.Masks;
@@ -31,6 +30,9 @@ public class EntityManager {
     private static ArrayList<Entity> entities = new ArrayList<Entity>();
     private static ArrayList<Bullet> bullets = new ArrayList<Bullet>();
     private static ArrayList<BulletCasing> bulletCasings = new ArrayList<BulletCasing>();
+
+    private static Player player;
+
     private static btRigidBody.btRigidBodyConstructionInfo constructionInfo = new btRigidBody.btRigidBodyConstructionInfo(1, null, null, Vector3.Zero);
     private static Vector3 tempVec3 = new Vector3();
     private static Vector3 linearFactor = Vector3.X.add(Vector3.Z);
@@ -38,6 +40,7 @@ public class EntityManager {
     private static Vector3 localInertia = new Vector3();
     private static btVector3 btLocalInertia = new btVector3();
     private static BoundingBox boundingBox = new BoundingBox();
+
     private static Pool<Bullet> bulletPool = new Pool<Bullet>() {
         @Override
         protected Bullet newObject() {
@@ -114,7 +117,9 @@ public class EntityManager {
         }
     }
 
-    public static Entity spawnEntitiy(Vector3 position, ModelInstance modelInstance) {
+
+
+    public static void spawnEntitiy(Vector3 position, ModelInstance modelInstance) {
         modelInstance.calculateBoundingBox(boundingBox);
         btCollisionShape collisionShape = new btBoxShape(boundingBox.getDimensions(tempVec3).scl(.5f));
         constructionInfo.setCollisionShape(collisionShape);
@@ -129,11 +134,9 @@ public class EntityManager {
 
         dynamicsWorld.addRigidBody(rigidBody);
         entities.add(entity);
-
-        return entity;
     }
 
-    public static Player spawnPlayer(Vector3 position, float maxSpeed) {
+    public static void spawnPlayer(Vector3 position, float maxSpeed) {
         AssetLoader.boxhead.calculateBoundingBox(boundingBox);
         btCollisionShape collisionShape = new btBoxShape(boundingBox.getDimensions(tempVec3).scl(.5f));
         constructionInfo.setCollisionShape(collisionShape);
@@ -143,16 +146,14 @@ public class EntityManager {
         rigidBody.setContactCallbackFlag(Flags.ENTITY_FLAG);
         rigidBody.setActivationState(Collision.DISABLE_DEACTIVATION);
 
-        Player player = new Player();
+        player = new Player();
         player.init(position, maxSpeed, rigidBody);
 
         dynamicsWorld.addRigidBody(rigidBody, (short)Flags.ENTITY_FLAG, (short)Masks.PLAYER_MASK);
         entities.add(player);
-
-        return player;
     }
 
-    public static Entity spawnZombie(Vector3 position) {
+    public static void spawnZombie(Vector3 position) {
         AssetLoader.zombie.calculateBoundingBox(boundingBox);
         btCollisionShape collisionShape = new btBoxShape(boundingBox.getDimensions(tempVec3).scl(.5f));
         constructionInfo.setCollisionShape(collisionShape);
@@ -165,12 +166,15 @@ public class EntityManager {
         Zombie zombie = new Zombie();
         zombie.init(position, rigidBody);
 
+        Arrive<Vector3> arrive = new Arrive<Vector3>(zombie, player).setEnabled(true)
+                .setTimeToTarget(.01f)
+                .setArrivalTolerance(1.5f)
+                .setDecelerationRadius(0);
+        zombie.setBehavior(arrive);
+
         dynamicsWorld.addRigidBody(rigidBody, (short)(Flags.ENEMY_FLAG | Flags.ENTITY_FLAG), (short)Masks.ENEMY_MASK);
         entities.add(zombie);
-
-        return zombie;
     }
-
 
     public static Bullet spawnBullet(Matrix4 transform, ModelInstance modelInstance, int direction, float velocity) {
         Bullet bullet = bulletPool.obtain();
@@ -183,7 +187,7 @@ public class EntityManager {
             rigidBody = new btRigidBody(constructionInfo);
             rigidBody.setCollisionFlags(rigidBody.getCollisionFlags() | btRigidBody.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
             rigidBody.setContactCallbackFlag(Flags.BULLET_FLAG);
-            rigidBody.setContactCallbackFilter(Flags.OBJECT_FLAG);
+            rigidBody.setContactCallbackFilter(Flags.OBJECT_FLAG | Flags.ENTITY_FLAG | Flags.ENEMY_FLAG);
             rigidBody.setActivationState(Collision.DISABLE_DEACTIVATION);
         } else {
             rigidBody = bullet.rigidBody;
@@ -226,6 +230,10 @@ public class EntityManager {
         bulletCasings.add(bulletCasing);
 
         return bulletCasing;
+    }
+
+    public static Player getPlayer() {
+        return player;
     }
 
 

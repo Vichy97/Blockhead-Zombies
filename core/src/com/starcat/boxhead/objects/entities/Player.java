@@ -47,10 +47,7 @@ public class Player extends Entity {
             currentWeapon.setTransform(modelInstance.transform);
             rigidBody.translate(speed);
         }
-    }
 
-    @Override
-    protected void updateAnimations(float delta) {
         if(!moving) {
             walkAnimationController.setAnimation(null);
         } else {

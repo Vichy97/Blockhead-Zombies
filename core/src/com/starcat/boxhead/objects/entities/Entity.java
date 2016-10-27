@@ -3,11 +3,11 @@ package com.starcat.boxhead.objects.entities;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
+import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
@@ -34,16 +34,18 @@ public class Entity implements Steerable<Vector3>, Disposable {
     protected float maxLinearSpeed, maxLinearAcceleration;
     protected float maxAngularSpeed, maxAngularAcceleration;
     protected boolean tagged;
+
     protected float currentRotation = -45;
     protected float currentRotationAngle = 45;
     protected int direction = 0;
+    protected boolean canChangeDirection = true;
+    protected boolean moving = false;
 
-    protected SteeringBehavior<Vector3> behavior;
+    protected Arrive<Vector3> behavior;
     protected SteeringAcceleration<Vector3> steeringOutput;
     protected Timer timer;
 
-    protected boolean canChangeDirection = true;
-    protected boolean moving = false;
+
 
     public Entity() {
         rotation = new Quaternion();
@@ -92,19 +94,10 @@ public class Entity implements Steerable<Vector3>, Disposable {
         rigidBody.setLinearVelocity(Vector3.Zero);
     }
 
+
+
     public void update(float delta) {
         modelInstance.transform.getTranslation(position);
-
-        if(behavior != null) {
-            behavior.calculateSteering(steeringOutput);
-            applySteering(delta);
-        }
-
-        updateAnimations(delta);
-    }
-
-    protected void updateAnimations(float delta) {
-
     }
 
     public void applySteering(float delta) {
@@ -165,12 +158,26 @@ public class Entity implements Steerable<Vector3>, Disposable {
         modelBatch.render(modelInstance);
     }
 
+
+
     public btRigidBody getRigidBody() {
         return rigidBody;
     }
 
     public ModelInstance getModelInstance() {
         return modelInstance;
+    }
+
+    public void setBehavior(Arrive<Vector3> behavior) {
+        this.behavior = behavior;
+    }
+
+    public Arrive<Vector3> getBehavior() {
+        return behavior;
+    }
+
+    public SteeringAcceleration<Vector3> getSteeringOutput() {
+        return steeringOutput;
     }
 
 
@@ -202,11 +209,6 @@ public class Entity implements Steerable<Vector3>, Disposable {
         outVector.y = 0;
         outVector.x = (float)Math.cos(angle);
         return outVector;
-    }
-
-    public void snapVectorToAngle(Vector3 vector, float targetAngle) {
-        float currentAngle = vectorToAngle(vector);
-        vector.rotate(Vector3.Y, targetAngle - currentAngle);
     }
 
     @Override
@@ -289,18 +291,6 @@ public class Entity implements Steerable<Vector3>, Disposable {
         this.maxAngularAcceleration = maxAngularAcceleration;
     }
 
-    public void setBehavior(SteeringBehavior<Vector3> behavior) {
-        this.behavior = behavior;
-    }
-
-    public SteeringBehavior<Vector3> getBehavior() {
-        return behavior;
-    }
-
-
-    public float getCurrentRotation() {
-        return direction;
-    }
 
 
     @Override

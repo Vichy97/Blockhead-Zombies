@@ -11,5 +11,4 @@ public class Flags {
     public static final int BULLET_CASING_FLAG = 1 << 5;
     public static final int SHOULD_POOL_FLAG = 1 << 6;
     public static final int ENEMY_FLAG = 1 << 7;
-
 }

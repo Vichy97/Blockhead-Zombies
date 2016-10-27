@@ -2,11 +2,7 @@ package com.starcat.boxhead.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -14,8 +10,6 @@ import com.starcat.boxhead.screens.GameScreen;
 import com.starcat.boxhead.screens.LoadingScreen;
 import com.starcat.boxhead.screens.MenuScreen;
 import com.starcat.boxhead.utils.AssetLoader;
-
-import java.util.Locale;
 
 public class MyGdxGame extends Game {
 
@@ -41,7 +35,7 @@ public class MyGdxGame extends Game {
 		gameCamera = new OrthographicCamera(GAME_HEIGHT/ASPECT_RATIO, GAME_HEIGHT);
 
 		UIViewport = new ScreenViewport(UICamera);
-		gameViewport = new FillViewport(GAME_WIDTH / 100, GAME_HEIGHT / 100, gameCamera);
+		gameViewport = new FillViewport(GAME_WIDTH / 120, GAME_HEIGHT / 120, gameCamera);
 
 		setScreen("loading");
 	}

@@ -1,10 +1,9 @@
-package com.starcat.boxhead.objects;
+package com.starcat.boxhead.objects.entities;
 
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
-import com.starcat.boxhead.objects.entities.Entity;
 
 /**
  * Created by Vincent on 8/22/2016.
