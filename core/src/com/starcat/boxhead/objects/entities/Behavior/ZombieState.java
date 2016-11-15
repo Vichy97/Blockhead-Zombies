@@ -5,6 +5,7 @@ import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.math.Vector3;
 import com.starcat.boxhead.objects.entities.Zombie;
+import com.starcat.boxhead.utils.Flags;
 
 /**
  * Created by Vincent on 10/25/2016.
@@ -49,6 +50,20 @@ public enum ZombieState implements State<Zombie> {
 
         @Override
         public void exit(Zombie zombie) {
+        }
+    },
+    DIE() {
+        @Override
+        public void update(Zombie zombie) {
+        }
+
+        @Override
+        public void enter(Zombie zombie) {
+        }
+
+        @Override
+        public void exit(Zombie zombie) {
+            zombie.getRigidBody().setUserValue(Flags.SHOULD_POOL_FLAG);
         }
     };
 

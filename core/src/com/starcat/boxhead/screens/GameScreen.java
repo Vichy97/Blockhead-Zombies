@@ -26,8 +26,8 @@ import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.DebugDrawer;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionDispatcher;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.collision.btDbvtBroadphase;
 import com.badlogic.gdx.physics.bullet.collision.btDefaultCollisionConfiguration;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
@@ -46,12 +46,12 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.starcat.boxhead.environment.Afternoon;
 import com.starcat.boxhead.environment.Evening;
 import com.starcat.boxhead.environment.Night;
-import com.starcat.boxhead.objects.GameObject;
-import com.starcat.boxhead.objects.Star;
-import com.starcat.boxhead.objects.entities.EntityManager;
 import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.objects.Cloud;
+import com.starcat.boxhead.objects.GameObject;
 import com.starcat.boxhead.objects.Map;
+import com.starcat.boxhead.objects.Star;
+import com.starcat.boxhead.objects.entities.EntityManager;
 import com.starcat.boxhead.physics.MyContactListener;
 import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.utils.Flags;
@@ -114,6 +114,8 @@ public class GameScreen implements Screen, InputProcessor {
     private btCollisionObject mapBaseCollisionObject;
     private MyContactListener contactListener;
 
+    private long diff, start = System.currentTimeMillis();
+
 
 
     public GameScreen(MyGdxGame game, OrthographicCamera UICamera, Viewport UIViewport, OrthographicCamera gameCamera, Viewport gameViewport) {
@@ -132,6 +134,10 @@ public class GameScreen implements Screen, InputProcessor {
 
         EntityManager.spawnPlayer(new Vector3(10, 1.3f, 10), .055f);
         EntityManager.spawnZombie(new Vector3(15, 1.3f, 15));
+        EntityManager.spawnZombie(new Vector3(14, 1.3f, 15));
+        EntityManager.spawnZombie(new Vector3(13, 1.3f, 15));
+        EntityManager.spawnZombie(new Vector3(12, 1.3f, 15));
+        EntityManager.spawnZombie(new Vector3(11, 1.3f, 15));
 
         fpsLogger = new FPSLogger();
 
@@ -247,6 +253,21 @@ public class GameScreen implements Screen, InputProcessor {
         UICamera.update();
         stage.act();
         stage.draw();
+
+        //sleep(30);
+    }
+
+    public void sleep(int fps) {
+        if(fps>0){
+            diff = System.currentTimeMillis() - start;
+            long targetDelay = 1000/fps;
+            if (diff < targetDelay) {
+                try{
+                    Thread.sleep(targetDelay - diff);
+                } catch (InterruptedException e) {}
+            }
+            start = System.currentTimeMillis();
+        }
     }
 
     @Override

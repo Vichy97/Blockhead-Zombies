@@ -2,34 +2,23 @@ package com.starcat.boxhead.objects.entities;
 
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
-import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Timer;
-import com.starcat.boxhead.physics.MotionState;
+import com.starcat.boxhead.objects.DynamicRigidBodyModel;
 import com.starcat.boxhead.utils.GameUtils;
 
 /**
  * Created by Vincent on 8/12/2016.
  */
-public class Entity implements Steerable<Vector3>, Disposable {
-    protected static Vector3 rotationVector = Vector3.Y;
-
-    protected ModelInstance modelInstance;
-    protected MotionState motionState;
-    protected btRigidBody rigidBody;
-
-    protected Quaternion rotation;
-    protected Vector3 position;
-    protected Vector3 temp;
+public class Entity extends DynamicRigidBodyModel implements Steerable<Vector3>, Disposable {
 
     protected float maxLinearSpeed, maxLinearAcceleration;
     protected float maxAngularSpeed, maxAngularAcceleration;
@@ -45,13 +34,13 @@ public class Entity implements Steerable<Vector3>, Disposable {
     protected SteeringAcceleration<Vector3> steeringOutput;
     protected Timer timer;
 
+    private int hitpoints = 100;
+    private boolean shouldPool;
+
 
 
     public Entity() {
-        rotation = new Quaternion();
-        motionState = new MotionState();
-        position = new Vector3();
-        temp = new Vector3();
+        super();
 
         this.maxLinearSpeed = 50;
         this.maxLinearAcceleration = 100;
@@ -70,28 +59,14 @@ public class Entity implements Steerable<Vector3>, Disposable {
         }, .5f, .5f);
     }
 
-    public void init(Vector3 position, ModelInstance modelInstance,  btRigidBody rigidBody) {
-        this.modelInstance = modelInstance;
-        this.rigidBody = rigidBody;
-
-        motionState.transform = modelInstance.transform.setTranslation(position);
-        rigidBody.setMotionState(motionState);
-
-        rigidBody.setWorldTransform(rigidBody.getWorldTransform());
-        rigidBody.setAngularVelocity(Vector3.Zero);
-        rigidBody.setLinearVelocity(Vector3.Zero);
+    public void init(Vector3 position, ModelInstance modelInstance, btRigidBody rigidBody) {
+        super.init(position, modelInstance, rigidBody);
+        shouldPool = false;
     }
 
     public void init(Matrix4 transform, ModelInstance modelInstance, btRigidBody rigidBody) {
-        this.modelInstance = modelInstance;
-        this.rigidBody = rigidBody;
-
-        motionState.transform = modelInstance.transform;
-        rigidBody.setMotionState(motionState);
-
-        rigidBody.setWorldTransform(transform);
-        rigidBody.setAngularVelocity(Vector3.Zero);
-        rigidBody.setLinearVelocity(Vector3.Zero);
+        super.init(transform, modelInstance, rigidBody);
+        shouldPool = false;
     }
 
 
@@ -160,13 +135,15 @@ public class Entity implements Steerable<Vector3>, Disposable {
 
 
 
-    public btRigidBody getRigidBody() {
-        return rigidBody;
+    public void damage(int hitpoints) {
+        this.hitpoints -= hitpoints;
     }
 
-    public ModelInstance getModelInstance() {
-        return modelInstance;
+    public void heal(int hitpoints) {
+        this.hitpoints += hitpoints;
     }
+
+
 
     public void setBehavior(Arrive<Vector3> behavior) {
         this.behavior = behavior;
@@ -178,6 +155,18 @@ public class Entity implements Steerable<Vector3>, Disposable {
 
     public SteeringAcceleration<Vector3> getSteeringOutput() {
         return steeringOutput;
+    }
+
+    public int getHitpoints() {
+        return hitpoints;
+    }
+
+    public boolean getShouldPool() {
+        return shouldPool;
+    }
+
+    public void setShouldPool(boolean shouldPool) {
+        this.shouldPool = shouldPool;
     }
 
 

@@ -71,7 +71,7 @@ public class EntityManager {
         Iterator<Entity> entityIterator = entities.iterator();
         while(entityIterator.hasNext()) {
             Entity entity = entityIterator.next();
-            if (entity.getRigidBody().getUserValue() == Flags.SHOULD_POOL_FLAG) {
+            if (entity.getShouldPool()) {
                 entityPool.free(entity);
                 entityIterator.remove();
             } else {
@@ -82,7 +82,7 @@ public class EntityManager {
         Iterator<Bullet> bulletIterator = bullets.iterator();
         while(bulletIterator.hasNext()) {
             Bullet bullet = bulletIterator.next();
-            if (bullet.getRigidBody().getUserValue() == Flags.SHOULD_POOL_FLAG) {
+            if (bullet.getShouldPool()) {
                 bulletPool.free(bullet);
                 bulletIterator.remove();
             } else {
@@ -167,7 +167,7 @@ public class EntityManager {
         zombie.init(position, rigidBody);
 
         Arrive<Vector3> arrive = new Arrive<Vector3>(zombie, player).setEnabled(true)
-                .setTimeToTarget(.01f)
+                .setTimeToTarget(.001f)
                 .setArrivalTolerance(1.5f)
                 .setDecelerationRadius(0);
         zombie.setBehavior(arrive);
@@ -180,7 +180,7 @@ public class EntityManager {
         Bullet bullet = bulletPool.obtain();
 
         btRigidBody rigidBody;
-        if (bullet.rigidBody == null) {
+        if (bullet.getRigidBody() == null) {
             modelInstance.calculateBoundingBox(boundingBox);
             btCollisionShape collisionShape = new btBoxShape(boundingBox.getDimensions(tempVec3).scl(.5f));
             constructionInfo.setCollisionShape(collisionShape);
@@ -190,12 +190,12 @@ public class EntityManager {
             rigidBody.setContactCallbackFilter(Flags.OBJECT_FLAG | Flags.ENTITY_FLAG | Flags.ENEMY_FLAG);
             rigidBody.setActivationState(Collision.DISABLE_DEACTIVATION);
         } else {
-            rigidBody = bullet.rigidBody;
+            rigidBody = bullet.getRigidBody();
         }
         rigidBody.setAngularFactor(angularFactor);
         rigidBody.setLinearFactor(linearFactor);
 
-        if (bullet.rigidBody == null) {
+        if (bullet.getRigidBody() == null) {
             dynamicsWorld.addRigidBody(rigidBody, (short)Flags.BULLET_FLAG, (short)Masks.BULLET_MASK);
         }
 

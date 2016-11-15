@@ -6,14 +6,18 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Pool;
+import com.starcat.boxhead.objects.DynamicRigidBodyModel;
 import com.starcat.boxhead.utils.Flags;
 
 /**
  * Created by Vincent on 8/17/2016.
  */
-public class Bullet extends Entity implements Pool.Poolable {
+public class Bullet extends DynamicRigidBodyModel implements Pool.Poolable {
 
     private Vector3 speed;
+    private int damage;
+    private boolean shouldPool = false;
+
 
     public Bullet() {
         speed = new Vector3();
@@ -53,6 +57,8 @@ public class Bullet extends Entity implements Pool.Poolable {
         }
     }
 
+
+
     @Override
     public void update(float delta) {
         super.update(delta);
@@ -67,5 +73,22 @@ public class Bullet extends Entity implements Pool.Poolable {
     @Override
     public void reset() {
         rigidBody.setUserValue(0);
+        rigidBody.userData = null;
+        shouldPool = false;
     }
+
+
+
+    public boolean getShouldPool() {
+        return shouldPool;
+    }
+
+    public void setShouldPool(boolean shouldPool) {
+        this.shouldPool = shouldPool;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+
 }
