@@ -23,6 +23,8 @@ import java.util.Iterator;
 
 /**
  * Created by Vincent on 8/12/2016.
+ *
+ * This class handles all entity and bullet spawning, updating, and rendering
  */
 public class EntityManager {
 

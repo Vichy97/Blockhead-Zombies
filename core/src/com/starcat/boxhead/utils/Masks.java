@@ -2,6 +2,8 @@ package com.starcat.boxhead.utils;
 
 /**
  * Created by Vincent on 10/21/2016.
+ *
+ * collision masks
  */
 
 public class Masks {

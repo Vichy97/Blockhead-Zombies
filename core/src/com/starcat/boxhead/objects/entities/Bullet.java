@@ -6,13 +6,13 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Pool;
-import com.starcat.boxhead.objects.DynamicRigidBodyModel;
+import com.starcat.boxhead.objects.DynamicGameObject;
 import com.starcat.boxhead.utils.Flags;
 
 /**
  * Created by Vincent on 8/17/2016.
  */
-public class Bullet extends DynamicRigidBodyModel implements Pool.Poolable {
+public class Bullet extends DynamicGameObject implements Pool.Poolable {
 
     private Vector3 speed;
     private int damage;

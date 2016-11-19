@@ -5,6 +5,9 @@ import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
 
 /**
  * Created by Vincent on 8/13/2016.
+ *
+ * this class syncs collision body movement with a model instance
+ * (so the model stays with its collision object)
  */
 public class MotionState extends btMotionState {
     public Matrix4 transform;

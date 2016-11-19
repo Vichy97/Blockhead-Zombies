@@ -5,6 +5,8 @@ import com.badlogic.gdx.math.Vector3;
 
 /**
  * Created by Vincent on 8/14/2016.
+ *
+ * The lighting is adjusted depending on the time of day
  */
 public abstract class TimeOfDay {
     public Color skyColor;

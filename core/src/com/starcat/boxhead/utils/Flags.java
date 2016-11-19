@@ -2,6 +2,8 @@ package com.starcat.boxhead.utils;
 
 /**
  * Created by Vincent on 8/19/2016.
+ *
+ * flags used for collision filters
  */
 public class Flags {
     public static final int GROUND_FLAG = 1 << 7;

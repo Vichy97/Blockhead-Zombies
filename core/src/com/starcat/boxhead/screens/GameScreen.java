@@ -48,7 +48,7 @@ import com.starcat.boxhead.environment.Evening;
 import com.starcat.boxhead.environment.Night;
 import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.objects.Cloud;
-import com.starcat.boxhead.objects.GameObject;
+import com.starcat.boxhead.objects.StaticGameObject;
 import com.starcat.boxhead.objects.Map;
 import com.starcat.boxhead.objects.Star;
 import com.starcat.boxhead.objects.entities.EntityManager;
@@ -61,6 +61,8 @@ import java.util.ArrayList;
 
 /**
  * Created by Vincent on 6/19/2015.
+ *
+ * This Screen is where all actual gameplay takes place
  */
 public class GameScreen implements Screen, InputProcessor {
 
@@ -88,7 +90,7 @@ public class GameScreen implements Screen, InputProcessor {
 
     private ModelCache modelCache, shadowCache;
     private ModelBatch modelBatch, shadowBatch;
-    private ArrayList<GameObject> modelInstances, shadowInstances;
+    private ArrayList<StaticGameObject> modelInstances, shadowInstances;
     private int visibleModelInstanceCount = 0;
 
     private Environment environment;
@@ -132,6 +134,7 @@ public class GameScreen implements Screen, InputProcessor {
         initLightingAndCameras();
         initPhysics();
 
+        //TODO: wave spawning system (probably handled by entity manager)
         EntityManager.spawnPlayer(new Vector3(10, 1.3f, 10), .055f);
         EntityManager.spawnZombie(new Vector3(15, 1.3f, 15));
         EntityManager.spawnZombie(new Vector3(14, 1.3f, 15));
@@ -257,6 +260,7 @@ public class GameScreen implements Screen, InputProcessor {
         //sleep(30);
     }
 
+    //method to limit fps (will soon switch game over to 30fps)
     public void sleep(int fps) {
         if(fps>0){
             diff = System.currentTimeMillis() - start;
@@ -332,7 +336,9 @@ public class GameScreen implements Screen, InputProcessor {
         System.gc();
     }
 
-    private boolean isVisible(GameObject instance) {
+
+    //is object in camera frustum
+    private boolean isVisible(StaticGameObject instance) {
         return gameCamera.frustum.sphereInFrustum(instance.center, instance.radius);
     }
 
@@ -470,14 +476,14 @@ public class GameScreen implements Screen, InputProcessor {
         modelBatch = new ModelBatch(new DefaultShaderProvider(config));
         shadowBatch = new ModelBatch(new DepthShaderProvider());
 
-        modelInstances = new ArrayList<GameObject>();
-        shadowInstances = new ArrayList<GameObject>();
+        modelInstances = new ArrayList<StaticGameObject>();
+        shadowInstances = new ArrayList<StaticGameObject>();
 
         modelCache.begin();
         shadowCache.begin();
         for (int i = 0; i < AssetLoader.mapBase.nodes.size; i++) {
             String id = AssetLoader.mapBase.nodes.get(i).id;
-            GameObject instance = new GameObject(AssetLoader.mapBase, id);
+            StaticGameObject instance = new StaticGameObject(AssetLoader.mapBase, id);
             Node node = instance.getNode(id);
 
             instance.transform.set(node.globalTransform);
@@ -492,7 +498,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         for (int i = 0; i < AssetLoader.mapObjects.nodes.size; i++) {
             String id = AssetLoader.mapObjects.nodes.get(i).id;
-            GameObject instance = new GameObject(AssetLoader.mapObjects, id);
+            StaticGameObject instance = new StaticGameObject(AssetLoader.mapObjects, id);
             Node node = instance.getNode(id);
 
             instance.transform.set(node.globalTransform);
@@ -509,7 +515,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         for (int i = 0; i < AssetLoader.mapDoodads.nodes.size; i++) {
             String id = AssetLoader.mapDoodads.nodes.get(i).id;
-            GameObject instance = new GameObject(AssetLoader.mapDoodads, id);
+            StaticGameObject instance = new StaticGameObject(AssetLoader.mapDoodads, id);
             Node node = instance.getNode(id);
 
             instance.transform.set(node.globalTransform);

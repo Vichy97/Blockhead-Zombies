@@ -12,14 +12,22 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Timer;
-import com.starcat.boxhead.objects.DynamicRigidBodyModel;
+import com.starcat.boxhead.objects.DynamicGameObject;
 import com.starcat.boxhead.utils.GameUtils;
 
 /**
  * Created by Vincent on 8/12/2016.
+ *
+ * All Entities (player and enemies) extend this class
  */
-public class Entity extends DynamicRigidBodyModel implements Steerable<Vector3>, Disposable {
+public class Entity extends DynamicGameObject implements Steerable<Vector3>, Disposable {
 
+    /*
+     * required fields for the Steerable interface
+     * however I dont make use of these because speed
+     * is calculated manually (with instant acceleration)
+     * because entities are limited to 8 directions
+     */
     protected float maxLinearSpeed, maxLinearAcceleration;
     protected float maxAngularSpeed, maxAngularAcceleration;
     protected boolean tagged;
@@ -27,6 +35,7 @@ public class Entity extends DynamicRigidBodyModel implements Steerable<Vector3>,
     protected float currentRotation = -45;
     protected float currentRotationAngle = 45;
     protected int direction = 0;
+    //to prevent the entity from rapidly switching directions
     protected boolean canChangeDirection = true;
     protected boolean moving = false;
 
@@ -35,6 +44,7 @@ public class Entity extends DynamicRigidBodyModel implements Steerable<Vector3>,
     protected Timer timer;
 
     private int hitpoints = 100;
+    //whether this entity should be pooled on the next update cycle (if it is dead for example)
     private boolean shouldPool;
 
 

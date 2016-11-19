@@ -7,6 +7,8 @@ import com.starcat.boxhead.objects.entities.Entity;
 
 /**
  * Created by Vincent on 8/19/2016.
+ *
+ * This class is used to trigger collision based events
  */
 public class MyContactListener extends ContactListener {
     @Override

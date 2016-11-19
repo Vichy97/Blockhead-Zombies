@@ -12,9 +12,12 @@ import com.starcat.boxhead.physics.MotionState;
 
 /**
  * Created by Vincent on 11/15/2016.
+ *
+ * Any moving game object such as Entities or bullets.
+ * For a non-moving object use StaticGameObject
  */
 
-public class DynamicRigidBodyModel implements Disposable {
+public class DynamicGameObject implements Disposable {
     protected static Vector3 rotationVector = Vector3.Y;
 
     protected ModelInstance modelInstance;
@@ -27,13 +30,18 @@ public class DynamicRigidBodyModel implements Disposable {
 
 
 
-    public DynamicRigidBodyModel() {
+    public DynamicGameObject() {
         rotation = new Quaternion();
         motionState = new MotionState();
         position = new Vector3();
         temp = new Vector3();
     }
 
+    /*
+     * because most classes that extend this can be pooled (entities and bullets both
+     * need to be pooled), we use an init method instead of just the constructor. It
+     * is called whenever an object is retrieved from the pool
+     */
     public void init(Vector3 position, ModelInstance modelInstance, btRigidBody rigidBody) {
         this.modelInstance = modelInstance;
         this.rigidBody = rigidBody;

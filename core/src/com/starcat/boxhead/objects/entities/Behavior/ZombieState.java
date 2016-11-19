@@ -9,6 +9,10 @@ import com.starcat.boxhead.utils.Flags;
 
 /**
  * Created by Vincent on 10/25/2016.
+ *
+ * Entity behavior uses a finite state machine for decision making
+ * The AI in this game is pretty simple so it mainly decides when to
+ * attack vs chase
  */
 
 public enum ZombieState implements State<Zombie> {

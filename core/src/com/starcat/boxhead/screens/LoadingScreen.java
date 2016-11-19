@@ -9,8 +9,6 @@ import com.starcat.boxhead.utils.AssetLoader;
  * Created by Vincent on 6/18/2015.
  *
  * this is the loading screen before the menu
- * this class uses AssetLoader to load resources before the game starts
- * this is where you would put splash screens if you wanted them
  */
 public class LoadingScreen implements Screen {
 

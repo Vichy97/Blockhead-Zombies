@@ -24,12 +24,12 @@ import com.starcat.boxhead.objects.Map;
 /**
  * Created by Vincent on 2/10/2015.
  *
- * load all assets here and call load from one of your screens
- * this also makes use of assetmanager to load assets asynchronously so you can display
- * other things such as a splash screen or loading bar. most textures are also stored
- * in texture atlas's for more efficient loading/rendering
+ * This class handles all asset loading it makes use of AssetManager
+ * to load assets asynchronously so you can display other things such
+ * as a splash screen or loading bar. (there wont be a huge lag spike when loading)
+ * most textures are also stored in texture atlas's for more efficient loading/rendering
  *
- * if ram is short then I could make more methods such as loadMenuAssets
+ * If ram is short then I could make more methods such as loadMenuAssets
  * then unload before the next screen (probably not necessary)
  */
 public class AssetLoader {
@@ -154,6 +154,8 @@ public class AssetLoader {
         }
     }
 
+
+
     //creates a freetype bitmap font
     private static BitmapFont createFont(String font, int size, Color color) {
         BitmapFont textFont;
@@ -177,7 +179,6 @@ public class AssetLoader {
         return manager.getQueuedAssets();
     }
 
-    //dispose all assets and manager
     public static void dispose() {
         manager.dispose();
     }
@@ -189,7 +190,6 @@ public class AssetLoader {
 
 
 
-    //method for writing to the log
     private static void debug(String message) {
         if (MyGdxGame.DEBUG) {
             Gdx.app.log("Asset Loader", message);

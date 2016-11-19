@@ -17,7 +17,7 @@ import com.starcat.boxhead.utils.AssetLoader;
 /**
  * Created by Vincent on 2/10/2015.
  *
- * The menu of the game
+ * This screens is the main menu of the game
  */
 public class MenuScreen implements Screen {
 

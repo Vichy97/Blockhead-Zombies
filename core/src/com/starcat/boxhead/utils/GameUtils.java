@@ -8,6 +8,8 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 /**
  * Created by Vincent on 6/30/2015.
+ *
+ * random utility methods
  */
 public class GameUtils {
 
