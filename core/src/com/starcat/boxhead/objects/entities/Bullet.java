@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Pool;
 import com.starcat.boxhead.objects.DynamicGameObject;
-import com.starcat.boxhead.utils.Flags;
 
 /**
  * Created by Vincent on 8/17/2016.
@@ -16,7 +15,6 @@ public class Bullet extends DynamicGameObject implements Pool.Poolable {
 
     private Vector3 speed;
     private int damage;
-    private boolean shouldPool = false;
 
 
     public Bullet() {
@@ -66,29 +64,20 @@ public class Bullet extends DynamicGameObject implements Pool.Poolable {
         rigidBody.translate(speed);
 
         if ((position.x > 50 || position.x < -50) || (position.z > 50 || position.z < -50)) {
-            rigidBody.setUserValue(Flags.SHOULD_POOL_FLAG);
+            setShouldPool(true);
         }
     }
 
-    @Override
-    public void reset() {
-        rigidBody.setUserValue(0);
-        rigidBody.userData = null;
-        shouldPool = false;
-    }
 
-
-
-    public boolean getShouldPool() {
-        return shouldPool;
-    }
-
-    public void setShouldPool(boolean shouldPool) {
-        this.shouldPool = shouldPool;
-    }
 
     public int getDamage() {
         return damage;
     }
 
+
+
+    @Override
+    public void reset() {
+
+    }
 }

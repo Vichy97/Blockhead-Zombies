@@ -15,8 +15,8 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btVector3;
 import com.badlogic.gdx.utils.Pool;
 import com.starcat.boxhead.utils.AssetLoader;
-import com.starcat.boxhead.utils.Flags;
-import com.starcat.boxhead.utils.Masks;
+import com.starcat.boxhead.physics.CollisionFlags;
+import com.starcat.boxhead.physics.CollisionMasks;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,7 +24,7 @@ import java.util.Iterator;
 /**
  * Created by Vincent on 8/12/2016.
  *
- * This class handles all entity and bullet spawning, updating, and rendering
+ * This class handles all entity and bullet spawning, updating, rendering, and pooling
  */
 public class EntityManager {
 
@@ -128,7 +128,7 @@ public class EntityManager {
         btRigidBody rigidBody = new btRigidBody(constructionInfo);
         rigidBody.setAngularFactor(angularFactor);
         rigidBody.setLinearFactor(linearFactor);
-        rigidBody.setContactCallbackFlag(Flags.ENTITY_FLAG);
+        rigidBody.setContactCallbackFlag(CollisionFlags.ENTITY_FLAG);
         rigidBody.setActivationState(Collision.DISABLE_DEACTIVATION);
 
         Entity entity = new Entity();
@@ -145,13 +145,13 @@ public class EntityManager {
         btRigidBody rigidBody = new btRigidBody(constructionInfo);
         rigidBody.setAngularFactor(angularFactor);
         rigidBody.setLinearFactor(linearFactor);
-        rigidBody.setContactCallbackFlag(Flags.ENTITY_FLAG);
+        rigidBody.setContactCallbackFlag(CollisionFlags.ENTITY_FLAG);
         rigidBody.setActivationState(Collision.DISABLE_DEACTIVATION);
 
         player = new Player();
         player.init(position, maxSpeed, rigidBody);
 
-        dynamicsWorld.addRigidBody(rigidBody, (short)Flags.ENTITY_FLAG, (short)Masks.PLAYER_MASK);
+        dynamicsWorld.addRigidBody(rigidBody, (short) CollisionFlags.ENTITY_FLAG, (short) CollisionMasks.PLAYER_MASK);
         entities.add(player);
     }
 
@@ -162,7 +162,7 @@ public class EntityManager {
         btRigidBody rigidBody = new btRigidBody(constructionInfo);
         rigidBody.setAngularFactor(angularFactor);
         rigidBody.setLinearFactor(linearFactor);
-        rigidBody.setContactCallbackFlag(Flags.ENTITY_FLAG | Flags.ENEMY_FLAG);
+        rigidBody.setContactCallbackFlag(CollisionFlags.ENTITY_FLAG | CollisionFlags.ENEMY_FLAG);
         rigidBody.setActivationState(Collision.DISABLE_DEACTIVATION);
 
         Zombie zombie = new Zombie();
@@ -174,7 +174,7 @@ public class EntityManager {
                 .setDecelerationRadius(0);
         zombie.setBehavior(arrive);
 
-        dynamicsWorld.addRigidBody(rigidBody, (short)(Flags.ENEMY_FLAG | Flags.ENTITY_FLAG), (short)Masks.ENEMY_MASK);
+        dynamicsWorld.addRigidBody(rigidBody, (short)(CollisionFlags.ENEMY_FLAG | CollisionFlags.ENTITY_FLAG), (short) CollisionMasks.ENEMY_MASK);
         entities.add(zombie);
     }
 
@@ -188,8 +188,8 @@ public class EntityManager {
             constructionInfo.setCollisionShape(collisionShape);
             rigidBody = new btRigidBody(constructionInfo);
             rigidBody.setCollisionFlags(rigidBody.getCollisionFlags() | btRigidBody.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
-            rigidBody.setContactCallbackFlag(Flags.BULLET_FLAG);
-            rigidBody.setContactCallbackFilter(Flags.OBJECT_FLAG | Flags.ENTITY_FLAG | Flags.ENEMY_FLAG);
+            rigidBody.setContactCallbackFlag(CollisionFlags.BULLET_FLAG);
+            rigidBody.setContactCallbackFilter(CollisionFlags.OBJECT_FLAG | CollisionFlags.ENTITY_FLAG | CollisionFlags.ENEMY_FLAG);
             rigidBody.setActivationState(Collision.DISABLE_DEACTIVATION);
         } else {
             rigidBody = bullet.getRigidBody();
@@ -198,7 +198,7 @@ public class EntityManager {
         rigidBody.setLinearFactor(linearFactor);
 
         if (bullet.getRigidBody() == null) {
-            dynamicsWorld.addRigidBody(rigidBody, (short)Flags.BULLET_FLAG, (short)Masks.BULLET_MASK);
+            dynamicsWorld.addRigidBody(rigidBody, (short) CollisionFlags.BULLET_FLAG, (short) CollisionMasks.BULLET_MASK);
         }
 
         bullet.init(transform, modelInstance, rigidBody, direction, velocity);
@@ -222,10 +222,10 @@ public class EntityManager {
         rigidBody = new btRigidBody(constructionInfo);
         rigidBody.setRestitution(.5f);
         rigidBody.setCollisionFlags(rigidBody.getCollisionFlags() | btRigidBody.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
-        rigidBody.setContactCallbackFlag(Flags.BULLET_CASING_FLAG);
-        rigidBody.setContactCallbackFilter(Flags.OBJECT_FLAG);
+        rigidBody.setContactCallbackFlag(CollisionFlags.BULLET_CASING_FLAG);
+        rigidBody.setContactCallbackFilter(CollisionFlags.OBJECT_FLAG);
 
-        dynamicsWorld.addRigidBody(rigidBody, (short)Flags.BULLET_CASING_FLAG, (short)Masks.BULLET_CASING_MASK);
+        dynamicsWorld.addRigidBody(rigidBody, (short) CollisionFlags.BULLET_CASING_FLAG, (short) CollisionMasks.BULLET_CASING_MASK);
 
         bulletCasing.init(transform, modelInstance, rigidBody, expulsionImpulse);
 

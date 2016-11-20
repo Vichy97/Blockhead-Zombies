@@ -1,4 +1,4 @@
-package com.starcat.boxhead.screens;
+package com.starcat.boxhead.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;

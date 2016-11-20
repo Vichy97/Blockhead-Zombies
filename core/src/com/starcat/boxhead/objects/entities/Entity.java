@@ -20,7 +20,7 @@ import com.starcat.boxhead.utils.GameUtils;
  *
  * All Entities (player and enemies) extend this class
  */
-public class Entity extends DynamicGameObject implements Steerable<Vector3>, Disposable {
+public class Entity extends DynamicGameObject implements Steerable<Vector3> {
 
     /*
      * required fields for the Steerable interface
@@ -44,8 +44,6 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3>, Dis
     protected Timer timer;
 
     private int hitpoints = 100;
-    //whether this entity should be pooled on the next update cycle (if it is dead for example)
-    private boolean shouldPool;
 
 
 
@@ -71,12 +69,10 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3>, Dis
 
     public void init(Vector3 position, ModelInstance modelInstance, btRigidBody rigidBody) {
         super.init(position, modelInstance, rigidBody);
-        shouldPool = false;
     }
 
     public void init(Matrix4 transform, ModelInstance modelInstance, btRigidBody rigidBody) {
         super.init(transform, modelInstance, rigidBody);
-        shouldPool = false;
     }
 
 
@@ -169,14 +165,6 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3>, Dis
 
     public int getHitpoints() {
         return hitpoints;
-    }
-
-    public boolean getShouldPool() {
-        return shouldPool;
-    }
-
-    public void setShouldPool(boolean shouldPool) {
-        this.shouldPool = shouldPool;
     }
 
 
@@ -294,8 +282,6 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3>, Dis
 
     @Override
     public void dispose() {
-        rigidBody.getCollisionShape().dispose();
-        rigidBody.dispose();
-        motionState.dispose();
+
     }
 }

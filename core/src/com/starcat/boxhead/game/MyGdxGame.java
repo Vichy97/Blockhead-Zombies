@@ -6,9 +6,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.starcat.boxhead.screens.GameScreen;
-import com.starcat.boxhead.screens.LoadingScreen;
-import com.starcat.boxhead.screens.MenuScreen;
+import com.starcat.boxhead.game.screens.GameScreen;
+import com.starcat.boxhead.game.screens.LoadingScreen;
+import com.starcat.boxhead.game.screens.MenuScreen;
 import com.starcat.boxhead.utils.AssetLoader;
 
 public class MyGdxGame extends Game {

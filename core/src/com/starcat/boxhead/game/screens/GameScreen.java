@@ -1,4 +1,4 @@
-package com.starcat.boxhead.screens;
+package com.starcat.boxhead.game.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -54,7 +54,7 @@ import com.starcat.boxhead.objects.Star;
 import com.starcat.boxhead.objects.entities.EntityManager;
 import com.starcat.boxhead.physics.MyContactListener;
 import com.starcat.boxhead.utils.AssetLoader;
-import com.starcat.boxhead.utils.Flags;
+import com.starcat.boxhead.physics.CollisionFlags;
 import com.starcat.boxhead.utils.GameUtils;
 
 import java.util.ArrayList;
@@ -443,7 +443,7 @@ public class GameScreen implements Screen, InputProcessor {
         mapObjectsCollisionObject = new btCollisionObject();
         mapObjectsCollisionObject.setCollisionShape(mapObjectsCollisionShape);
         mapObjectsCollisionObject.setWorldTransform(currentMap.objects.transform);
-        mapObjectsCollisionObject.setContactCallbackFlag(Flags.OBJECT_FLAG);
+        mapObjectsCollisionObject.setContactCallbackFlag(CollisionFlags.OBJECT_FLAG);
         mapObjectsCollisionObject.setContactCallbackFilter(0);
 
         collisionConfig = new btDefaultCollisionConfiguration();
@@ -454,8 +454,8 @@ public class GameScreen implements Screen, InputProcessor {
         dynamicsWorld.setGravity(new Vector3(0, -9.8f, 0));
         dynamicsWorld.setDebugDrawer(debugDrawer);
 
-        dynamicsWorld.addCollisionObject(mapBaseCollisionObject, (short)Flags.GROUND_FLAG, (short)(Flags.OBJECT_FLAG | Flags.ENTITY_FLAG |Flags.BULLET_CASING_FLAG));
-        dynamicsWorld.addCollisionObject(mapObjectsCollisionObject, (short)Flags.OBJECT_FLAG, (short)(Flags.BULLET_CASING_FLAG | Flags.ENTITY_FLAG | Flags.BULLET_FLAG));
+        dynamicsWorld.addCollisionObject(mapBaseCollisionObject, (short) CollisionFlags.GROUND_FLAG, (short)(CollisionFlags.OBJECT_FLAG | CollisionFlags.ENTITY_FLAG | CollisionFlags.BULLET_CASING_FLAG));
+        dynamicsWorld.addCollisionObject(mapObjectsCollisionObject, (short) CollisionFlags.OBJECT_FLAG, (short)(CollisionFlags.BULLET_CASING_FLAG | CollisionFlags.ENTITY_FLAG | CollisionFlags.BULLET_FLAG));
 
         EntityManager.setDynamicsWorld(dynamicsWorld);
 

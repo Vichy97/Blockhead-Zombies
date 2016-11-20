@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.Pool;
 import com.starcat.boxhead.physics.MotionState;
 
 /**
@@ -17,7 +18,7 @@ import com.starcat.boxhead.physics.MotionState;
  * For a non-moving object use StaticGameObject
  */
 
-public class DynamicGameObject implements Disposable {
+public class DynamicGameObject implements Pool.Poolable, Disposable {
     protected static Vector3 rotationVector = Vector3.Y;
 
     protected ModelInstance modelInstance;
@@ -27,6 +28,8 @@ public class DynamicGameObject implements Disposable {
     protected Quaternion rotation;
     protected Vector3 position;
     protected Vector3 temp;
+
+    private boolean shouldPool = false;
 
 
 
@@ -54,6 +57,7 @@ public class DynamicGameObject implements Disposable {
         rigidBody.setLinearVelocity(Vector3.Zero);
 
         rigidBody.userData = this;
+        shouldPool = false;
     }
 
     public void init(Matrix4 transform, ModelInstance modelInstance, btRigidBody rigidBody) {
@@ -68,6 +72,7 @@ public class DynamicGameObject implements Disposable {
         rigidBody.setLinearVelocity(Vector3.Zero);
 
         rigidBody.userData = this;
+        shouldPool = false;
     }
 
 
@@ -94,7 +99,22 @@ public class DynamicGameObject implements Disposable {
         return modelInstance;
     }
 
+    public boolean getShouldPool() {
+        return shouldPool;
+    }
 
+    public void setShouldPool(boolean shouldPool) {
+        this.shouldPool = shouldPool;
+    }
+
+
+
+    @Override
+    public void reset() {
+        rigidBody.setUserValue(0);
+        rigidBody.userData = null;
+        shouldPool = false;
+    }
 
     @Override
     public void dispose() {
