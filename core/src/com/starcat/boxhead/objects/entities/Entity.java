@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
-import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Timer;
 import com.starcat.boxhead.objects.DynamicGameObject;
 import com.starcat.boxhead.utils.GameUtils;
@@ -24,7 +23,7 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
 
     /*
      * required fields for the Steerable interface
-     * however I dont make use of these because speed
+     * however I don't make use of these because speed
      * is calculated manually (with instant acceleration)
      * because entities are limited to 8 directions
      */
@@ -44,6 +43,7 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
     protected Timer timer;
 
     private int hitpoints = 100;
+    private boolean drawHitpoints = false;
 
 
 
@@ -69,10 +69,12 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
 
     public void init(Vector3 position, ModelInstance modelInstance, btRigidBody rigidBody) {
         super.init(position, modelInstance, rigidBody);
+        hitpoints = 100;
     }
 
     public void init(Matrix4 transform, ModelInstance modelInstance, btRigidBody rigidBody) {
         super.init(transform, modelInstance, rigidBody);
+        hitpoints = 100;
     }
 
 
@@ -147,6 +149,10 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
 
     public void heal(int hitpoints) {
         this.hitpoints += hitpoints;
+    }
+
+    public void drawHitpoints() {
+
     }
 
 

@@ -6,9 +6,12 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.collision.Collision;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pool;
+import com.starcat.boxhead.physics.CollisionFlags;
 import com.starcat.boxhead.physics.MotionState;
 
 /**
@@ -19,11 +22,12 @@ import com.starcat.boxhead.physics.MotionState;
  */
 
 public class DynamicGameObject implements Pool.Poolable, Disposable {
+    //which axis the object can rotate around
     protected static Vector3 rotationVector = Vector3.Y;
 
     protected ModelInstance modelInstance;
-    protected MotionState motionState;
     protected btRigidBody rigidBody;
+    protected MotionState motionState;
 
     protected Quaternion rotation;
     protected Vector3 position;
@@ -111,6 +115,7 @@ public class DynamicGameObject implements Pool.Poolable, Disposable {
 
     @Override
     public void reset() {
+        rigidBody.translate(temp.set(50, 0, 50));
         rigidBody.setUserValue(0);
         rigidBody.userData = null;
         shouldPool = false;

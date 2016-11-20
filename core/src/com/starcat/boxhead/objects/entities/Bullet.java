@@ -17,39 +17,41 @@ public class Bullet extends DynamicGameObject implements Pool.Poolable {
     private int damage;
 
 
+
     public Bullet() {
         speed = new Vector3();
     }
 
-    public void init(Matrix4 transform, ModelInstance modelInstance, btRigidBody rigidBody, int direction, float velocity) {
+    public void init(Matrix4 transform, ModelInstance modelInstance, btRigidBody rigidBody, int direction, float velocity, int damage, float accuracy) {
         super.init(transform, modelInstance, rigidBody);
 
         speed.set(velocity, 0, velocity);
+        this.damage = damage;
 
         switch (direction) {
             case 1: {
-                speed.rotate(rotationVector, MathUtils.random(-5, 5));
+                speed.rotate(rotationVector, MathUtils.random(-accuracy, accuracy));
                 break;
             } case 2: {
-                speed.rotate(rotationVector, 315 + MathUtils.random(-5, 5));
+                speed.rotate(rotationVector, 315 + MathUtils.random(-accuracy, accuracy));
                 break;
             } case 3: {
-                speed.rotate(rotationVector, 270 + MathUtils.random(-5, 5));
+                speed.rotate(rotationVector, 270 + MathUtils.random(-accuracy, accuracy));
                 break;
             } case 4: {
-                speed.rotate(rotationVector, 225 + MathUtils.random(-5, 5));
+                speed.rotate(rotationVector, 225 + MathUtils.random(-accuracy, accuracy));
                 break;
             } case 5: {
-                speed.rotate(rotationVector, 180 + MathUtils.random(-5, 5));
+                speed.rotate(rotationVector, 180 + MathUtils.random(-accuracy, accuracy));
                 break;
             } case 6: {
-                speed.rotate(rotationVector, 135 + MathUtils.random(-5, 5));
+                speed.rotate(rotationVector, 135 + MathUtils.random(-accuracy, accuracy));
                 break;
             } case 7: {
-                speed.rotate(rotationVector, 90 + MathUtils.random(-5, 5));
+                speed.rotate(rotationVector, 90 + MathUtils.random(-accuracy, accuracy));
                 break;
             } case 8: {
-                speed.rotate(rotationVector, 45 + MathUtils.random(-5, 5));
+                speed.rotate(rotationVector, 45 + MathUtils.random(-accuracy, accuracy));
                 break;
             }
         }
@@ -63,7 +65,7 @@ public class Bullet extends DynamicGameObject implements Pool.Poolable {
 
         rigidBody.translate(speed);
 
-        if ((position.x > 50 || position.x < -50) || (position.z > 50 || position.z < -50)) {
+        if ((position.x > 75 || position.x < -75) || (position.z > 75 || position.z < -75)) {
             setShouldPool(true);
         }
     }
@@ -72,12 +74,5 @@ public class Bullet extends DynamicGameObject implements Pool.Poolable {
 
     public int getDamage() {
         return damage;
-    }
-
-
-
-    @Override
-    public void reset() {
-
     }
 }

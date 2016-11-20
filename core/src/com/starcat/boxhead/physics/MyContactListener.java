@@ -1,7 +1,9 @@
 package com.starcat.boxhead.physics;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
+import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.objects.entities.Bullet;
 import com.starcat.boxhead.objects.entities.Entity;
 
@@ -17,9 +19,30 @@ public class MyContactListener extends ContactListener {
             ((Bullet) colObj0.userData).setShouldPool(true);
 
             if (colObj1.userData instanceof Entity) {
+                ((Entity) colObj1.userData).damage(((Bullet) colObj0.userData).getDamage());
+                debug("damage");
+
+                if (((Entity) colObj1.userData).getHitpoints() <= 0) {
+                    ((Entity) colObj1.userData).setShouldPool(true);
+                }
             }
         } else if (colObj1.userData instanceof Bullet) {
             ((Bullet) colObj1.userData).setShouldPool(true);
+
+            if (colObj0.userData instanceof Entity) {
+                ((Entity) colObj0.userData).damage(((Bullet) colObj1.userData).getDamage());
+                debug("damage");
+
+                if (((Entity) colObj0.userData).getHitpoints() <= 0) {
+                    ((Entity) colObj0.userData).setShouldPool(true);
+                }
+            }
+        }
+    }
+
+    private static void debug(String message) {
+        if (MyGdxGame.DEBUG) {
+            Gdx.app.log("ContactListener", message);
         }
     }
 }

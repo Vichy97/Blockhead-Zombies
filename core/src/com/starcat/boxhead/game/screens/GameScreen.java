@@ -51,6 +51,7 @@ import com.starcat.boxhead.objects.Cloud;
 import com.starcat.boxhead.objects.StaticGameObject;
 import com.starcat.boxhead.objects.Map;
 import com.starcat.boxhead.objects.Star;
+import com.starcat.boxhead.objects.entities.Entity;
 import com.starcat.boxhead.objects.entities.EntityManager;
 import com.starcat.boxhead.physics.MyContactListener;
 import com.starcat.boxhead.utils.AssetLoader;
@@ -250,6 +251,8 @@ public class GameScreen implements Screen, InputProcessor {
 
         stringBuilder.setLength(0);
         stringBuilder.append(" FPS: ").append(Gdx.graphics.getFramesPerSecond());
+        stringBuilder.append(" FPS: ").append(EntityManager.getPlayer().getPosition().toString());
+
         debugLabel.setText(stringBuilder);
 
         UIViewport.apply();
@@ -611,6 +614,8 @@ public class GameScreen implements Screen, InputProcessor {
             EntityManager.getPlayer().fire();
         } else if (keycode == Input.Keys.BACKSPACE) {
             GameUtils.takeScreenshot();
+        } else if (keycode == Input.Keys.SHIFT_RIGHT){
+            EntityManager.spawnZombie(new Vector3(10, 1.3f, 10));
         } else if (keycode == Input.Keys.NUM_1) {
             currentMap.setTimeOfDay(new Afternoon());
             environment = new Environment();

@@ -49,10 +49,10 @@ public class EntityManager {
             return new Bullet();
         }
     };
-    private static Pool<Entity> entityPool = new Pool<Entity>() {
+    private static Pool<Zombie> zombiePool = new Pool<Zombie>() {
         @Override
-        protected Entity newObject() {
-            return new Entity();
+        protected Zombie newObject() {
+            return new Zombie();
         }
     };
     private static Pool<btRigidBody> bulletCasingCollisionPool = new Pool<btRigidBody>() {
@@ -74,8 +74,10 @@ public class EntityManager {
         while(entityIterator.hasNext()) {
             Entity entity = entityIterator.next();
             if (entity.getShouldPool()) {
-                entityPool.free(entity);
-                entityIterator.remove();
+                if (entity instanceof Zombie) {
+                    zombiePool.free((Zombie)entity);
+                    entityIterator.remove();
+                }
             } else {
                 entity.update(delta);
             }
@@ -156,16 +158,22 @@ public class EntityManager {
     }
 
     public static void spawnZombie(Vector3 position) {
-        AssetLoader.zombie.calculateBoundingBox(boundingBox);
-        btCollisionShape collisionShape = new btBoxShape(boundingBox.getDimensions(tempVec3).scl(.5f));
-        constructionInfo.setCollisionShape(collisionShape);
-        btRigidBody rigidBody = new btRigidBody(constructionInfo);
-        rigidBody.setAngularFactor(angularFactor);
-        rigidBody.setLinearFactor(linearFactor);
-        rigidBody.setContactCallbackFlag(CollisionFlags.ENTITY_FLAG | CollisionFlags.ENEMY_FLAG);
-        rigidBody.setActivationState(Collision.DISABLE_DEACTIVATION);
+        Zombie zombie = zombiePool.obtain();
 
-        Zombie zombie = new Zombie();
+        btRigidBody rigidBody;
+        if (zombie.getRigidBody() == null) {
+            AssetLoader.zombie.calculateBoundingBox(boundingBox);
+            btCollisionShape collisionShape = new btBoxShape(boundingBox.getDimensions(tempVec3).scl(.5f));
+            constructionInfo.setCollisionShape(collisionShape);
+            rigidBody =new btRigidBody(constructionInfo);
+            rigidBody.setAngularFactor(angularFactor);
+            rigidBody.setLinearFactor(linearFactor);
+            rigidBody.setContactCallbackFlag(CollisionFlags.ENTITY_FLAG | CollisionFlags.ENEMY_FLAG);
+            rigidBody.setActivationState(Collision.DISABLE_DEACTIVATION);
+        } else {
+            rigidBody = zombie.getRigidBody();
+        }
+
         zombie.init(position, rigidBody);
 
         Arrive<Vector3> arrive = new Arrive<Vector3>(zombie, player).setEnabled(true)
@@ -178,7 +186,7 @@ public class EntityManager {
         entities.add(zombie);
     }
 
-    public static Bullet spawnBullet(Matrix4 transform, ModelInstance modelInstance, int direction, float velocity) {
+    public static void spawnBullet(Matrix4 transform, ModelInstance modelInstance, int direction, float velocity, int damage, float accuracy) {
         Bullet bullet = bulletPool.obtain();
 
         btRigidBody rigidBody;
@@ -201,14 +209,16 @@ public class EntityManager {
             dynamicsWorld.addRigidBody(rigidBody, (short) CollisionFlags.BULLET_FLAG, (short) CollisionMasks.BULLET_MASK);
         }
 
-        bullet.init(transform, modelInstance, rigidBody, direction, velocity);
+        if (player.isMoving()) {
+            velocity += player.getMaxSpeed();
+        }
+
+        bullet.init(transform, modelInstance, rigidBody, direction, velocity, damage, accuracy);
 
         bullets.add(bullet);
-
-        return bullet;
     }
 
-    public static BulletCasing spawnBulletCasing(Matrix4 transform, ModelInstance modelInstance, Vector3 expulsionImpulse) {
+    public static void spawnBulletCasing(Matrix4 transform, ModelInstance modelInstance, Vector3 expulsionImpulse) {
         BulletCasing bulletCasing = new BulletCasing();
 
         btRigidBody rigidBody;
@@ -230,9 +240,9 @@ public class EntityManager {
         bulletCasing.init(transform, modelInstance, rigidBody, expulsionImpulse);
 
         bulletCasings.add(bulletCasing);
-
-        return bulletCasing;
     }
+
+
 
     public static Player getPlayer() {
         return player;

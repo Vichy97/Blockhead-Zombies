@@ -31,7 +31,7 @@ public class Player extends Entity {
         speed = new Vector3(maxSpeed, 0, maxSpeed);
         speed.rotate(rotationVector, -45);
 
-        currentWeapon = new Pistol(this);
+        currentWeapon = new Pistol();
         currentWeapon.setTransform(modelInstance.transform);
 
         walkAnimationController = new AnimationController(modelInstance);
@@ -44,8 +44,8 @@ public class Player extends Entity {
         rigidBody.setLinearVelocity(Vector3.Zero);
 
         if (moving) {
-            currentWeapon.setTransform(modelInstance.transform);
             rigidBody.translate(speed);
+            currentWeapon.setTransform(rigidBody.getWorldTransform());
         }
 
         if(!moving) {
