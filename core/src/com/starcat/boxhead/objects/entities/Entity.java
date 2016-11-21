@@ -51,9 +51,9 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
         super();
 
         this.maxLinearSpeed = 50;
-        this.maxLinearAcceleration = 100;
-        this.maxAngularSpeed = 50;
-        this.maxAngularAcceleration = 100;
+        this.maxLinearAcceleration = 50;
+        this.maxAngularSpeed = 0;
+        this.maxAngularAcceleration = 0;
 
         this.tagged = false;
         this.steeringOutput = new SteeringAcceleration<Vector3>(new Vector3());
@@ -70,11 +70,15 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
     public void init(Vector3 position, ModelInstance modelInstance, btRigidBody rigidBody) {
         super.init(position, modelInstance, rigidBody);
         hitpoints = 100;
+        this.maxLinearSpeed = 50;
+        this.maxLinearAcceleration = 50;
     }
 
     public void init(Matrix4 transform, ModelInstance modelInstance, btRigidBody rigidBody) {
         super.init(transform, modelInstance, rigidBody);
         hitpoints = 100;
+        this.maxLinearSpeed = 50;
+        this.maxLinearAcceleration = 50;
     }
 
 
@@ -285,6 +289,12 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
     }
 
 
+    @Override
+    public void reset() {
+        currentRotation = -45;
+        currentRotationAngle = 45;
+        super.reset();
+    }
 
     @Override
     public void dispose() {

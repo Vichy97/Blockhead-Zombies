@@ -165,24 +165,26 @@ public class EntityManager {
             AssetLoader.zombie.calculateBoundingBox(boundingBox);
             btCollisionShape collisionShape = new btBoxShape(boundingBox.getDimensions(tempVec3).scl(.5f));
             constructionInfo.setCollisionShape(collisionShape);
-            rigidBody =new btRigidBody(constructionInfo);
+            rigidBody = new btRigidBody(constructionInfo);
             rigidBody.setAngularFactor(angularFactor);
             rigidBody.setLinearFactor(linearFactor);
             rigidBody.setContactCallbackFlag(CollisionFlags.ENTITY_FLAG | CollisionFlags.ENEMY_FLAG);
             rigidBody.setActivationState(Collision.DISABLE_DEACTIVATION);
+            dynamicsWorld.addRigidBody(rigidBody, (short)(CollisionFlags.ENEMY_FLAG | CollisionFlags.ENTITY_FLAG), (short) CollisionMasks.ENEMY_MASK);
         } else {
             rigidBody = zombie.getRigidBody();
         }
 
+        if (zombie.getBehavior() == null) {
+            Arrive<Vector3> arrive = new Arrive<Vector3>(zombie, player).setEnabled(true)
+                    .setTimeToTarget(.001f)
+                    .setArrivalTolerance(1.5f)
+                    .setDecelerationRadius(0);
+            zombie.setBehavior(arrive);
+        }
+
         zombie.init(position, rigidBody);
 
-        Arrive<Vector3> arrive = new Arrive<Vector3>(zombie, player).setEnabled(true)
-                .setTimeToTarget(.001f)
-                .setArrivalTolerance(1.5f)
-                .setDecelerationRadius(0);
-        zombie.setBehavior(arrive);
-
-        dynamicsWorld.addRigidBody(rigidBody, (short)(CollisionFlags.ENEMY_FLAG | CollisionFlags.ENTITY_FLAG), (short) CollisionMasks.ENEMY_MASK);
         entities.add(zombie);
     }
 
@@ -199,14 +201,11 @@ public class EntityManager {
             rigidBody.setContactCallbackFlag(CollisionFlags.BULLET_FLAG);
             rigidBody.setContactCallbackFilter(CollisionFlags.OBJECT_FLAG | CollisionFlags.ENTITY_FLAG | CollisionFlags.ENEMY_FLAG);
             rigidBody.setActivationState(Collision.DISABLE_DEACTIVATION);
+            rigidBody.setAngularFactor(angularFactor);
+            rigidBody.setLinearFactor(linearFactor);
+            dynamicsWorld.addRigidBody(rigidBody, (short) CollisionFlags.BULLET_FLAG, (short) CollisionMasks.BULLET_MASK);
         } else {
             rigidBody = bullet.getRigidBody();
-        }
-        rigidBody.setAngularFactor(angularFactor);
-        rigidBody.setLinearFactor(linearFactor);
-
-        if (bullet.getRigidBody() == null) {
-            dynamicsWorld.addRigidBody(rigidBody, (short) CollisionFlags.BULLET_FLAG, (short) CollisionMasks.BULLET_MASK);
         }
 
         if (player.isMoving()) {

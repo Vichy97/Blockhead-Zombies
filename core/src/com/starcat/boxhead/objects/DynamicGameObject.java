@@ -115,7 +115,8 @@ public class DynamicGameObject implements Pool.Poolable, Disposable {
 
     @Override
     public void reset() {
-        rigidBody.translate(temp.set(50, 0, 50));
+        rigidBody.setWorldTransform((rigidBody.getWorldTransform().translate(0, 15, 0)));
+        rigidBody.setLinearVelocity(Vector3.Zero);
         rigidBody.setUserValue(0);
         rigidBody.userData = null;
         shouldPool = false;

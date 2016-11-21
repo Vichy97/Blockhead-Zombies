@@ -45,8 +45,8 @@ public class Player extends Entity {
 
         if (moving) {
             rigidBody.translate(speed);
-            currentWeapon.setTransform(rigidBody.getWorldTransform());
         }
+        currentWeapon.setTransform(rigidBody.getWorldTransform());
 
         if(!moving) {
             walkAnimationController.setAnimation(null);

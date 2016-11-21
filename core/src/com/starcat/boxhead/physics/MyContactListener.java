@@ -20,7 +20,6 @@ public class MyContactListener extends ContactListener {
 
             if (colObj1.userData instanceof Entity) {
                 ((Entity) colObj1.userData).damage(((Bullet) colObj0.userData).getDamage());
-                debug("damage");
 
                 if (((Entity) colObj1.userData).getHitpoints() <= 0) {
                     ((Entity) colObj1.userData).setShouldPool(true);
@@ -31,7 +30,6 @@ public class MyContactListener extends ContactListener {
 
             if (colObj0.userData instanceof Entity) {
                 ((Entity) colObj0.userData).damage(((Bullet) colObj1.userData).getDamage());
-                debug("damage");
 
                 if (((Entity) colObj0.userData).getHitpoints() <= 0) {
                     ((Entity) colObj0.userData).setShouldPool(true);

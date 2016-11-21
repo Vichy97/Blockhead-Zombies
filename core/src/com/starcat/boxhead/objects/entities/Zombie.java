@@ -18,14 +18,18 @@ public class Zombie extends Entity {
     private AnimationController walkAnimationController, attackAnimationController;
     public StateMachine<Zombie, ZombieState> stateMachine;
 
+    public Zombie() {
+        super();
+        stateMachine = new DefaultStateMachine<Zombie, ZombieState>(this, ZombieState.CHASE);
+    }
+
     public void init(Vector3 position, btRigidBody rigidBody) {
         super.init(position, new ModelInstance(AssetLoader.zombie), rigidBody);
-
-
-        stateMachine = new DefaultStateMachine<Zombie, ZombieState>(this, ZombieState.CHASE);
         walkAnimationController = new AnimationController(modelInstance);
         attackAnimationController = new AnimationController(modelInstance);
         walkAnimationController.setAnimation("walk", -1).speed = .2f;
+
+        stateMachine.changeState(ZombieState.CHASE);
     }
 
     @Override

@@ -13,7 +13,7 @@ import com.starcat.boxhead.utils.AssetLoader;
 
 public class MyGdxGame extends Game {
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static final int GAME_WIDTH = 1920;
     public static final int GAME_HEIGHT = 1080;
