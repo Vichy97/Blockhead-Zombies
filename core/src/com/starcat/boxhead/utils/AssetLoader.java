@@ -86,7 +86,7 @@ public class AssetLoader {
         manager.load("objects/entities/boxhead.g3dj", Model.class);
         manager.load("objects/entities/zombie.g3dj", Model.class);
 
-        manager.load("objects/weapons/pistol.g3db", Model.class);
+        manager.load("objects/weapons/pistol.g3dj", Model.class);
         manager.load("objects/projectiles/pistol_bullet.g3db", Model.class);
         manager.load("objects/projectiles/pistol_bullet_casing.g3db", Model.class);
 
@@ -133,7 +133,7 @@ public class AssetLoader {
 
         skinAdventurer = manager.get("objects/entities/skin_exclusiveZombie.png", Texture.class);
 
-        pistol = manager.get("objects/weapons/pistol.g3db", Model.class);
+        pistol = manager.get("objects/weapons/pistol.g3dj", Model.class);
         pistolBullet = manager.get("objects/projectiles/pistol_bullet.g3db", Model.class);
         pistolBulletCasing = manager.get("objects/projectiles/pistol_bullet_casing.g3db", Model.class);
 

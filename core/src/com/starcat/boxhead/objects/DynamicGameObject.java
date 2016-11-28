@@ -6,12 +6,9 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.bullet.collision.Collision;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pool;
-import com.starcat.boxhead.physics.CollisionFlags;
 import com.starcat.boxhead.physics.MotionState;
 
 /**
@@ -34,6 +31,7 @@ public class DynamicGameObject implements Pool.Poolable, Disposable {
     protected Vector3 temp;
 
     private boolean shouldPool = false;
+    private boolean shouldRemoveBody = false;
 
 
 
@@ -62,6 +60,7 @@ public class DynamicGameObject implements Pool.Poolable, Disposable {
 
         rigidBody.userData = this;
         shouldPool = false;
+        shouldRemoveBody = false;
     }
 
     public void init(Matrix4 transform, ModelInstance modelInstance, btRigidBody rigidBody) {
@@ -77,6 +76,7 @@ public class DynamicGameObject implements Pool.Poolable, Disposable {
 
         rigidBody.userData = this;
         shouldPool = false;
+        shouldRemoveBody = false;
     }
 
 
@@ -111,10 +111,19 @@ public class DynamicGameObject implements Pool.Poolable, Disposable {
         this.shouldPool = shouldPool;
     }
 
+    public boolean getShouldRemoveBody() {
+        return shouldRemoveBody;
+    }
+
+    public void setShouldRemoveBody(boolean shouldRemoveBody) {
+        this.shouldRemoveBody = shouldRemoveBody;
+    }
+
 
 
     @Override
     public void reset() {
+        //rigid body can still collide so it gets moved away from playing area
         rigidBody.setWorldTransform((rigidBody.getWorldTransform().translate(0, 15, 0)));
         rigidBody.setLinearVelocity(Vector3.Zero);
         rigidBody.setUserValue(0);

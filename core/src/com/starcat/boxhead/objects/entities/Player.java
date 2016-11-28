@@ -21,6 +21,7 @@ public class Player extends Entity {
     private float currentRotationAngle = 0;
     private int direction = 2;
     private AnimationController walkAnimationController;
+    private AnimationController shootAnimationController;
 
 
 
@@ -35,6 +36,8 @@ public class Player extends Entity {
         currentWeapon.setTransform(modelInstance.transform);
 
         walkAnimationController = new AnimationController(modelInstance);
+        shootAnimationController = new AnimationController(modelInstance);
+        shootAnimationController.allowSameAnimation = true;
     }
 
     @Override
@@ -51,9 +54,12 @@ public class Player extends Entity {
         if(!moving) {
             walkAnimationController.setAnimation(null);
         } else {
-            walkAnimationController.setAnimation("walk", -1).speed = .35f;
+            walkAnimationController.setAnimation("walk", -1).speed = .5f;
         }
         walkAnimationController.update(delta);
+        shootAnimationController.update(delta);
+
+        currentWeapon.update(delta);
     }
 
     @Override
@@ -64,6 +70,7 @@ public class Player extends Entity {
 
     public void fire() {
         currentWeapon.fire();
+        shootAnimationController.setAnimation("shoot_pistol");
     }
 
     public void setDirection(int direction) {

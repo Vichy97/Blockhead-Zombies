@@ -15,7 +15,7 @@ import com.starcat.boxhead.utils.AssetLoader;
 
 public class Zombie extends Entity {
 
-    private AnimationController walkAnimationController, attackAnimationController;
+    private AnimationController animationController;
     public StateMachine<Zombie, ZombieState> stateMachine;
 
     public Zombie() {
@@ -25,9 +25,9 @@ public class Zombie extends Entity {
 
     public void init(Vector3 position, btRigidBody rigidBody) {
         super.init(position, new ModelInstance(AssetLoader.zombie), rigidBody);
-        walkAnimationController = new AnimationController(modelInstance);
-        attackAnimationController = new AnimationController(modelInstance);
-        walkAnimationController.setAnimation("walk", -1).speed = .2f;
+        animationController = new AnimationController(modelInstance);
+        animationController.allowSameAnimation = true;
+        animationController.setAnimation("walk", -1).speed = .2f;
 
         stateMachine.changeState(ZombieState.CHASE);
     }
@@ -38,8 +38,8 @@ public class Zombie extends Entity {
         stateMachine.update();
     }
 
-    public AnimationController getWalkAnimationController() {
-        return walkAnimationController;
+    public AnimationController getAnimationController() {
+        return animationController;
     }
 
     public StateMachine<Zombie, ZombieState> getStateMachine() {

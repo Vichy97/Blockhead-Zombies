@@ -40,7 +40,6 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
 
     protected Arrive<Vector3> behavior;
     protected SteeringAcceleration<Vector3> steeringOutput;
-    protected Timer timer;
 
     private int hitpoints = 100;
     private boolean drawHitpoints = false;
@@ -58,8 +57,7 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
         this.tagged = false;
         this.steeringOutput = new SteeringAcceleration<Vector3>(new Vector3());
 
-        timer = new Timer();
-        timer.scheduleTask(new Timer.Task() {
+        Timer.instance().scheduleTask(new Timer.Task() {
             @Override
             public void run() {
                 canChangeDirection = true;
@@ -70,22 +68,14 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
     public void init(Vector3 position, ModelInstance modelInstance, btRigidBody rigidBody) {
         super.init(position, modelInstance, rigidBody);
         hitpoints = 100;
-        this.maxLinearSpeed = 50;
-        this.maxLinearAcceleration = 50;
     }
 
     public void init(Matrix4 transform, ModelInstance modelInstance, btRigidBody rigidBody) {
         super.init(transform, modelInstance, rigidBody);
         hitpoints = 100;
-        this.maxLinearSpeed = 50;
-        this.maxLinearAcceleration = 50;
     }
 
 
-
-    public void update(float delta) {
-        modelInstance.transform.getTranslation(position);
-    }
 
     public void applySteering(float delta) {
 
@@ -135,14 +125,6 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
             moving = false;
         }
 
-    }
-
-    public void render(ModelBatch modelBatch, Environment environment) {
-        modelBatch.render(modelInstance, environment);
-    }
-
-    public void render(ModelBatch modelBatch) {
-        modelBatch.render(modelInstance);
     }
 
 

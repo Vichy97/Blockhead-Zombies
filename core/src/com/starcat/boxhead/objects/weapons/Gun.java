@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
@@ -14,8 +15,6 @@ import com.starcat.boxhead.objects.entities.EntityManager;
  * Created by Vincent on 8/17/2016.
  */
 public abstract class Gun {
-
-    private static Timer timer = new Timer();
 
     protected float bulletSpeed;
     protected int damage;
@@ -35,6 +34,7 @@ public abstract class Gun {
     protected Model bulletModel;
     protected Model bulletCasingModel;
     protected Sound sound;
+    protected AnimationController shootAnimationController;
 
 
 
@@ -47,8 +47,9 @@ public abstract class Gun {
             //EntityManager.spawnBulletCasing(EntityManager.getPlayer().getModelInstance().transform.cpy().translate(bulletCasingTranslation), new ModelInstance(bulletCasingModel), bulletCasingExpulsionImpulse.cpy());
             sound.play();
             canShoot = false;
+            shootAnimationController.setAnimation("shoot");
 
-            timer.scheduleTask(new Timer.Task() {
+            Timer.instance().scheduleTask(new Timer.Task() {
                 @Override
                 public void run() {
                     canShoot = true;
@@ -61,9 +62,13 @@ public abstract class Gun {
         modelBatch.render(modelInstance, environment);
     }
 
+    public void update(float delta) {
+        shootAnimationController.update(delta);
+    }
+
     public void setTransform(Matrix4 transform) {
         modelInstance.transform.set(transform);
-        modelInstance.transform.translate(translation);
+        //modelInstance.transform.translate(translation);
     }
 
 

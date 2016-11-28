@@ -73,6 +73,7 @@ public class EntityManager {
         Iterator<Entity> entityIterator = entities.iterator();
         while(entityIterator.hasNext()) {
             Entity entity = entityIterator.next();
+
             if (entity.getShouldPool()) {
                 if (entity instanceof Zombie) {
                     zombiePool.free((Zombie)entity);
@@ -81,16 +82,25 @@ public class EntityManager {
             } else {
                 entity.update(delta);
             }
+
+            if (entity.getShouldRemoveBody()) {
+                dynamicsWorld.removeRigidBody(entity.getRigidBody());
+            }
         }
 
         Iterator<Bullet> bulletIterator = bullets.iterator();
         while(bulletIterator.hasNext()) {
             Bullet bullet = bulletIterator.next();
+
             if (bullet.getShouldPool()) {
                 bulletPool.free(bullet);
                 bulletIterator.remove();
             } else {
                 bullet.update(delta);
+            }
+
+            if (bullet.getShouldRemoveBody()) {
+                dynamicsWorld.removeRigidBody(bullet.getRigidBody());
             }
         }
         /*
@@ -123,23 +133,6 @@ public class EntityManager {
 
 
 
-    public static void spawnEntitiy(Vector3 position, ModelInstance modelInstance) {
-        modelInstance.calculateBoundingBox(boundingBox);
-        btCollisionShape collisionShape = new btBoxShape(boundingBox.getDimensions(tempVec3).scl(.5f));
-        constructionInfo.setCollisionShape(collisionShape);
-        btRigidBody rigidBody = new btRigidBody(constructionInfo);
-        rigidBody.setAngularFactor(angularFactor);
-        rigidBody.setLinearFactor(linearFactor);
-        rigidBody.setContactCallbackFlag(CollisionFlags.ENTITY_FLAG);
-        rigidBody.setActivationState(Collision.DISABLE_DEACTIVATION);
-
-        Entity entity = new Entity();
-        entity.init(position, modelInstance, rigidBody);
-
-        dynamicsWorld.addRigidBody(rigidBody);
-        entities.add(entity);
-    }
-
     public static void spawnPlayer(Vector3 position, float maxSpeed) {
         AssetLoader.boxhead.calculateBoundingBox(boundingBox);
         btCollisionShape collisionShape = new btBoxShape(boundingBox.getDimensions(tempVec3).scl(.5f));
@@ -170,10 +163,11 @@ public class EntityManager {
             rigidBody.setLinearFactor(linearFactor);
             rigidBody.setContactCallbackFlag(CollisionFlags.ENTITY_FLAG | CollisionFlags.ENEMY_FLAG);
             rigidBody.setActivationState(Collision.DISABLE_DEACTIVATION);
-            dynamicsWorld.addRigidBody(rigidBody, (short)(CollisionFlags.ENEMY_FLAG | CollisionFlags.ENTITY_FLAG), (short) CollisionMasks.ENEMY_MASK);
         } else {
             rigidBody = zombie.getRigidBody();
         }
+
+        dynamicsWorld.addRigidBody(rigidBody, (short)(CollisionFlags.ENEMY_FLAG | CollisionFlags.ENTITY_FLAG), (short) CollisionMasks.ENEMY_MASK);
 
         if (zombie.getBehavior() == null) {
             Arrive<Vector3> arrive = new Arrive<Vector3>(zombie, player).setEnabled(true)
@@ -203,10 +197,11 @@ public class EntityManager {
             rigidBody.setActivationState(Collision.DISABLE_DEACTIVATION);
             rigidBody.setAngularFactor(angularFactor);
             rigidBody.setLinearFactor(linearFactor);
-            dynamicsWorld.addRigidBody(rigidBody, (short) CollisionFlags.BULLET_FLAG, (short) CollisionMasks.BULLET_MASK);
         } else {
             rigidBody = bullet.getRigidBody();
         }
+
+        dynamicsWorld.addRigidBody(rigidBody, (short) CollisionFlags.BULLET_FLAG, (short) CollisionMasks.BULLET_MASK);
 
         if (player.isMoving()) {
             velocity += player.getMaxSpeed();
@@ -217,6 +212,7 @@ public class EntityManager {
         bullets.add(bullet);
     }
 
+    //TODO: this method needs to be updated before it can be used
     public static void spawnBulletCasing(Matrix4 transform, ModelInstance modelInstance, Vector3 expulsionImpulse) {
         BulletCasing bulletCasing = new BulletCasing();
 

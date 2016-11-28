@@ -3,7 +3,10 @@ package com.starcat.boxhead.objects.entities.Behavior;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Timer;
+import com.starcat.boxhead.objects.entities.EntityManager;
 import com.starcat.boxhead.objects.entities.Zombie;
 
 /**
@@ -19,54 +22,97 @@ public enum ZombieState implements State<Zombie> {
     CHASE() {
         @Override
         public void update(Zombie zombie) {
-            zombie.getWalkAnimationController().update(Gdx.graphics.getDeltaTime());
+            zombie.getAnimationController().update(Gdx.graphics.getDeltaTime());
 
             if(zombie.getBehavior() != null) {
                 zombie.getBehavior().calculateSteering(zombie.getSteeringOutput());
                 zombie.applySteering(Gdx.graphics.getDeltaTime());
             }
 
-            if (zombie.getPosition().dst(zombie.getBehavior().getTarget().getPosition()) <= 1.5f) {
-                zombie.stateMachine.changeState(CHASE);
+            if (zombie.getPosition().dst(zombie.getBehavior().getTarget().getPosition()) <= 1f) {
+                zombie.stateMachine.changeState(ATTACK);
             }
         }
 
         @Override
         public void enter(Zombie zombie) {
-            zombie.getWalkAnimationController().setAnimation("walk", -1).speed = .2f;
+            zombie.getAnimationController().setAnimation("walk", -1).speed = .2f;
         }
 
         @Override
         public void exit(Zombie zombie) {
             zombie.getRigidBody().setLinearVelocity(Vector3.Zero);
-            zombie.getWalkAnimationController().setAnimation(null);
+            zombie.getAnimationController().setAnimation(null);
         }
     },
     ATTACK(){
         @Override
         public void update(Zombie zombie) {
+            zombie.getAnimationController().update(Gdx.graphics.getDeltaTime());
         }
 
         @Override
-        public void enter(Zombie zombie) {
+        public void enter(final Zombie zombie) {
+            zombie.getAnimationController().setAnimation("attack").speed = .5f;
+
+            AnimationController.AnimationListener animationListener = new AnimationController.AnimationListener() {
+                @Override
+                public void onEnd(AnimationController.AnimationDesc animation) {
+                    if (zombie.getPosition().dst(zombie.getBehavior().getTarget().getPosition()) <= 1f) {
+                        EntityManager.getPlayer().damage(10);
+                    }
+
+                    Timer.instance().scheduleTask(new Timer.Task() {
+                        @Override
+                        public void run() {
+
+                            zombie.stateMachine.changeState(CHASE);
+                        }
+                    }, 1);
+                }
+
+                @Override
+                public void onLoop(AnimationController.AnimationDesc animation) {
+
+                }
+            };
+
+            zombie.getAnimationController().current.listener = animationListener;
         }
 
         @Override
         public void exit(Zombie zombie) {
+            zombie.getAnimationController().setAnimation(null);
         }
     },
     DIE() {
         @Override
         public void update(Zombie zombie) {
+                zombie.getAnimationController().update(Gdx.graphics.getDeltaTime());
         }
 
         @Override
-        public void enter(Zombie zombie) {
+        public void enter(final Zombie zombie) {
+            zombie.setShouldRemoveBody(true);
+            zombie.getAnimationController().setAnimation("die").speed = .4f;
+
+            AnimationController.AnimationListener animationListener = new AnimationController.AnimationListener() {
+                @Override
+                public void onEnd(AnimationController.AnimationDesc animation) {
+                    //zombie.setShouldPool(true);
+                }
+
+                @Override
+                public void onLoop(AnimationController.AnimationDesc animation) {
+
+                }
+            };
+
+            zombie.getAnimationController().current.listener = animationListener;
         }
 
         @Override
         public void exit(Zombie zombie) {
-            zombie.setShouldPool(true);
         }
     };
 

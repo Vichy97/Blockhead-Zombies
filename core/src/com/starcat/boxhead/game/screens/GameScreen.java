@@ -137,11 +137,10 @@ public class GameScreen implements Screen, InputProcessor {
 
         //TODO: wave spawning system (probably handled by entity manager)
         EntityManager.spawnPlayer(new Vector3(10, 1.3f, 10), .055f);
-        EntityManager.spawnZombie(new Vector3(15, 1.3f, 15));
-        EntityManager.spawnZombie(new Vector3(14, 1.3f, 15));
-        EntityManager.spawnZombie(new Vector3(13, 1.3f, 15));
-        EntityManager.spawnZombie(new Vector3(12, 1.3f, 15));
-        EntityManager.spawnZombie(new Vector3(11, 1.3f, 15));
+        for (int i = 0; i < 10; i++) {
+            EntityManager.spawnZombie(new Vector3(15, 1.3f, 15));
+
+        }
 
         fpsLogger = new FPSLogger();
 
@@ -457,7 +456,9 @@ public class GameScreen implements Screen, InputProcessor {
         dynamicsWorld.setDebugDrawer(debugDrawer);
 
         dynamicsWorld.addCollisionObject(mapBaseCollisionObject, (short) CollisionFlags.GROUND_FLAG, (short)(CollisionFlags.OBJECT_FLAG | CollisionFlags.ENTITY_FLAG | CollisionFlags.BULLET_CASING_FLAG));
-       // dynamicsWorld.addCollisionObject(mapObjectsCollisionObject, (short) CollisionFlags.OBJECT_FLAG, (short)(CollisionFlags.BULLET_CASING_FLAG | CollisionFlags.ENTITY_FLAG | CollisionFlags.BULLET_FLAG));
+        if (MyGdxGame.WIREFRAME) {
+            dynamicsWorld.addCollisionObject(mapObjectsCollisionObject, (short) CollisionFlags.OBJECT_FLAG, (short) (CollisionFlags.BULLET_CASING_FLAG | CollisionFlags.ENTITY_FLAG | CollisionFlags.BULLET_FLAG));
+        }
 
         EntityManager.setDynamicsWorld(dynamicsWorld);
 

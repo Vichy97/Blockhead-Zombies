@@ -13,7 +13,8 @@ import com.starcat.boxhead.utils.AssetLoader;
 
 public class MyGdxGame extends Game {
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
+    public static final boolean WIREFRAME = true;
 
     public static final int GAME_WIDTH = 1920;
     public static final int GAME_HEIGHT = 1080;
@@ -35,7 +36,7 @@ public class MyGdxGame extends Game {
         gameCamera = new OrthographicCamera(GAME_HEIGHT/ASPECT_RATIO, GAME_HEIGHT);
 
         UIViewport = new ScreenViewport(UICamera);
-        gameViewport = new FillViewport(GAME_WIDTH / 120, GAME_HEIGHT / 120, gameCamera);
+        gameViewport = new FillViewport(GAME_WIDTH / 150, GAME_HEIGHT / 150, gameCamera);
 
         setScreen("loading");
     }
