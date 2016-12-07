@@ -5,11 +5,12 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.starcat.boxhead.game.MyGdxGame;
 
 /**
  * Created by Vincent on 6/30/2015.
  *
- * random utility methods
+ * various utility methods
  */
 public class GameUtils {
 
@@ -72,7 +73,14 @@ public class GameUtils {
 
         Pixmap pixmap = new Pixmap(Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), Pixmap.Format.RGBA8888);
         BufferUtils.copy(pixels, 0, pixmap.getPixels(), pixels.length);
-        PixmapIO.writePNG(Gdx.files.external("mypixmap.png"), pixmap);
+        PixmapIO.writePNG(Gdx.files.external("screenshot.png"), pixmap);
         pixmap.dispose();
     }
+
+    public static void debug(Object object, String message) {
+        if (MyGdxGame.DEBUG) {
+            Gdx.app.log(object.getClass().getSimpleName(), message);
+        }
+    }
+
 }

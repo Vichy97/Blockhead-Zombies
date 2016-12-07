@@ -75,4 +75,8 @@ public class Bullet extends DynamicGameObject implements Pool.Poolable {
     public int getDamage() {
         return damage;
     }
+
+    public Vector3 getCurrentSpeed() {
+        return speed;
+    }
 }

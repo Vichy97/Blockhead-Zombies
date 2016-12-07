@@ -271,6 +271,7 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
     }
 
 
+
     @Override
     public void reset() {
         currentRotation = -45;

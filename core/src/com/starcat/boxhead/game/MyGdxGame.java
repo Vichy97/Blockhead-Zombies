@@ -6,13 +6,18 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.starcat.boxhead.game.screens.AboutScreen;
+import com.starcat.boxhead.game.screens.GameOverScreen;
 import com.starcat.boxhead.game.screens.GameScreen;
 import com.starcat.boxhead.game.screens.LoadingScreen;
 import com.starcat.boxhead.game.screens.MenuScreen;
+import com.starcat.boxhead.game.screens.SettingsScreen;
 import com.starcat.boxhead.utils.AssetLoader;
+import com.starcat.boxhead.utils.GameUtils;
 
 public class MyGdxGame extends Game {
 
+    //TODO: make all batches static fields of this class
     public static final boolean DEBUG = false;
     public static final boolean WIREFRAME = true;
 
@@ -20,6 +25,7 @@ public class MyGdxGame extends Game {
     public static final int GAME_HEIGHT = 1080;
     public static float ASPECT_RATIO;
 
+    //TODO: one camera (viewport.apply())
     private OrthographicCamera UICamera;
     private OrthographicCamera gameCamera;
     private Viewport UIViewport, gameViewport;
@@ -28,7 +34,7 @@ public class MyGdxGame extends Game {
 
     @Override
     public void create() {
-        debug("created");
+        GameUtils.debug(this, "created");
 
         ASPECT_RATIO = (float) Gdx.graphics.getHeight() / (float) Gdx.graphics.getWidth();
 
@@ -38,12 +44,12 @@ public class MyGdxGame extends Game {
         UIViewport = new ScreenViewport(UICamera);
         gameViewport = new FillViewport(GAME_WIDTH / 150, GAME_HEIGHT / 150, gameCamera);
 
-        setScreen("loading");
+        setScreen(new LoadingScreen(this));
     }
 
     @Override
     public void dispose() {
-        debug("dispose");
+        GameUtils.debug(this, "dispose");
 
         super.dispose();
         AssetLoader.dispose();
@@ -51,23 +57,20 @@ public class MyGdxGame extends Game {
 
 
 
-    public void setScreen(String screen) {
-        if (screen.equals("loading")) {
-            setScreen(new LoadingScreen(this));
-        } else if(screen.equals("menu")) {
-            setScreen(new MenuScreen(this, UICamera, UIViewport));
-        } else if(screen.equals("game")) {
-            setScreen(new GameScreen(this, UICamera, UIViewport, gameCamera, gameViewport));
-        } else {
-            debug("Incorrect Screen Name");
-            Gdx.app.exit();
-        }
-        System.gc();
+    public OrthographicCamera getUICamera() {
+        return UICamera;
     }
 
-    private static void debug(String message) {
-        if (MyGdxGame.DEBUG) {
-            Gdx.app.log("My GDX Game", message);
-        }
+    public OrthographicCamera getGameCamera() {
+        return gameCamera;
     }
+
+    public Viewport getUIViewport() {
+        return UIViewport;
+    }
+
+    public Viewport getGameViewport() {
+        return gameViewport;
+    }
+
 }

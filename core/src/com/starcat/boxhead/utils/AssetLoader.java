@@ -34,6 +34,7 @@ import com.starcat.boxhead.objects.Map;
  */
 public class AssetLoader {
 
+    //TODO: make this class(AssetLoader) non-static
     private static AssetManager manager;
 
     public static I18NBundle i18NBundle;
@@ -61,6 +62,7 @@ public class AssetLoader {
 
 
 
+    //only queues assets to be loaded. calling update() actually does the loading
     public static void load() {
         debug("load");
 

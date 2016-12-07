@@ -2,25 +2,22 @@ package com.starcat.boxhead.game.screens;
 
 import com.badlogic.gdx.Screen;
 import com.starcat.boxhead.game.MyGdxGame;
-import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.utils.GameUtils;
 
 /**
- * Created by Vincent on 6/18/2015.
- *
- * this is the loading screen before the menu
+ * Created by Vincent on 12/3/2016.
  */
-public class LoadingScreen implements Screen {
+
+public class SettingsScreen implements Screen {
 
     private MyGdxGame game;
 
 
 
-    public LoadingScreen(MyGdxGame game) {
+    public SettingsScreen(MyGdxGame game) {
         GameUtils.debug(this, "constructor");
-        this.game = game;
 
-        AssetLoader.load();
+        this.game = game;
     }
 
 
@@ -32,16 +29,7 @@ public class LoadingScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        GameUtils.debug(this, "" + AssetLoader.getQueuedAssets());
 
-        //returns true if it is done loading
-        if (AssetLoader.update()) {
-            AssetLoader.initAssets();
-            game.setScreen(new MenuScreen(game));
-            dispose();
-        }
-
-        float progress = AssetLoader.getProgress();
     }
 
     @Override
@@ -61,7 +49,7 @@ public class LoadingScreen implements Screen {
 
     @Override
     public void hide() {
-        GameUtils.debug(this, "hide");
+        GameUtils.debug(this, "dispose");
     }
 
     @Override
@@ -70,4 +58,5 @@ public class LoadingScreen implements Screen {
 
         System.gc();
     }
+
 }

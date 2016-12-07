@@ -1,9 +1,7 @@
 package com.starcat.boxhead.physics;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
-import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.objects.entities.Behavior.ZombieState;
 import com.starcat.boxhead.objects.entities.Bullet;
 import com.starcat.boxhead.objects.entities.Entity;
@@ -23,6 +21,8 @@ public class MyContactListener extends ContactListener {
 
             if (colObj1.userData instanceof Zombie) {
                 ((Zombie) colObj1.userData).damage(((Bullet) colObj0.userData).getDamage());
+
+                ((Zombie) colObj1.userData).getRigidBody().translate(((Bullet) colObj0.userData).getCurrentSpeed());
 
                 if (((Zombie) colObj1.userData).getHitpoints() <= 0) {
                     if (((Zombie) colObj1.userData).stateMachine.getCurrentState() != ZombieState.DIE) {
@@ -62,11 +62,4 @@ public class MyContactListener extends ContactListener {
         }
     }
 
-
-
-    private static void debug(String message) {
-        if (MyGdxGame.DEBUG) {
-            Gdx.app.log("ContactListener", message);
-        }
-    }
 }

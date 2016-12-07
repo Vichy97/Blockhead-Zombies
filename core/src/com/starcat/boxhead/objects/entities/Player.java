@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.objects.weapons.Gun;
 import com.starcat.boxhead.objects.weapons.Pistol;
 import com.starcat.boxhead.utils.AssetLoader;

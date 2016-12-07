@@ -6,10 +6,8 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ai.GdxAI;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -42,7 +40,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.StringBuilder;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.starcat.boxhead.environment.Afternoon;
 import com.starcat.boxhead.environment.Evening;
 import com.starcat.boxhead.environment.Night;
@@ -51,7 +48,6 @@ import com.starcat.boxhead.objects.Cloud;
 import com.starcat.boxhead.objects.StaticGameObject;
 import com.starcat.boxhead.objects.Map;
 import com.starcat.boxhead.objects.Star;
-import com.starcat.boxhead.objects.entities.Entity;
 import com.starcat.boxhead.objects.entities.EntityManager;
 import com.starcat.boxhead.physics.MyContactListener;
 import com.starcat.boxhead.utils.AssetLoader;
@@ -72,9 +68,6 @@ public class GameScreen implements Screen, InputProcessor {
     public boolean leftPressed, rightPressed, upPressed, downPressed = false;
 
     private MyGdxGame game;
-
-    private Camera UICamera, gameCamera;
-    private Viewport UIViewport, gameViewport;
 
     private InputMultiplexer inputMultiplexer;
     private Stage stage;
@@ -121,14 +114,10 @@ public class GameScreen implements Screen, InputProcessor {
 
 
 
-    public GameScreen(MyGdxGame game, OrthographicCamera UICamera, Viewport UIViewport, OrthographicCamera gameCamera, Viewport gameViewport) {
-        debug("constructor");
+    public GameScreen(MyGdxGame game) {
+        GameUtils.debug(this, "constructor");
 
         this.game = game;
-        this.UICamera = UICamera;
-        this.UIViewport = UIViewport;
-        this.gameCamera = gameCamera;
-        this.gameViewport = gameViewport;
 
         initUI();
         initWorld();
@@ -137,7 +126,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         //TODO: wave spawning system (probably handled by entity manager)
         EntityManager.spawnPlayer(new Vector3(10, 1.3f, 10), .055f);
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 20; i++) {
             EntityManager.spawnZombie(new Vector3(15, 1.3f, 15));
 
         }
@@ -152,7 +141,7 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public void show() {
-        debug("show");
+        GameUtils.debug(this, "show");
 
         Gdx.graphics.setContinuousRendering(true);
     }
@@ -161,8 +150,8 @@ public class GameScreen implements Screen, InputProcessor {
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        gameViewport.apply();
-        gameCamera.update();
+        game.getGameViewport().apply();
+        game.getGameCamera().update();
 
         if (currentMap.getTimeOfDay() instanceof Night) {
             renderStars();
@@ -207,7 +196,7 @@ public class GameScreen implements Screen, InputProcessor {
         }
 
         visibleModelInstanceCount = 0;
-        modelBatch.begin(gameCamera);
+        modelBatch.begin(game.getGameCamera());
         /*for(GameObject object : modelInstances) {
             if (isVisible(object)) {
                 modelBatch.render(object, environment);
@@ -219,7 +208,7 @@ public class GameScreen implements Screen, InputProcessor {
         EntityManager.renderBullets(modelBatch, environment);
         modelBatch.end();
 
-        sunlight.begin(Vector3.Zero, gameCamera.direction);
+        sunlight.begin(Vector3.Zero, game.getGameCamera().direction);
         shadowBatch.begin(sunlight.getCamera());
         /*for(GameObject object : shadowInstances) {
             if (isVisible(object)) {
@@ -233,15 +222,20 @@ public class GameScreen implements Screen, InputProcessor {
 
         if (!paused) {
             EntityManager.update(Gdx.graphics.getDeltaTime());
+
+            if (EntityManager.getPlayer().getHitpoints() <= 0) {
+                game.setScreen(new GameOverScreen(game));
+                dispose();
+            }
         }
 
         Vector3 position = EntityManager.getPlayer().getPosition();
-        gameCamera.position.set(position.x - 10, 10, position.z - 10);
+        game.getGameCamera().position.set(position.x - 10, 10, position.z - 10);
 
         Gdx.gl.glClearColor(currentMap.getTimeOfDay().skyColor.r, currentMap.getTimeOfDay().skyColor.g, currentMap.getTimeOfDay().skyColor.b, 1);
 
         if (MyGdxGame.DEBUG && !paused) {
-            debugDrawer.begin(gameCamera);
+            debugDrawer.begin(game.getGameCamera());
             dynamicsWorld.debugDrawWorld();
             debugDrawer.end();
         }
@@ -253,43 +247,29 @@ public class GameScreen implements Screen, InputProcessor {
 
         debugLabel.setText(stringBuilder);
 
-        UIViewport.apply();
-        UICamera.update();
+        game.getUIViewport().apply();
+        game.getGameCamera().update();
         stage.act();
         stage.draw();
 
         //sleep(30);
     }
 
-    //method to limit fps (will soon switch game over to 30fps)
-    public void sleep(int fps) {
-        if(fps>0){
-            diff = System.currentTimeMillis() - start;
-            long targetDelay = 1000/fps;
-            if (diff < targetDelay) {
-                try{
-                    Thread.sleep(targetDelay - diff);
-                } catch (InterruptedException e) {}
-            }
-            start = System.currentTimeMillis();
-        }
-    }
-
     @Override
     public void resize(int width, int height) {
-        debug("resize");
+        GameUtils.debug(this, "resize");
 
-        gameViewport.update(width, height);
-        gameViewport.apply();
-        UIViewport.update(width, height);
-        UIViewport.apply();
-        UICamera.position.set(UICamera.viewportWidth / 2, UICamera.viewportHeight / 2, 0);
+        game.getGameViewport().update(width, height);
+        game.getGameViewport().apply();
+        game.getUIViewport().update(width, height);
+        game.getUIViewport().apply();
+        game.getUICamera().position.set(game.getUICamera().viewportWidth / 2, game.getUICamera().viewportHeight / 2, 0);
         Gdx.graphics.requestRendering();
     }
 
     @Override
     public void pause() {
-        debug("pause");
+        GameUtils.debug(this, "pause");
 
         pauseButton.setVisible(false);
         playButton.setVisible(true);
@@ -304,19 +284,17 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public void resume() {
-        debug("resume");
+        GameUtils.debug(this, "resume");
     }
 
     @Override
     public void hide() {
-        debug("hide");
-
-        dispose();
+        GameUtils.debug(this, "hide");
     }
 
     @Override
     public void dispose() {
-        debug("dispose");
+        GameUtils.debug(this, "dispose");
 
         mapBaseCollisionShape.dispose();
         mapObjectsCollisionShape.dispose();
@@ -338,15 +316,30 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
 
+    
     //is object in camera frustum
     private boolean isVisible(StaticGameObject instance) {
-        return gameCamera.frustum.sphereInFrustum(instance.center, instance.radius);
+        return game.getGameCamera().frustum.sphereInFrustum(instance.center, instance.radius);
+    }
+
+    //method to limit fps (will soon switch game over to 30fps)
+    public void sleep(int fps) {
+        if(fps>0){
+            diff = System.currentTimeMillis() - start;
+            long targetDelay = 1000/fps;
+            if (diff < targetDelay) {
+                try{
+                    Thread.sleep(targetDelay - diff);
+                } catch (InterruptedException e) {}
+            }
+            start = System.currentTimeMillis();
+        }
     }
 
 
 
     private void initUI() {
-        debug("initUI");
+        GameUtils.debug(this,"initUI");
 
         pauseButton = new ImageButton(AssetLoader.uiSkin.getDrawable("pause"));
         pauseButton.addListener(pauseButtonListener);
@@ -372,8 +365,8 @@ public class GameScreen implements Screen, InputProcessor {
         debugLabel = new Label("debugLabel", AssetLoader.uiSkin);
         debugLabel.setY(MyGdxGame.GAME_HEIGHT - debugLabel.getHeight());
 
-        UIViewport.apply();
-        UICamera.position.set(UICamera.viewportWidth / 2, UICamera.viewportHeight / 2, 0);
+        game.getUIViewport().apply();
+        game.getUICamera().position.set(game.getUICamera().viewportWidth / 2, game.getUICamera().viewportHeight / 2, 0);
 
         playTable = new Table();
         playTable.setFillParent(true);
@@ -390,7 +383,7 @@ public class GameScreen implements Screen, InputProcessor {
         pauseTable.row();
         pauseTable.add(menuButton).height(128).colspan(2).fillX();
 
-        stage = new Stage(UIViewport);
+        stage = new Stage(game.getUIViewport());
         stage.addActor(playTable);
         stage.addActor(pauseTable);
         stage.addActor(debugLabel);
@@ -402,16 +395,16 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
     private void initLightingAndCameras() {
-        debug("initLightingAndCameras");
+        GameUtils.debug(this, "initLightingAndCameras");
 
-        gameViewport.apply();
+        game.getGameViewport().apply();
 
-        gameCamera.rotate(-30, 1, 0, 0);
-        gameCamera.rotate(225, 0, 1, 0);
-        gameCamera.position.set(0, 10, 0);
-        gameCamera.near = 1;
-        gameCamera.far = 200;
-        gameCamera.update();
+        game.getGameCamera().rotate(-30, 1, 0, 0);
+        game.getGameCamera().rotate(225, 0, 1, 0);
+        game.getGameCamera().position.set(0, 10, 0);
+        game.getGameCamera().near = 1;
+        game.getGameCamera().far = 200;
+        game.getGameCamera().update();
 
         environment = new Environment();
         sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 70f, 70f, 1, 75);
@@ -424,7 +417,7 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
     private void initPhysics() {
-        debug("initPhysics");
+        GameUtils.debug(this, "initPhysics");
 
         Bullet.init();
 
@@ -592,14 +585,6 @@ public class GameScreen implements Screen, InputProcessor {
 
 
 
-    private static void debug(String message) {
-        if (MyGdxGame.DEBUG) {
-            Gdx.app.log("Game Screen", message);
-        }
-    }
-
-
-
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.UP) {
@@ -734,7 +719,8 @@ public class GameScreen implements Screen, InputProcessor {
         @Override
         public void clicked(InputEvent event, float x, float y) {
             AssetLoader.button_click.play();
-            game.setScreen("menu");
+            game.setScreen(new MenuScreen(game));
+            dispose();
         }
     };
 

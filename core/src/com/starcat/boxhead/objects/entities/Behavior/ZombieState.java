@@ -94,12 +94,17 @@ public enum ZombieState implements State<Zombie> {
         @Override
         public void enter(final Zombie zombie) {
             zombie.setShouldRemoveBody(true);
-            zombie.getAnimationController().setAnimation("die").speed = .4f;
+            zombie.getAnimationController().setAnimation("die").speed = .6f;
 
             AnimationController.AnimationListener animationListener = new AnimationController.AnimationListener() {
                 @Override
                 public void onEnd(AnimationController.AnimationDesc animation) {
-                    //zombie.setShouldPool(true);
+                    Timer.instance().scheduleTask(new Timer.Task() {
+                        @Override
+                        public void run() {
+                            zombie.setShouldPool(true);
+                        }
+                    }, 2);
                 }
 
                 @Override

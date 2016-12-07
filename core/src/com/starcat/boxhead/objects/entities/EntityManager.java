@@ -244,6 +244,7 @@ public class EntityManager {
     }
 
 
+
     public static void dispose() {
         constructionInfo.dispose();
         for (int i = 0; i < entities.size(); i++) {
