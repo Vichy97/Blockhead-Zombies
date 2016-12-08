@@ -61,6 +61,10 @@ public class Player extends Entity {
         shootAnimationController.update(delta);
 
         currentWeapon.update(delta);
+
+        if (getHitpoints() < 100) {
+            heal(.025f);
+        }
     }
 
     @Override

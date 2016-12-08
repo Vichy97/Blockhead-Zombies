@@ -2,7 +2,6 @@ package com.starcat.boxhead.game.screens;
 
 import com.badlogic.gdx.Screen;
 import com.starcat.boxhead.game.MyGdxGame;
-import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.utils.GameUtils;
 
 /**
@@ -20,7 +19,7 @@ public class LoadingScreen implements Screen {
         GameUtils.debug(this, "constructor");
         this.game = game;
 
-        AssetLoader.load();
+        game.getAssetLoader().load();
     }
 
 
@@ -32,16 +31,16 @@ public class LoadingScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        GameUtils.debug(this, "" + AssetLoader.getQueuedAssets());
+        GameUtils.debug(this, "" + game.getAssetLoader().getManager().getQueuedAssets());
 
         //returns true if it is done loading
-        if (AssetLoader.update()) {
-            AssetLoader.initAssets();
+        if (game.getAssetLoader().update()) {
+            game.getAssetLoader().initAssets();
             game.setScreen(new MenuScreen(game));
             dispose();
         }
 
-        float progress = AssetLoader.getProgress();
+        float progress = game.getAssetLoader().getManager().getProgress();
     }
 
     @Override

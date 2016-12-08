@@ -50,6 +50,8 @@ public class GameOverScreen implements Screen {
         stage = new Stage();
         stage.addActor(table);
 
+        Gdx.input.setInputProcessor(stage);
+
         game.getUIViewport().apply();
         game.getUICamera().position.set(game.getGameCamera().viewportWidth / 2, game.getGameCamera().viewportHeight / 2, 0);
     }

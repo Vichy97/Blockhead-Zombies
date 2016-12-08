@@ -17,8 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.I18NBundle;
-import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.objects.Map;
 
 /**
@@ -32,9 +32,8 @@ import com.starcat.boxhead.objects.Map;
  * If ram is short then I could make more methods such as loadMenuAssets
  * then unload before the next screen (probably not necessary)
  */
-public class AssetLoader {
+public class AssetLoader implements Disposable {
 
-    //TODO: make this class(AssetLoader) non-static
     private static AssetManager manager;
 
     public static I18NBundle i18NBundle;
@@ -62,15 +61,20 @@ public class AssetLoader {
 
 
 
+    public AssetLoader() {
+        GameUtils.debug(this, "constructor");
+        manager = new AssetManager();
+    }
+
+
+
     //only queues assets to be loaded. calling update() actually does the loading
-    public static void load() {
-        debug("load");
+    public void load() {
+        GameUtils.debug(this, "load");
 
         TextureLoader.TextureParameter param = new TextureLoader.TextureParameter();
         param.minFilter = Texture.TextureFilter.Linear;
         param.magFilter = Texture.TextureFilter.Linear;
-
-        manager = new AssetManager();
 
         manager.load("locales/Boxhead", I18NBundle.class);
 
@@ -98,14 +102,14 @@ public class AssetLoader {
         manager.load("audio/guns/pistol.ogg", Sound.class);
     }
 
-    public static boolean update() {
-        debug("update");
+    public boolean update() {
+        GameUtils.debug(this, "update");
 
         return manager.update();
     }
 
-    public static void initAssets() {
-        debug("initAssets");
+    public void initAssets() {
+        GameUtils.debug(this, "initAssets");
 
         i18NBundle = manager.get("locales/Boxhead");
 
@@ -152,14 +156,14 @@ public class AssetLoader {
             node.scale.set(1, 1, 1);
             node.rotation.idt();
             instance.calculateTransforms();
-
         }
+
     }
 
 
 
     //creates a freetype bitmap font
-    private static BitmapFont createFont(String font, int size, Color color) {
+    private BitmapFont createFont(String font, int size, Color color) {
         BitmapFont textFont;
         FileHandle fontFile = Gdx.files.internal("fonts/" + font);
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(fontFile);
@@ -171,30 +175,13 @@ public class AssetLoader {
         return textFont;
     }
 
-    //returns a float between 0 and 1. this doesnt work well for atlas's
-    public static float getProgress() {
-        return manager.getProgress();
+    public AssetManager getManager() {
+        return manager;
     }
 
-    //returns the number of assets left to load. this fluctuates?
-    public static int getQueuedAssets() {
-        return manager.getQueuedAssets();
-    }
-
-    public static void dispose() {
+    @Override
+    public void dispose() {
         manager.dispose();
     }
 
-    //disposes all assets but does not dispose of the manager itself
-    public static void clearManager() {
-        manager.clear();
-    }
-
-
-
-    private static void debug(String message) {
-        if (MyGdxGame.DEBUG) {
-            Gdx.app.log("Asset Loader", message);
-        }
-    }
 }

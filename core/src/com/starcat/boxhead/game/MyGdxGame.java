@@ -3,21 +3,18 @@ package com.starcat.boxhead.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.starcat.boxhead.game.screens.AboutScreen;
-import com.starcat.boxhead.game.screens.GameOverScreen;
-import com.starcat.boxhead.game.screens.GameScreen;
 import com.starcat.boxhead.game.screens.LoadingScreen;
-import com.starcat.boxhead.game.screens.MenuScreen;
-import com.starcat.boxhead.game.screens.SettingsScreen;
 import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.utils.GameUtils;
 
 public class MyGdxGame extends Game {
 
-    //TODO: make all batches static fields of this class
     public static final boolean DEBUG = false;
     public static final boolean WIREFRAME = true;
 
@@ -25,10 +22,13 @@ public class MyGdxGame extends Game {
     public static final int GAME_HEIGHT = 1080;
     public static float ASPECT_RATIO;
 
-    //TODO: one camera (viewport.apply())
     private OrthographicCamera UICamera;
     private OrthographicCamera gameCamera;
     private Viewport UIViewport, gameViewport;
+
+    private AssetLoader assetLoader;
+    private SpriteBatch spriteBatch;
+    private ShapeRenderer shapeRenderer;
 
 
 
@@ -40,9 +40,19 @@ public class MyGdxGame extends Game {
 
         UICamera = new OrthographicCamera(GAME_HEIGHT/ASPECT_RATIO, GAME_HEIGHT);
         gameCamera = new OrthographicCamera(GAME_HEIGHT/ASPECT_RATIO, GAME_HEIGHT);
+        gameCamera.rotate(-30, 1, 0, 0);
+        gameCamera.rotate(225, 0, 1, 0);
+        gameCamera.position.set(0, 10, 0);
+        gameCamera.near = 1;
+        gameCamera.far = 200;
+        gameCamera.update();
 
         UIViewport = new ScreenViewport(UICamera);
         gameViewport = new FillViewport(GAME_WIDTH / 150, GAME_HEIGHT / 150, gameCamera);
+
+        assetLoader = new AssetLoader();
+        spriteBatch = new SpriteBatch();
+        shapeRenderer = new ShapeRenderer();
 
         setScreen(new LoadingScreen(this));
     }
@@ -52,7 +62,7 @@ public class MyGdxGame extends Game {
         GameUtils.debug(this, "dispose");
 
         super.dispose();
-        AssetLoader.dispose();
+        assetLoader.dispose();
     }
 
 
@@ -71,6 +81,18 @@ public class MyGdxGame extends Game {
 
     public Viewport getGameViewport() {
         return gameViewport;
+    }
+
+    public AssetLoader getAssetLoader() {
+        return assetLoader;
+    }
+
+    public SpriteBatch getSpriteBatch() {
+        return spriteBatch;
+    }
+
+    public ShapeRenderer getShapeRenderer() {
+        return shapeRenderer;
     }
 
 }

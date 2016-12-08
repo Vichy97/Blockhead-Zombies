@@ -8,7 +8,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
@@ -18,6 +17,7 @@ import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.Bullet;
@@ -64,8 +64,7 @@ import java.util.ArrayList;
 public class GameScreen implements Screen, InputProcessor {
 
     private boolean paused = false;
-
-    public boolean leftPressed, rightPressed, upPressed, downPressed = false;
+    private boolean leftPressed, rightPressed, upPressed, downPressed = false;
 
     private MyGdxGame game;
 
@@ -79,8 +78,6 @@ public class GameScreen implements Screen, InputProcessor {
     private ImageButton pauseButton, playButton, musicButton, soundButton;
     private TextButton menuButton;
     private Touchpad touchpad;
-
-    private SpriteBatch spriteBatch;
 
     private ModelCache modelCache, shadowCache;
     private ModelBatch modelBatch, shadowBatch;
@@ -121,19 +118,18 @@ public class GameScreen implements Screen, InputProcessor {
 
         initUI();
         initWorld();
-        initLightingAndCameras();
+        initLighting();
         initPhysics();
 
         //TODO: wave spawning system (probably handled by entity manager)
         EntityManager.spawnPlayer(new Vector3(10, 1.3f, 10), .055f);
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 5; i++) {
             EntityManager.spawnZombie(new Vector3(15, 1.3f, 15));
 
         }
 
         fpsLogger = new FPSLogger();
 
-        spriteBatch = new SpriteBatch();
         stringBuilder = new StringBuilder();
     }
 
@@ -243,12 +239,15 @@ public class GameScreen implements Screen, InputProcessor {
         //fpsLogger.log();
 
         stringBuilder.setLength(0);
-        stringBuilder.append(" FPS: ").append(Gdx.graphics.getFramesPerSecond());
+        stringBuilder.append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
 
         debugLabel.setText(stringBuilder);
 
         game.getUIViewport().apply();
         game.getGameCamera().update();
+
+        renderPlayerHP();
+
         stage.act();
         stage.draw();
 
@@ -264,6 +263,7 @@ public class GameScreen implements Screen, InputProcessor {
         game.getUIViewport().update(width, height);
         game.getUIViewport().apply();
         game.getUICamera().position.set(game.getUICamera().viewportWidth / 2, game.getUICamera().viewportHeight / 2, 0);
+
         Gdx.graphics.requestRendering();
     }
 
@@ -299,7 +299,7 @@ public class GameScreen implements Screen, InputProcessor {
         mapBaseCollisionShape.dispose();
         mapObjectsCollisionShape.dispose();
 
-        EntityManager.dispose();
+        EntityManager.clear();
         dynamicsWorld.dispose();
         collisionConfig.dispose();
         broadphase.dispose();
@@ -309,7 +309,6 @@ public class GameScreen implements Screen, InputProcessor {
         modelBatch.dispose();
         shadowBatch.dispose();
 
-        spriteBatch.dispose();
         stage.dispose();
 
         System.gc();
@@ -317,20 +316,30 @@ public class GameScreen implements Screen, InputProcessor {
 
 
     
-    //is object in camera frustum
+    /*
+     * method to test whether an object is in the camera frustum
+     *
+     * this method is used for frustum culling of objects,
+     * however it is more efficient to cache them, so this
+     * might only be useful for dynamic objects that would
+     * need to be re-cached every frame (making caching
+     * actually less efficient than frustum culling)
+     */
     private boolean isVisible(StaticGameObject instance) {
         return game.getGameCamera().frustum.sphereInFrustum(instance.center, instance.radius);
     }
 
     //method to limit fps (will soon switch game over to 30fps)
     public void sleep(int fps) {
-        if(fps>0){
+        if(fps > 0){
             diff = System.currentTimeMillis() - start;
-            long targetDelay = 1000/fps;
+            long targetDelay = 1000 / fps;
             if (diff < targetDelay) {
-                try{
+                try {
                     Thread.sleep(targetDelay - diff);
-                } catch (InterruptedException e) {}
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             start = System.currentTimeMillis();
         }
@@ -394,17 +403,8 @@ public class GameScreen implements Screen, InputProcessor {
         Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
-    private void initLightingAndCameras() {
-        GameUtils.debug(this, "initLightingAndCameras");
-
-        game.getGameViewport().apply();
-
-        game.getGameCamera().rotate(-30, 1, 0, 0);
-        game.getGameCamera().rotate(225, 0, 1, 0);
-        game.getGameCamera().position.set(0, 10, 0);
-        game.getGameCamera().near = 1;
-        game.getGameCamera().far = 200;
-        game.getGameCamera().update();
+    private void initLighting() {
+        GameUtils.debug(this, "initLighting");
 
         environment = new Environment();
         sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 70f, 70f, 1, 75);
@@ -570,7 +570,7 @@ public class GameScreen implements Screen, InputProcessor {
 
     private void renderStars() {
         for (Star star : stars) {
-                star.render(spriteBatch);
+            star.render(game.getSpriteBatch());
         }
     }
 
@@ -579,8 +579,20 @@ public class GameScreen implements Screen, InputProcessor {
             if (!paused) {
                 aCloudArray.update(delta);
             }
-            aCloudArray.render(spriteBatch);
+            aCloudArray.render(game.getSpriteBatch());
         }
+    }
+
+    private void renderPlayerHP() {
+        game.getShapeRenderer().begin(ShapeRenderer.ShapeType.Line);
+        game.getShapeRenderer().setColor(0, 0, 0, 1);
+        game.getShapeRenderer().rect(game.GAME_WIDTH / 2 - 50, game.GAME_HEIGHT / 2 + 75, 100, 10);
+        game.getShapeRenderer().end();
+
+        game.getShapeRenderer().begin(ShapeRenderer.ShapeType.Filled);
+        game.getShapeRenderer().setColor(1 - EntityManager.getPlayer().getHitpoints() / 100, EntityManager.getPlayer().getHitpoints() / 100, 0, 1);
+        game.getShapeRenderer().rect(game.GAME_WIDTH / 2 - 50, game.GAME_HEIGHT / 2 + 75, EntityManager.getPlayer().getHitpoints(), 10);
+        game.getShapeRenderer().end();
     }
 
 
@@ -723,5 +735,4 @@ public class GameScreen implements Screen, InputProcessor {
             dispose();
         }
     };
-
 }

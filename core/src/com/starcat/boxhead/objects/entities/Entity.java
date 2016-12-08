@@ -41,7 +41,7 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
     protected Arrive<Vector3> behavior;
     protected SteeringAcceleration<Vector3> steeringOutput;
 
-    private int hitpoints = 100;
+    private float hitpoints = 100;
     private boolean drawHitpoints = false;
 
 
@@ -129,11 +129,11 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
 
 
 
-    public void damage(int hitpoints) {
+    public void damage(float hitpoints) {
         this.hitpoints -= hitpoints;
     }
 
-    public void heal(int hitpoints) {
+    public void heal(float hitpoints) {
         this.hitpoints += hitpoints;
     }
 
@@ -155,7 +155,7 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
         return steeringOutput;
     }
 
-    public int getHitpoints() {
+    public float getHitpoints() {
         return hitpoints;
     }
 
@@ -277,10 +277,5 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
         currentRotation = -45;
         currentRotationAngle = 45;
         super.reset();
-    }
-
-    @Override
-    public void dispose() {
-
     }
 }

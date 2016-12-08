@@ -30,7 +30,9 @@ public enum ZombieState implements State<Zombie> {
             }
 
             if (zombie.getPosition().dst(zombie.getBehavior().getTarget().getPosition()) <= 1f) {
-                zombie.stateMachine.changeState(ATTACK);
+                if (zombie.stateMachine.getCurrentState() != DIE) {
+                    zombie.stateMachine.changeState(ATTACK);
+                }
             }
         }
 
@@ -45,6 +47,7 @@ public enum ZombieState implements State<Zombie> {
             zombie.getAnimationController().setAnimation(null);
         }
     },
+
     ATTACK(){
         @Override
         public void update(Zombie zombie) {
@@ -55,10 +58,10 @@ public enum ZombieState implements State<Zombie> {
         public void enter(final Zombie zombie) {
             zombie.getAnimationController().setAnimation("attack").speed = .5f;
 
-            AnimationController.AnimationListener animationListener = new AnimationController.AnimationListener() {
+            zombie.getAnimationController().current.listener = new AnimationController.AnimationListener() {
                 @Override
                 public void onEnd(AnimationController.AnimationDesc animation) {
-                    if (zombie.getPosition().dst(zombie.getBehavior().getTarget().getPosition()) <= 1f) {
+                    if (zombie.getPosition().dst(zombie.getBehavior().getTarget().getPosition()) <= 1.5f) {
                         EntityManager.getPlayer().damage(10);
                     }
 
@@ -66,7 +69,9 @@ public enum ZombieState implements State<Zombie> {
                         @Override
                         public void run() {
 
-                            zombie.stateMachine.changeState(CHASE);
+                            if (zombie.stateMachine.getCurrentState() != DIE) {
+                                zombie.stateMachine.changeState(CHASE);
+                            }
                         }
                     }, 1);
                 }
@@ -76,8 +81,6 @@ public enum ZombieState implements State<Zombie> {
 
                 }
             };
-
-            zombie.getAnimationController().current.listener = animationListener;
         }
 
         @Override
@@ -85,6 +88,7 @@ public enum ZombieState implements State<Zombie> {
             zombie.getAnimationController().setAnimation(null);
         }
     },
+
     DIE() {
         @Override
         public void update(Zombie zombie) {
@@ -96,7 +100,7 @@ public enum ZombieState implements State<Zombie> {
             zombie.setShouldRemoveBody(true);
             zombie.getAnimationController().setAnimation("die").speed = .6f;
 
-            AnimationController.AnimationListener animationListener = new AnimationController.AnimationListener() {
+            zombie.getAnimationController().current.listener = new AnimationController.AnimationListener() {
                 @Override
                 public void onEnd(AnimationController.AnimationDesc animation) {
                     Timer.instance().scheduleTask(new Timer.Task() {
@@ -112,8 +116,6 @@ public enum ZombieState implements State<Zombie> {
 
                 }
             };
-
-            zombie.getAnimationController().current.listener = animationListener;
         }
 
         @Override

@@ -247,8 +247,27 @@ public class EntityManager {
 
     public static void dispose() {
         constructionInfo.dispose();
-        for (int i = 0; i < entities.size(); i++) {
-            entities.get(i).dispose();
+
+        clear();
+    }
+
+    public static void clear() {
+        Iterator<Entity> entityIterator = entities.iterator();
+        while(entityIterator.hasNext()) {
+            Entity entity = entityIterator.next();
+
+            entity.dispose();
+
+            entityIterator.remove();
+        }
+
+        Iterator<Bullet> bulletIterator = bullets.iterator();
+        while(bulletIterator.hasNext()) {
+            Bullet bullet = bulletIterator.next();
+
+            bullet.dispose();
+
+            bulletIterator.remove();
         }
     }
 }

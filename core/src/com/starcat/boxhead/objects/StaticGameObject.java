@@ -10,9 +10,9 @@ import com.badlogic.gdx.math.collision.BoundingBox;
  *
  * This class is used for game objects that aren't dynamic
  * (trees or rocks for example) for dynamic objects use
- * DynamicGameObject. This class is mainly used for
- * frustum culling (otherwise you just create a collision mesh
- * from the map and don't bother making a StaticGameObject)
+ * DynamicGameObject.
+ *
+ * *Possibly deprecated*
  */
 public class StaticGameObject extends ModelInstance {
 
