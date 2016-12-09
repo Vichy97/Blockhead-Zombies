@@ -1,7 +1,6 @@
 package com.starcat.boxhead.game.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -17,9 +16,7 @@ import com.starcat.boxhead.utils.GameUtils;
  *
  * This screens is the main menu of the game
  */
-public class MenuScreen implements Screen {
-
-    private MyGdxGame game;
+public class MenuScreen extends BaseScreen {
 
     private Stage stage;
     private Table table;
@@ -30,9 +27,7 @@ public class MenuScreen implements Screen {
 
 
     public MenuScreen(final MyGdxGame game) {
-        GameUtils.debug(this, "constructor");
-
-        this.game = game;
+        super(game);
 
         stage = new Stage(game.getUIViewport());
         table = new Table();
@@ -79,34 +74,8 @@ public class MenuScreen implements Screen {
     }
 
     @Override
-    public void resize(int width, int height) {
-        GameUtils.debug(this, "resize");
-
-        game.getUIViewport().update(width, height);
-        game.getUIViewport().apply();
-        game.getUICamera().position.set(game.getUICamera().viewportWidth / 2, game.getUICamera().viewportHeight / 2, 0);
-
-        Gdx.graphics.requestRendering();
-    }
-
-    @Override
-    public void pause() {
-        GameUtils.debug(this, "pause");
-    }
-
-    @Override
-    public void resume() {
-        GameUtils.debug(this, "resume");
-    }
-
-    @Override
-    public void hide() {
-        GameUtils.debug(this, "hide");
-    }
-
-    @Override
     public void dispose() {
-        GameUtils.debug(this, "dispose");
+        super.dispose();
 
         stage.dispose();
         System.gc();

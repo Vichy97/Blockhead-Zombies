@@ -3,10 +3,7 @@ package com.starcat.boxhead.game.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ai.GdxAI;
-import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -39,7 +36,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.StringBuilder;
 import com.starcat.boxhead.environment.Afternoon;
 import com.starcat.boxhead.environment.Evening;
 import com.starcat.boxhead.environment.Night;
@@ -61,19 +57,16 @@ import java.util.ArrayList;
  *
  * This Screen is where all actual gameplay takes place
  */
-public class GameScreen implements Screen, InputProcessor {
+public class GameScreen extends BaseScreen {
 
     private boolean paused = false;
     private boolean leftPressed, rightPressed, upPressed, downPressed = false;
-
-    private MyGdxGame game;
 
     private InputMultiplexer inputMultiplexer;
     private Stage stage;
     private Table pauseTable, playTable;
 
     private Label debugLabel;
-    private StringBuilder stringBuilder;
 
     private ImageButton pauseButton, playButton, musicButton, soundButton;
     private TextButton menuButton;
@@ -95,8 +88,6 @@ public class GameScreen implements Screen, InputProcessor {
     private Cloud[] cloudArray;
     private Star[] stars;
 
-    private FPSLogger fpsLogger;
-
     private btDiscreteDynamicsWorld dynamicsWorld;
     private DebugDrawer debugDrawer;
     private btDbvtBroadphase broadphase;
@@ -112,9 +103,7 @@ public class GameScreen implements Screen, InputProcessor {
 
 
     public GameScreen(MyGdxGame game) {
-        GameUtils.debug(this, "constructor");
-
-        this.game = game;
+        super(game);
 
         initUI();
         initWorld();
@@ -127,23 +116,21 @@ public class GameScreen implements Screen, InputProcessor {
             EntityManager.spawnZombie(new Vector3(15, 1.3f, 15));
 
         }
-
-        fpsLogger = new FPSLogger();
-
-        stringBuilder = new StringBuilder();
     }
 
 
 
     @Override
     public void show() {
-        GameUtils.debug(this, "show");
+        super.show();
 
         Gdx.graphics.setContinuousRendering(true);
     }
 
     @Override
     public void render(float delta) {
+        super.render(delta);
+
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         game.getGameViewport().apply();
@@ -236,12 +223,10 @@ public class GameScreen implements Screen, InputProcessor {
             debugDrawer.end();
         }
 
-        //fpsLogger.log();
+        game.getStringBuilder().setLength(0);
+        game.getStringBuilder().append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
 
-        stringBuilder.setLength(0);
-        stringBuilder.append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
-
-        debugLabel.setText(stringBuilder);
+        debugLabel.setText(game.getStringBuilder());
 
         game.getUIViewport().apply();
         game.getGameCamera().update();
@@ -255,21 +240,8 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
     @Override
-    public void resize(int width, int height) {
-        GameUtils.debug(this, "resize");
-
-        game.getGameViewport().update(width, height);
-        game.getGameViewport().apply();
-        game.getUIViewport().update(width, height);
-        game.getUIViewport().apply();
-        game.getUICamera().position.set(game.getUICamera().viewportWidth / 2, game.getUICamera().viewportHeight / 2, 0);
-
-        Gdx.graphics.requestRendering();
-    }
-
-    @Override
     public void pause() {
-        GameUtils.debug(this, "pause");
+        super.pause();
 
         pauseButton.setVisible(false);
         playButton.setVisible(true);
@@ -283,18 +255,10 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
     @Override
-    public void resume() {
-        GameUtils.debug(this, "resume");
-    }
-
-    @Override
-    public void hide() {
-        GameUtils.debug(this, "hide");
-    }
-
-    @Override
     public void dispose() {
-        GameUtils.debug(this, "dispose");
+        super.dispose();
+
+        game.getStringBuilder().setLength(0);
 
         mapBaseCollisionShape.dispose();
         mapObjectsCollisionShape.dispose();
@@ -656,34 +620,9 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
     @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         EntityManager.getPlayer().fire();
         return true;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        return false;
     }
 
 
@@ -735,4 +674,5 @@ public class GameScreen implements Screen, InputProcessor {
             dispose();
         }
     };
+
 }

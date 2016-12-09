@@ -2,10 +2,12 @@ package com.starcat.boxhead.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.StringBuilder;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -29,6 +31,8 @@ public class MyGdxGame extends Game {
     private AssetLoader assetLoader;
     private SpriteBatch spriteBatch;
     private ShapeRenderer shapeRenderer;
+    private StringBuilder stringBuilder;
+    private FPSLogger fpsLogger;
 
 
 
@@ -53,6 +57,8 @@ public class MyGdxGame extends Game {
         assetLoader = new AssetLoader();
         spriteBatch = new SpriteBatch();
         shapeRenderer = new ShapeRenderer();
+        stringBuilder = new StringBuilder();
+        fpsLogger = new FPSLogger();
 
         setScreen(new LoadingScreen(this));
     }
@@ -93,6 +99,14 @@ public class MyGdxGame extends Game {
 
     public ShapeRenderer getShapeRenderer() {
         return shapeRenderer;
+    }
+
+    public StringBuilder getStringBuilder() {
+        return stringBuilder;
+    }
+
+    public FPSLogger getFpsLogger() {
+        return fpsLogger;
     }
 
 }

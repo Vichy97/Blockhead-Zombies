@@ -1,7 +1,6 @@
 package com.starcat.boxhead.game.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -11,15 +10,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.utils.AssetLoader;
-import com.starcat.boxhead.utils.GameUtils;
 
 /**
  * Created by Vincent on 11/29/2016.
  */
 
-public class GameOverScreen implements Screen {
-
-    private MyGdxGame game;
+public class GameOverScreen extends BaseScreen {
 
     private Stage stage;
     private Table table;
@@ -30,9 +26,7 @@ public class GameOverScreen implements Screen {
 
 
     public GameOverScreen(MyGdxGame game) {
-        GameUtils.debug(this, "constructor");
-
-        this.game = game;
+        super(game);
 
         menuButton = new TextButton(AssetLoader.i18NBundle.get("menu"), AssetLoader.uiSkin, "small");
         menuButton.addListener(menuListener);
@@ -59,11 +53,6 @@ public class GameOverScreen implements Screen {
 
 
     @Override
-    public void show() {
-        GameUtils.debug(this, "show");
-    }
-
-    @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.gl.glClearColor(1f, 1f, 1f, 1f);
@@ -75,34 +64,8 @@ public class GameOverScreen implements Screen {
     }
 
     @Override
-    public void resize(int width, int height) {
-        GameUtils.debug(this, "resize");
-
-        game.getUIViewport().update(width, height);
-        game.getGameViewport().apply();
-        game.getUICamera().position.set(game.getUICamera().viewportWidth / 2, game.getUICamera().viewportHeight / 2, 0);
-
-        Gdx.graphics.requestRendering();
-    }
-
-    @Override
-    public void pause() {
-        GameUtils.debug(this, "pause");
-    }
-
-    @Override
-    public void resume() {
-        GameUtils.debug(this, "resume");
-    }
-
-    @Override
-    public void hide() {
-        GameUtils.debug(this, "hide");
-    }
-
-    @Override
     public void dispose() {
-        GameUtils.debug(this, "dispose");
+        super.dispose();
 
         stage.dispose();
         System.gc();
