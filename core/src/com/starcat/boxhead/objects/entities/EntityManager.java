@@ -134,7 +134,7 @@ public class EntityManager {
 
 
     public static void spawnPlayer(Vector3 position, float maxSpeed) {
-        AssetLoader.boxhead.calculateBoundingBox(boundingBox);
+        AssetLoader.player.calculateBoundingBox(boundingBox);
         btCollisionShape collisionShape = new btBoxShape(boundingBox.getDimensions(tempVec3).scl(.5f));
         constructionInfo.setCollisionShape(collisionShape);
         btRigidBody rigidBody = new btRigidBody(constructionInfo);

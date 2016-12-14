@@ -44,10 +44,27 @@ public class AssetLoader implements Disposable {
 
     public static Map map;
     public static Model mapBase, mapObjects, mapDoodads;
-    public static Model boxhead, zombie;
+    public static Model player, zombie;
+
     public static Model pistol;
-    public static Model pistolBullet;
-    public static Model pistolBulletCasing;
+    public static Model pistolDual;
+    public static Model uzi;
+    public static Model uziDual;
+    public static Model shotgun;
+    public static Model shotgunDual;
+    public static Model shotgunShort;
+    public static Model shotgunShortDual;
+    public static Model sniper;
+
+    public static Model bulletPistol;
+    public static Model bulletSniper;
+    public static Model bulletUzi;
+    public static Model bulletAssaultRifle;
+    public static Model casingPistol;
+    public static Model casingSniper;
+    public static Model casingUzi;
+    public static Model casingShotgun;
+    public static Model casingAssaultRifle;
 
     public static Texture cloudTexture1;
     public static Texture cloudTexture2;
@@ -89,12 +106,29 @@ public class AssetLoader implements Disposable {
         manager.load("maps/test_scene/test_scene_objects.g3dj", Model.class);
         manager.load("maps/test_scene/test_scene_doodads.g3dj", Model.class);
 
-        manager.load("objects/entities/boxhead.g3dj", Model.class);
+        manager.load("objects/entities/player.g3dj", Model.class);
         manager.load("objects/entities/zombie.g3dj", Model.class);
 
         manager.load("objects/weapons/pistol.g3dj", Model.class);
-        manager.load("objects/projectiles/pistol_bullet.g3db", Model.class);
-        manager.load("objects/projectiles/pistol_bullet_casing.g3db", Model.class);
+        manager.load("objects/weapons/pistol_dual.g3dj", Model.class);
+        manager.load("objects/weapons/uzi.g3dj", Model.class);
+        manager.load("objects/weapons/uzi_dual.g3dj", Model.class);
+        //manager.load("objects/weapons/shotgun.g3dj", Model.class);
+        //manager.load("objects/weapons/shotgun_dual.g3dj", Model.class);
+        //manager.load("objects/weapons/shotgun_short.g3dj", Model.class);
+        //manager.load("objects/weapons/shotgun_short_dual.g3dj", Model.class);
+        //manager.load("objects/weapons/sniper.g3dj", Model.class);
+
+        manager.load("objects/projectiles/bullet_pistol.g3dj", Model.class);
+        manager.load("objects/projectiles/bullet_sniper.g3dj", Model.class);
+        manager.load("objects/projectiles/bullet_uzi.g3dj", Model.class);
+        manager.load("objects/projectiles/bullet_assault_rifle.g3dj", Model.class);
+
+        manager.load("objects/projectiles/casing_pistol.g3dj", Model.class);
+        manager.load("objects/projectiles/casing_sniper.g3dj", Model.class);
+        manager.load("objects/projectiles/casing_shotgun.g3dj", Model.class);
+        manager.load("objects/projectiles/casing_uzi.g3dj", Model.class);
+        manager.load("objects/projectiles/casing_assault_rifle.g3dj", Model.class);
 
         manager.load("objects/entities/skin_exclusiveZombie.png", Texture.class);
 
@@ -134,14 +168,31 @@ public class AssetLoader implements Disposable {
         mapDoodads = manager.get("maps/test_scene/test_scene_doodads.g3dj", Model.class);
         map = new Map(mapBase, mapObjects, mapDoodads);
 
-        boxhead = manager.get("objects/entities/boxhead.g3dj", Model.class);
+        player = manager.get("objects/entities/player.g3dj", Model.class);
         zombie = manager.get("objects/entities/zombie.g3dj", Model.class);
 
         skinAdventurer = manager.get("objects/entities/skin_exclusiveZombie.png", Texture.class);
 
         pistol = manager.get("objects/weapons/pistol.g3dj", Model.class);
-        pistolBullet = manager.get("objects/projectiles/pistol_bullet.g3db", Model.class);
-        pistolBulletCasing = manager.get("objects/projectiles/pistol_bullet_casing.g3db", Model.class);
+        pistolDual = manager.get("objects/weapons/pistol_dual.g3dj", Model.class);
+        uzi = manager.get("objects/weapons/uzi.g3dj", Model.class);
+        uziDual = manager.get("objects/weapons/uzi_dual.g3dj", Model.class);
+        //shotgun = manager.get("objects/weapons/shotgun.g3dj", Model.class);
+        //shotgunDual = manager.get("objects/weapons/shotgun_dual.g3dj", Model.class);
+        //shotgunShort = manager.get("objects/weapons/shotgun_short.g3dj", Model.class);
+        //shotgunShortDual = manager.get("objects/weapons/shotgun_short_dual.g3dj", Model.class);
+        //sniper = manager.get("objects/weapons/sniper.g3dj", Model.class);
+
+        bulletPistol = manager.get("objects/projectiles/bullet_pistol.g3dj", Model.class);
+        bulletSniper = manager.get("objects/projectiles/bullet_sniper.g3dj", Model.class);
+        bulletUzi = manager.get("objects/projectiles/bullet_uzi.g3dj", Model.class);
+        bulletAssaultRifle = manager.get("objects/projectiles/bullet_assault_rifle.g3dj", Model.class);
+
+        casingPistol = manager.get("objects/projectiles/casing_pistol.g3dj", Model.class);
+        casingSniper = manager.get("objects/projectiles/casing_sniper.g3dj", Model.class);
+        casingShotgun = manager.get("objects/projectiles/casing_shotgun.g3dj", Model.class);
+        casingUzi = manager.get("objects/projectiles/casing_uzi.g3dj", Model.class);
+        casingAssaultRifle = manager.get("objects/projectiles/casing_assault_rifle.g3dj", Model.class);
 
         button_click = manager.get("audio/ui/button_click.ogg", Sound.class);
         pistolSound = manager.get("audio/guns/pistol.ogg", Sound.class);

@@ -6,29 +6,34 @@ import com.badlogic.gdx.math.Vector3;
 import com.starcat.boxhead.utils.AssetLoader;
 
 /**
- * Created by Vincent on 8/17/2016.
+ * Created by Vincent on 12/11/2016.
  */
-public class Pistol extends Gun {
 
-    public Pistol() {
-        modelInstance = new ModelInstance(AssetLoader.pistol);
+public class PistolDual extends Gun {
+
+    public PistolDual() {
+        modelInstance = new ModelInstance(AssetLoader.pistolDual);
         bulletModel = AssetLoader.bulletPistol;
         bulletCasingModel = AssetLoader.casingPistol;
         sound = AssetLoader.pistolSound;
         shootAnimationController = new AnimationController(modelInstance);
         shootAnimationController.allowSameAnimation = true;
-        fireAnimation = "fire";
-        altFireAnimation = null;
+        fireAnimation = "fire_right";
+        altFireAnimation = "fire_left";
 
-        bulletTranslationAlt = null;
         bulletTranslation = new Vector3(WeaponConstants.PISTOL_BULLET_TRANSLATION);
+        bulletTranslationAlt = new Vector3(WeaponConstants.PISTOL_BULLET_TRANSLATION_ALT);
         bulletCasingTranslation = new Vector3(WeaponConstants.PISTOL_CASING_TRANSLATION);
         bulletCasingExpulsionImpulse = new Vector3(WeaponConstants.PISTOL_CASING_EXPULSION_IMPULSE);
 
         damage = 34;
         accuracy = 5;
         bulletSpeed = .1f;
-        reloadTime = 1;
+        reloadTime = .05f;
     }
 
+    @Override
+    public void fire() {
+        super.fire();
+    }
 }

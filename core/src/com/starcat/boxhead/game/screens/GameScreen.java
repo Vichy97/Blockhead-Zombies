@@ -210,6 +210,10 @@ public class GameScreen extends BaseScreen {
                 game.setScreen(new GameOverScreen(game));
                 dispose();
             }
+
+            if (EntityManager.getPlayer().getCurrentWeapon().isAutofire() && EntityManager.getPlayer().getCurrentWeapon().isAutofire() && Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+                EntityManager.getPlayer().fire();
+            }
         }
 
         Vector3 position = EntityManager.getPlayer().getPosition();

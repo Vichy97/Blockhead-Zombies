@@ -4,8 +4,6 @@ import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.ai.utils.Location;
-import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -42,7 +40,6 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
     protected SteeringAcceleration<Vector3> steeringOutput;
 
     private float hitpoints = 100;
-    private boolean drawHitpoints = false;
 
 
 
@@ -135,10 +132,6 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
 
     public void heal(float hitpoints) {
         this.hitpoints += hitpoints;
-    }
-
-    public void drawHitpoints() {
-
     }
 
 

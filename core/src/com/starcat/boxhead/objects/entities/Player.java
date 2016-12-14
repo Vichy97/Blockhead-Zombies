@@ -1,5 +1,6 @@
 package com.starcat.boxhead.objects.entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -9,6 +10,8 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.objects.weapons.Gun;
 import com.starcat.boxhead.objects.weapons.Pistol;
+import com.starcat.boxhead.objects.weapons.PistolDual;
+import com.starcat.boxhead.objects.weapons.UziDual;
 import com.starcat.boxhead.utils.AssetLoader;
 
 /**
@@ -27,13 +30,13 @@ public class Player extends Entity {
 
 
     public void init(Vector3 position, float maxSpeed, btRigidBody rigidBody) {
-        super.init(position, new ModelInstance(AssetLoader.boxhead), rigidBody);
+        super.init(position, new ModelInstance(AssetLoader.player), rigidBody);
         this.maxSpeed = maxSpeed;
 
         speed = new Vector3(maxSpeed, 0, maxSpeed);
         speed.rotate(rotationVector, -45);
 
-        currentWeapon = new Pistol();
+        currentWeapon = new UziDual();
         currentWeapon.setTransform(modelInstance.transform);
 
         walkAnimationController = new AnimationController(modelInstance);
@@ -44,6 +47,7 @@ public class Player extends Entity {
     @Override
     public void update(float delta) {
         super.update(delta);
+
         rigidBody.setAngularVelocity(Vector3.Zero);
         rigidBody.setLinearVelocity(Vector3.Zero);
 
@@ -52,10 +56,10 @@ public class Player extends Entity {
         }
         currentWeapon.setTransform(rigidBody.getWorldTransform());
 
-        if(!moving) {
-            walkAnimationController.setAnimation(null);
+        if (!moving) {
+            walkAnimationController.setAnimation("pose_dual_wield");
         } else {
-            walkAnimationController.setAnimation("walk", -1).speed = .5f;
+            walkAnimationController.setAnimation("walk_dual_wield", -1).speed = .5f;
         }
         walkAnimationController.update(delta);
         shootAnimationController.update(delta);
@@ -74,8 +78,14 @@ public class Player extends Entity {
     }
 
     public void fire() {
+        if (currentWeapon.canShoot()) {
+            if (currentWeapon.isAltFire()) {
+                shootAnimationController.setAnimation("shoot_dual_wield_left");
+            } else {
+                shootAnimationController.setAnimation("shoot_dual_wield_right");
+            }
+        }
         currentWeapon.fire();
-        shootAnimationController.setAnimation("shoot_pistol");
     }
 
     public void setDirection(int direction) {
@@ -153,6 +163,10 @@ public class Player extends Entity {
 
     public boolean isMoving() {
         return moving;
+    }
+
+    public Gun getCurrentWeapon() {
+        return currentWeapon;
     }
 
 }

@@ -251,7 +251,7 @@
 			"textures": [
 				{
 					"id": "file1", 
-					"filename": "skin_exclusivePolice.png",
+					"filename": "skin_adventurer.png",
 					"type": "DIFFUSE"
 				}
 			]

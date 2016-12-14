@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.badlogic.gdx.utils.viewport.FillViewport;
@@ -52,7 +51,7 @@ public class MyGdxGame extends Game {
         gameCamera.update();
 
         UIViewport = new ScreenViewport(UICamera);
-        gameViewport = new FillViewport(GAME_WIDTH / 150, GAME_HEIGHT / 150, gameCamera);
+        gameViewport = new FillViewport(GAME_WIDTH / 100, GAME_HEIGHT / 100, gameCamera);
 
         assetLoader = new AssetLoader();
         spriteBatch = new SpriteBatch();

@@ -6,14 +6,15 @@ import com.badlogic.gdx.math.Vector3;
 import com.starcat.boxhead.utils.AssetLoader;
 
 /**
- * Created by Vincent on 8/17/2016.
+ * Created by Vincent on 12/13/2016.
  */
-public class Pistol extends Gun {
 
-    public Pistol() {
-        modelInstance = new ModelInstance(AssetLoader.pistol);
-        bulletModel = AssetLoader.bulletPistol;
-        bulletCasingModel = AssetLoader.casingPistol;
+public class Shotgun extends Gun {
+
+    public Shotgun() {
+        modelInstance = new ModelInstance(AssetLoader.shotgun);
+        bulletModel = null;
+        bulletCasingModel = AssetLoader.casingShotgun;
         sound = AssetLoader.pistolSound;
         shootAnimationController = new AnimationController(modelInstance);
         shootAnimationController.allowSameAnimation = true;
@@ -21,14 +22,13 @@ public class Pistol extends Gun {
         altFireAnimation = null;
 
         bulletTranslationAlt = null;
-        bulletTranslation = new Vector3(WeaponConstants.PISTOL_BULLET_TRANSLATION);
-        bulletCasingTranslation = new Vector3(WeaponConstants.PISTOL_CASING_TRANSLATION);
-        bulletCasingExpulsionImpulse = new Vector3(WeaponConstants.PISTOL_CASING_EXPULSION_IMPULSE);
+        bulletTranslation = new Vector3(WeaponConstants.SHOTGUN_BULLET_TRANSLATION);
+        bulletCasingTranslation = new Vector3(WeaponConstants.SHOTGUN_CASING_TRANSLATION);
+        bulletCasingExpulsionImpulse = new Vector3(WeaponConstants.SHOTGUN_CASING_EXPULSION_IMPULSE);
 
-        damage = 34;
+        damage = 30;
         accuracy = 5;
         bulletSpeed = .1f;
-        reloadTime = 1;
+        reloadTime = 2;
     }
-
 }
