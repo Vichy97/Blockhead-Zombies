@@ -3,6 +3,7 @@ package com.starcat.boxhead.objects.weapons;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
+import com.starcat.boxhead.objects.entities.Player;
 import com.starcat.boxhead.utils.AssetLoader;
 
 /**
@@ -11,15 +12,17 @@ import com.starcat.boxhead.utils.AssetLoader;
 
 public class Sniper extends Gun {
 
-    public Sniper() {
+    public Sniper(Player player) {
+        super(player);
+
         modelInstance = new ModelInstance(AssetLoader.sniper);
         bulletModel = AssetLoader.bulletSniper;
         bulletCasingModel = AssetLoader.casingSniper;
         sound = AssetLoader.pistolSound;
-        shootAnimationController = new AnimationController(modelInstance);
-        shootAnimationController.allowSameAnimation = true;
+        animationController = new AnimationController(modelInstance);
+        animationController.allowSameAnimation = true;
         fireAnimation = "fire";
-        altFireAnimation = null;
+        fireAnimationAlt = null;
 
         bulletTranslationAlt = null;
         bulletTranslation = new Vector3(WeaponConstants.SNIPER_BULLET_TRANSLATION);

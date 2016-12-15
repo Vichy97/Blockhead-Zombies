@@ -4,11 +4,12 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.starcat.boxhead.objects.DynamicGameObject;
 
 /**
  * Created by Vincent on 8/22/2016.
  */
-public class BulletCasing extends Entity {
+public class BulletCasing extends DynamicGameObject {
 
     public BulletCasing() {
         super();
@@ -18,4 +19,5 @@ public class BulletCasing extends Entity {
         super.init(transform, modelInstance, rigidBody);
         rigidBody.applyCentralImpulse(expulsionImpulse);
     }
+
 }

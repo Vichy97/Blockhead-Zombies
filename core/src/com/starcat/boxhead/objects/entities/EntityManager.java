@@ -103,17 +103,22 @@ public class EntityManager {
                 dynamicsWorld.removeRigidBody(bullet.getRigidBody());
             }
         }
-        /*
-        Iterator<BulletCasing> bulletCasingIterator = bulletCasings.iterator();
 
+        Iterator<BulletCasing> bulletCasingIterator = bulletCasings.iterator();
         while(bulletCasingIterator.hasNext()) {
             BulletCasing bulletCasing = bulletCasingIterator.next();
+
+            bulletCasing.update(delta);
+
             if (!bulletCasing.getRigidBody().isActive()) {
+                bulletCasing.setShouldRemoveBody(true);
+            }
+
+            if (bulletCasing.getShouldRemoveBody()) {
                 dynamicsWorld.removeRigidBody(bulletCasing.getRigidBody());
-                bulletCasingCollisionPool.free(bulletCasing.getRigidBody());
             }
         }
-        */
+
     }
 
     public static void renderEntities(ModelBatch modelBatch, Environment environment) {
@@ -127,7 +132,7 @@ public class EntityManager {
             bullet.render(modelBatch);
         }
         for (BulletCasing bulletCasing : bulletCasings) {
-            bulletCasing.render(modelBatch, environment);
+            bulletCasing.render(modelBatch);
         }
     }
 
@@ -228,7 +233,8 @@ public class EntityManager {
         rigidBody.setRestitution(.5f);
         rigidBody.setCollisionFlags(rigidBody.getCollisionFlags() | btRigidBody.CollisionFlags.CF_CUSTOM_MATERIAL_CALLBACK);
         rigidBody.setContactCallbackFlag(CollisionFlags.BULLET_CASING_FLAG);
-        rigidBody.setContactCallbackFilter(CollisionFlags.OBJECT_FLAG);
+        rigidBody.setDeactivationTime(0);
+        //rigidBody.setContactCallbackFilter(CollisionFlags.OBJECT_FLAG | CollisionFlags.GROUND_FLAG);
 
         dynamicsWorld.addRigidBody(rigidBody, (short) CollisionFlags.BULLET_CASING_FLAG, (short) CollisionMasks.BULLET_CASING_MASK);
 
@@ -268,6 +274,15 @@ public class EntityManager {
             bullet.dispose();
 
             bulletIterator.remove();
+        }
+
+        Iterator<BulletCasing> bulletCasingIterator = bulletCasings.iterator();
+        while(bulletCasingIterator.hasNext()) {
+            BulletCasing bulletCasing = bulletCasingIterator.next();
+
+            bulletCasing.dispose();
+
+            bulletCasingIterator.remove();
         }
     }
 }

@@ -1,16 +1,12 @@
 package com.starcat.boxhead.objects.entities;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
-import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.objects.weapons.Gun;
-import com.starcat.boxhead.objects.weapons.Pistol;
-import com.starcat.boxhead.objects.weapons.PistolDual;
 import com.starcat.boxhead.objects.weapons.UziDual;
 import com.starcat.boxhead.utils.AssetLoader;
 
@@ -36,8 +32,7 @@ public class Player extends Entity {
         speed = new Vector3(maxSpeed, 0, maxSpeed);
         speed.rotate(rotationVector, -45);
 
-        currentWeapon = new UziDual();
-        currentWeapon.setTransform(modelInstance.transform);
+        currentWeapon = new UziDual(this);
 
         walkAnimationController = new AnimationController(modelInstance);
         shootAnimationController = new AnimationController(modelInstance);
@@ -54,15 +49,6 @@ public class Player extends Entity {
         if (moving) {
             rigidBody.translate(speed);
         }
-        currentWeapon.setTransform(rigidBody.getWorldTransform());
-
-        if (!moving) {
-            walkAnimationController.setAnimation("pose_dual_wield");
-        } else {
-            walkAnimationController.setAnimation("walk_dual_wield", -1).speed = .5f;
-        }
-        walkAnimationController.update(delta);
-        shootAnimationController.update(delta);
 
         currentWeapon.update(delta);
 
@@ -78,13 +64,6 @@ public class Player extends Entity {
     }
 
     public void fire() {
-        if (currentWeapon.canShoot()) {
-            if (currentWeapon.isAltFire()) {
-                shootAnimationController.setAnimation("shoot_dual_wield_left");
-            } else {
-                shootAnimationController.setAnimation("shoot_dual_wield_right");
-            }
-        }
         currentWeapon.fire();
     }
 
@@ -167,6 +146,14 @@ public class Player extends Entity {
 
     public Gun getCurrentWeapon() {
         return currentWeapon;
+    }
+
+    public AnimationController getWalkAnimationController() {
+        return  walkAnimationController;
+    }
+
+    public AnimationController getShootAnimationController() {
+        return shootAnimationController;
     }
 
 }

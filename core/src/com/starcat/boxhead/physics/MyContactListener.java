@@ -4,6 +4,7 @@ import com.badlogic.gdx.physics.bullet.collision.ContactListener;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.starcat.boxhead.objects.entities.Behavior.ZombieState;
 import com.starcat.boxhead.objects.entities.Bullet;
+import com.starcat.boxhead.objects.entities.BulletCasing;
 import com.starcat.boxhead.objects.entities.Entity;
 import com.starcat.boxhead.objects.entities.Zombie;
 
@@ -59,6 +60,10 @@ public class MyContactListener extends ContactListener {
                     ((Entity) colObj0.userData).setShouldPool(true);
                 }
             }
+        } else if (colObj0.userData instanceof BulletCasing) {
+            ((BulletCasing) colObj0.userData).setShouldRemoveBody(true);
+        } else if (colObj1.userData instanceof BulletCasing) {
+            ((BulletCasing) colObj1.userData).setShouldRemoveBody(true);
         }
     }
 

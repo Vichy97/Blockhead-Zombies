@@ -3,6 +3,7 @@ package com.starcat.boxhead.objects.weapons;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
+import com.starcat.boxhead.objects.entities.Player;
 import com.starcat.boxhead.utils.AssetLoader;
 
 /**
@@ -11,15 +12,17 @@ import com.starcat.boxhead.utils.AssetLoader;
 
 public class PistolDual extends Gun {
 
-    public PistolDual() {
+    public PistolDual(Player player) {
+        super(player);
+
         modelInstance = new ModelInstance(AssetLoader.pistolDual);
         bulletModel = AssetLoader.bulletPistol;
         bulletCasingModel = AssetLoader.casingPistol;
         sound = AssetLoader.pistolSound;
-        shootAnimationController = new AnimationController(modelInstance);
-        shootAnimationController.allowSameAnimation = true;
+        animationController = new AnimationController(modelInstance);
+        animationController.allowSameAnimation = true;
         fireAnimation = "fire_right";
-        altFireAnimation = "fire_left";
+        fireAnimationAlt = "fire_left";
 
         bulletTranslation = new Vector3(WeaponConstants.PISTOL_BULLET_TRANSLATION);
         bulletTranslationAlt = new Vector3(WeaponConstants.PISTOL_BULLET_TRANSLATION_ALT);

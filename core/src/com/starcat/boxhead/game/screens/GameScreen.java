@@ -211,7 +211,7 @@ public class GameScreen extends BaseScreen {
                 dispose();
             }
 
-            if (EntityManager.getPlayer().getCurrentWeapon().isAutofire() && EntityManager.getPlayer().getCurrentWeapon().isAutofire() && Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            if (EntityManager.getPlayer().getCurrentWeapon().isAutofire() && EntityManager.getPlayer().getCurrentWeapon().isAutofire() && (Gdx.input.isKeyPressed(Input.Keys.SPACE) || Gdx.input.isTouched())) {
                 EntityManager.getPlayer().fire();
             }
         }
@@ -398,7 +398,7 @@ public class GameScreen extends BaseScreen {
         mapBaseCollisionShape = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(.5f));
         mapBaseCollisionObject = new btCollisionObject();
         mapBaseCollisionObject.setCollisionShape(mapBaseCollisionShape);
-        mapBaseCollisionObject.setWorldTransform(currentMap.base.transform.translate(0, -.05f, 0));
+        mapBaseCollisionObject.setWorldTransform(currentMap.base.transform.translate(0, -.025f, 0));
         mapBaseCollisionObject.setRestitution(.5f);
 
         mapObjectsCollisionShape = Bullet.obtainStaticNodeShape(currentMap.objects.nodes);
