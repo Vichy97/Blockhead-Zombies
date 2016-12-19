@@ -6,6 +6,7 @@ import com.badlogic.gdx.assets.loaders.TextureLoader;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -72,6 +73,7 @@ public class AssetLoader implements Disposable {
     public static Texture starTexture1;
     public static Texture starTexture2;
     public static Texture skinAdventurer;
+    public static Texture bloodSpatter;
 
     public static Sound button_click;
     public static Sound pistolSound;
@@ -92,6 +94,7 @@ public class AssetLoader implements Disposable {
         TextureLoader.TextureParameter param = new TextureLoader.TextureParameter();
         param.minFilter = Texture.TextureFilter.Linear;
         param.magFilter = Texture.TextureFilter.Linear;
+        param.format = Pixmap.Format.RGBA8888;
 
         manager.load("locales/Boxhead", I18NBundle.class);
 
@@ -100,6 +103,7 @@ public class AssetLoader implements Disposable {
         manager.load("cloud_3.png", Texture.class, param);
         manager.load("starBig.png", Texture.class, param);
         manager.load("starSmall.png", Texture.class, param);
+        manager.load("blood_spatter.png", Texture.class, param);
 
         manager.load("ui/ui.atlas", TextureAtlas.class);
         manager.load("maps/test_scene/test_scene_base.g3dj", Model.class);
@@ -162,6 +166,7 @@ public class AssetLoader implements Disposable {
         cloudTexture3 = manager.get("cloud_3.png", Texture.class);
         starTexture1 = manager.get("starBig.png", Texture.class);
         starTexture2 = manager.get("starSmall.png", Texture.class);
+        bloodSpatter = manager.get("blood_spatter.png", Texture.class);
 
         mapBase = manager.get("maps/test_scene/test_scene_base.g3dj", Model.class);
         mapObjects = manager.get("maps/test_scene/test_scene_objects.g3dj", Model.class);

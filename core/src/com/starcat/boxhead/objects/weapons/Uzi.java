@@ -23,10 +23,15 @@ public class Uzi extends Gun {
         animationController.allowSameAnimation = true;
         fireAnimation = "fire";
         fireAnimationAlt = "fire";
+        walkAnimation = "walk_single_wield";
+        poseAnimation = "pose_single_wield";
+        playerFireAnimation = "shoot_single_wield";
+        playerFireAnimationAlt = "shoot_single_wield";
 
-        bulletTranslationAlt = null;
         bulletTranslation = new Vector3(WeaponConstants.UZI_BULLET_TRANSLATION);
+        bulletTranslationAlt = new Vector3(WeaponConstants.UZI_BULLET_TRANSLATION);
         bulletCasingTranslation = new Vector3(WeaponConstants.UZI_CASING_TRANSLATION);
+        bulletCasingTranslationAlt = new Vector3(WeaponConstants.UZI_CASING_TRANSLATION);
         bulletCasingExpulsionImpulse = new Vector3(WeaponConstants.UZI_CASING_EXPULSION_IMPULSE);
 
         damage = 20;

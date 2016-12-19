@@ -129,10 +129,10 @@ public class EntityManager {
 
     public static void renderBullets(ModelBatch modelBatch, Environment environment) {
         for (Bullet bullet : bullets) {
-            bullet.render(modelBatch);
+            bullet.render(modelBatch, environment);
         }
         for (BulletCasing bulletCasing : bulletCasings) {
-            bulletCasing.render(modelBatch);
+            bulletCasing.render(modelBatch, environment);
         }
     }
 

@@ -7,6 +7,9 @@ import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.starcat.boxhead.objects.weapons.Gun;
+import com.starcat.boxhead.objects.weapons.Pistol;
+import com.starcat.boxhead.objects.weapons.PistolDual;
+import com.starcat.boxhead.objects.weapons.Uzi;
 import com.starcat.boxhead.objects.weapons.UziDual;
 import com.starcat.boxhead.utils.AssetLoader;
 

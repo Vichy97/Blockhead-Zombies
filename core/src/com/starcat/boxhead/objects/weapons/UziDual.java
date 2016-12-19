@@ -28,7 +28,6 @@ public class UziDual extends Gun {
         playerFireAnimation = "shoot_dual_wield_right";
         playerFireAnimationAlt = "shoot_dual_wield_left";
 
-        bulletTranslationAlt = null;
         bulletTranslation = new Vector3(WeaponConstants.UZI_BULLET_TRANSLATION);
         bulletTranslationAlt = new Vector3(WeaponConstants.UZI_BULLET_TRANSLATION_ALT);
         bulletCasingTranslation = new Vector3(WeaponConstants.UZI_CASING_TRANSLATION);
@@ -38,7 +37,7 @@ public class UziDual extends Gun {
         damage = 20;
         accuracy = 5;
         bulletSpeed = .2f;
-        reloadTime = .1f;
+        reloadTime = .05f;
         autofire = true;
     }
 

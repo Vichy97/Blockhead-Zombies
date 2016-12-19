@@ -23,16 +23,22 @@ public class PistolDual extends Gun {
         animationController.allowSameAnimation = true;
         fireAnimation = "fire_right";
         fireAnimationAlt = "fire_left";
+        walkAnimation = "walk_dual_wield";
+        poseAnimation = "pose_dual_wield";
+        playerFireAnimation = "shoot_dual_wield_right";
+        playerFireAnimationAlt = "shoot_dual_wield_left";
 
         bulletTranslation = new Vector3(WeaponConstants.PISTOL_BULLET_TRANSLATION);
         bulletTranslationAlt = new Vector3(WeaponConstants.PISTOL_BULLET_TRANSLATION_ALT);
         bulletCasingTranslation = new Vector3(WeaponConstants.PISTOL_CASING_TRANSLATION);
+        bulletCasingTranslationAlt = new Vector3(WeaponConstants.PISTOL_CASING_TRANSLATION_ALT);
         bulletCasingExpulsionImpulse = new Vector3(WeaponConstants.PISTOL_CASING_EXPULSION_IMPULSE);
 
         damage = 34;
         accuracy = 5;
         bulletSpeed = .1f;
-        reloadTime = .05f;
+        reloadTime = .2f;
+        autofire = true;
     }
 
     @Override

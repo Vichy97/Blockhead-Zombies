@@ -7,6 +7,7 @@ import com.starcat.boxhead.objects.entities.Bullet;
 import com.starcat.boxhead.objects.entities.BulletCasing;
 import com.starcat.boxhead.objects.entities.Entity;
 import com.starcat.boxhead.objects.entities.Zombie;
+import com.starcat.boxhead.particles.ParticleManager;
 
 /**
  * Created by Vincent on 8/19/2016.
@@ -31,6 +32,8 @@ public class MyContactListener extends ContactListener {
                     }
                 }
 
+                ParticleManager.instance().addBloodSpLatterDecal(((Zombie) colObj1.userData).getPosition().x, ((Zombie) colObj1.userData).getPosition().z);
+
             } else if (colObj1.userData instanceof Entity) {
                 ((Entity) colObj1.userData).damage(((Bullet) colObj0.userData).getDamage());
 
@@ -51,6 +54,8 @@ public class MyContactListener extends ContactListener {
                         ((Zombie) colObj0.userData).stateMachine.changeState(ZombieState.DIE);
                     }
                 }
+
+                ParticleManager.instance().addBloodSpLatterDecal(((Zombie) colObj0.userData).getPosition().x, ((Zombie) colObj0.userData).getPosition().z);
 
             } else if (colObj0.userData instanceof Entity) {
                 ((Entity) colObj0.userData).damage(((Bullet) colObj1.userData).getDamage());

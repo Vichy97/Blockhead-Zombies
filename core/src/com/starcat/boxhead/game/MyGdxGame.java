@@ -4,13 +4,18 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.decals.CameraGroupStrategy;
+import com.badlogic.gdx.graphics.g3d.decals.DecalBatch;
+import com.badlogic.gdx.graphics.g3d.decals.SimpleOrthoGroupStrategy;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.StringBuilder;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.starcat.boxhead.game.screens.LoadingScreen;
+import com.starcat.boxhead.particles.ZStrategyComparator;
 import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.utils.GameUtils;
 
@@ -29,6 +34,7 @@ public class MyGdxGame extends Game {
 
     private AssetLoader assetLoader;
     private SpriteBatch spriteBatch;
+    private DecalBatch decalBatch;
     private ShapeRenderer shapeRenderer;
     private StringBuilder stringBuilder;
     private FPSLogger fpsLogger;
@@ -55,6 +61,7 @@ public class MyGdxGame extends Game {
 
         assetLoader = new AssetLoader();
         spriteBatch = new SpriteBatch();
+        decalBatch = new DecalBatch(new CameraGroupStrategy(gameCamera, new ZStrategyComparator(gameCamera)));
         shapeRenderer = new ShapeRenderer();
         stringBuilder = new StringBuilder();
         fpsLogger = new FPSLogger();
@@ -94,6 +101,10 @@ public class MyGdxGame extends Game {
 
     public SpriteBatch getSpriteBatch() {
         return spriteBatch;
+    }
+
+    public DecalBatch getDecalBatch() {
+        return decalBatch;
     }
 
     public ShapeRenderer getShapeRenderer() {

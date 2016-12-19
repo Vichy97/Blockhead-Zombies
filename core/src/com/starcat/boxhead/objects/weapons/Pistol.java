@@ -21,17 +21,23 @@ public class Pistol extends Gun {
         animationController = new AnimationController(modelInstance);
         animationController.allowSameAnimation = true;
         fireAnimation = "fire";
-        fireAnimationAlt = null;
+        fireAnimationAlt = "fire";
+        walkAnimation = "walk_single_wield";
+        poseAnimation = "pose_single_wield";
+        playerFireAnimation = "shoot_single_wield";
+        playerFireAnimationAlt= "shoot_single_wield";
 
-        bulletTranslationAlt = null;
         bulletTranslation = new Vector3(WeaponConstants.PISTOL_BULLET_TRANSLATION);
+        bulletTranslationAlt = new Vector3(WeaponConstants.PISTOL_BULLET_TRANSLATION);
         bulletCasingTranslation = new Vector3(WeaponConstants.PISTOL_CASING_TRANSLATION);
+        bulletCasingTranslationAlt = new Vector3(WeaponConstants.PISTOL_CASING_TRANSLATION);
         bulletCasingExpulsionImpulse = new Vector3(WeaponConstants.PISTOL_CASING_EXPULSION_IMPULSE);
 
         damage = 34;
         accuracy = 5;
         bulletSpeed = .1f;
-        reloadTime = 1;
+        reloadTime = .4f;
+        autofire = true;
     }
 
 }

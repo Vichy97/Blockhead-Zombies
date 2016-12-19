@@ -45,6 +45,7 @@ import com.starcat.boxhead.objects.StaticGameObject;
 import com.starcat.boxhead.objects.Map;
 import com.starcat.boxhead.objects.Star;
 import com.starcat.boxhead.objects.entities.EntityManager;
+import com.starcat.boxhead.particles.ParticleManager;
 import com.starcat.boxhead.physics.MyContactListener;
 import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.physics.CollisionFlags;
@@ -109,6 +110,8 @@ public class GameScreen extends BaseScreen {
         initWorld();
         initLighting();
         initPhysics();
+
+        //particleManager = new ParticleManager();
 
         //TODO: wave spawning system (probably handled by entity manager)
         EntityManager.spawnPlayer(new Vector3(10, 1.3f, 10), .055f);
@@ -190,6 +193,8 @@ public class GameScreen extends BaseScreen {
         EntityManager.renderEntities(modelBatch, environment);
         EntityManager.renderBullets(modelBatch, environment);
         modelBatch.end();
+
+        ParticleManager.instance().renderDecals(game.getDecalBatch());
 
         sunlight.begin(Vector3.Zero, game.getGameCamera().direction);
         shadowBatch.begin(sunlight.getCamera());
@@ -584,7 +589,7 @@ public class GameScreen extends BaseScreen {
         } else if (keycode == Input.Keys.NUM_1) {
             currentMap.setTimeOfDay(new Afternoon());
             environment = new Environment();
-            sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 50f, 50f, 1, 50);
+            sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 50f, 50f, 1, 100);
             sunlight.set(currentMap.getTimeOfDay().sunlightColor, currentMap.getTimeOfDay().sunlightDirection);
             environment.set(new ColorAttribute(ColorAttribute.AmbientLight, currentMap.getTimeOfDay().ambientColor));
             environment.add(sunlight);
@@ -592,7 +597,7 @@ public class GameScreen extends BaseScreen {
         } else if (keycode == Input.Keys.NUM_2) {
             currentMap.setTimeOfDay(new Evening());
             environment = new Environment();
-            sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 50f, 50f, 1, 50);
+            sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 50f, 50f, 1, 100);
             sunlight.set(currentMap.getTimeOfDay().sunlightColor, currentMap.getTimeOfDay().sunlightDirection);
             environment.set(new ColorAttribute(ColorAttribute.AmbientLight, currentMap.getTimeOfDay().ambientColor));
             environment.add(sunlight);
@@ -600,12 +605,13 @@ public class GameScreen extends BaseScreen {
         } else if (keycode == Input.Keys.NUM_3) {
             currentMap.setTimeOfDay(new Night());
             environment = new Environment();
-            sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 50f, 50f, 1, 50);
+            sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 50f, 50f, 1, 100);
             sunlight.set(currentMap.getTimeOfDay().sunlightColor, currentMap.getTimeOfDay().sunlightDirection);
             environment.set(new ColorAttribute(ColorAttribute.AmbientLight, currentMap.getTimeOfDay().ambientColor));
             environment.add(sunlight);
             environment.shadowMap = sunlight;
         }
+
         return true;
     }
 

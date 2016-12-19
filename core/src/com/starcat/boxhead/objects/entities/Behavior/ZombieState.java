@@ -6,8 +6,10 @@ import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Timer;
+import com.starcat.boxhead.objects.entities.Entity;
 import com.starcat.boxhead.objects.entities.EntityManager;
 import com.starcat.boxhead.objects.entities.Zombie;
+import com.starcat.boxhead.particles.ParticleManager;
 
 /**
  * Created by Vincent on 10/25/2016.
@@ -63,6 +65,8 @@ public enum ZombieState implements State<Zombie> {
                 public void onEnd(AnimationController.AnimationDesc animation) {
                     if (zombie.getPosition().dst(zombie.getBehavior().getTarget().getPosition()) <= 1.5f) {
                         EntityManager.getPlayer().damage(10);
+                        ParticleManager.instance().addBloodSpLatterDecal(EntityManager.getPlayer().getPosition().x, EntityManager.getPlayer().getPosition().z);
+
                     }
 
                     Timer.instance().scheduleTask(new Timer.Task() {
