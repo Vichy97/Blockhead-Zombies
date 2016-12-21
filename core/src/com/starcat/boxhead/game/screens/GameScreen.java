@@ -84,6 +84,9 @@ public class GameScreen extends BaseScreen {
     private btCollisionShape mapBaseCollisionShape;
     private btCollisionObject mapObjectsCollisionObject;
 
+    private EntityManager entityManager;
+    private ParticleManager particleManager;
+
     private Map currentMap;
 
     private Cloud[] cloudArray;
@@ -111,14 +114,15 @@ public class GameScreen extends BaseScreen {
         initLighting();
         initPhysics();
 
-        //particleManager = new ParticleManager();
+        particleManager = ParticleManager.instance();
+        entityManager = EntityManager.instance();
 
         //TODO: wave spawning system (probably handled by entity manager)
-        EntityManager.spawnPlayer(new Vector3(10, 1.3f, 10), .055f);
+        entityManager.spawnPlayer(new Vector3(10, 1.3f, 10), .055f);
         for (int i = 0; i < 5; i++) {
-            EntityManager.spawnZombie(new Vector3(15, 1.3f, 15));
-
+            entityManager.spawnZombie(new Vector3(15, 1.3f, 15));
         }
+
     }
 
 
@@ -175,10 +179,10 @@ public class GameScreen extends BaseScreen {
             direction = GameUtils.getTouchpadEightDirection(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
         }
 
-        if (!EntityManager.getPlayer().isMoving()) {
-            EntityManager.getPlayer().setDirection(direction);
-        } else if (EntityManager.getPlayer().getDirection() != direction) {
-            EntityManager.getPlayer().setDirection(direction);
+        if (!entityManager.getPlayer().isMoving()) {
+            entityManager.getPlayer().setDirection(direction);
+        } else if (entityManager.getPlayer().getDirection() != direction) {
+            entityManager.getPlayer().setDirection(direction);
         }
 
         visibleModelInstanceCount = 0;
@@ -190,11 +194,11 @@ public class GameScreen extends BaseScreen {
             }
         }*/
         modelBatch.render(modelCache, environment);
-        EntityManager.renderEntities(modelBatch, environment);
-        EntityManager.renderBullets(modelBatch, environment);
+        entityManager.renderEntities(modelBatch, environment);
+        entityManager.renderBullets(modelBatch, environment);
         modelBatch.end();
 
-        ParticleManager.instance().renderDecals(game.getDecalBatch());
+        particleManager.renderDecals(game.getDecalBatch());
 
         sunlight.begin(Vector3.Zero, game.getGameCamera().direction);
         shadowBatch.begin(sunlight.getCamera());
@@ -204,24 +208,24 @@ public class GameScreen extends BaseScreen {
             }
         }*/
         shadowBatch.render(shadowCache);
-        EntityManager.renderEntities(shadowBatch, environment);
+        entityManager.renderEntities(shadowBatch, environment);
         shadowBatch.end();
         sunlight.end();
 
         if (!paused) {
-            EntityManager.update(Gdx.graphics.getDeltaTime());
+            entityManager.update(Gdx.graphics.getDeltaTime());
 
-            if (EntityManager.getPlayer().getHitpoints() <= 0) {
+            if (entityManager.getPlayer().getHitpoints() <= 0) {
                 game.setScreen(new GameOverScreen(game));
                 dispose();
             }
 
-            if (EntityManager.getPlayer().getCurrentWeapon().isAutofire() && EntityManager.getPlayer().getCurrentWeapon().isAutofire() && (Gdx.input.isKeyPressed(Input.Keys.SPACE) || Gdx.input.isTouched())) {
-                EntityManager.getPlayer().fire();
+            if (entityManager.getPlayer().getCurrentWeapon().isAutofire() && entityManager.getPlayer().getCurrentWeapon().isAutofire() && (Gdx.input.isKeyPressed(Input.Keys.SPACE) || Gdx.input.isTouched())) {
+                entityManager.getPlayer().fire();
             }
         }
 
-        Vector3 position = EntityManager.getPlayer().getPosition();
+        Vector3 position = entityManager.getPlayer().getPosition();
         game.getGameCamera().position.set(position.x - 10, 10, position.z - 10);
 
         Gdx.gl.glClearColor(currentMap.getTimeOfDay().skyColor.r, currentMap.getTimeOfDay().skyColor.g, currentMap.getTimeOfDay().skyColor.b, 1);
@@ -272,7 +276,7 @@ public class GameScreen extends BaseScreen {
         mapBaseCollisionShape.dispose();
         mapObjectsCollisionShape.dispose();
 
-        EntityManager.clear();
+        EntityManager.instance().clear();
         dynamicsWorld.dispose();
         collisionConfig.dispose();
         broadphase.dispose();
@@ -426,7 +430,7 @@ public class GameScreen extends BaseScreen {
             dynamicsWorld.addCollisionObject(mapObjectsCollisionObject, (short) CollisionFlags.OBJECT_FLAG, (short) (CollisionFlags.BULLET_CASING_FLAG | CollisionFlags.ENTITY_FLAG | CollisionFlags.BULLET_FLAG));
         }
 
-        EntityManager.setDynamicsWorld(dynamicsWorld);
+        EntityManager.instance().setDynamicsWorld(dynamicsWorld);
 
         contactListener = new MyContactListener();
     }
@@ -563,8 +567,8 @@ public class GameScreen extends BaseScreen {
         game.getShapeRenderer().end();
 
         game.getShapeRenderer().begin(ShapeRenderer.ShapeType.Filled);
-        game.getShapeRenderer().setColor(1 - EntityManager.getPlayer().getHitpoints() / 100, EntityManager.getPlayer().getHitpoints() / 100, 0, 1);
-        game.getShapeRenderer().rect(game.GAME_WIDTH / 2 - 50, game.GAME_HEIGHT / 2 + 75, EntityManager.getPlayer().getHitpoints(), 10);
+        game.getShapeRenderer().setColor(1 - entityManager.getPlayer().getHitpoints() / 100, entityManager.getPlayer().getHitpoints() / 100, 0, 1);
+        game.getShapeRenderer().rect(game.GAME_WIDTH / 2 - 50, game.GAME_HEIGHT / 2 + 75, entityManager.getPlayer().getHitpoints(), 10);
         game.getShapeRenderer().end();
     }
 
@@ -581,11 +585,11 @@ public class GameScreen extends BaseScreen {
         } else if (keycode == Input.Keys.LEFT) {
             leftPressed = true;
         } else if (keycode == Input.Keys.SPACE) {
-            EntityManager.getPlayer().fire();
+            entityManager.getPlayer().fire();
         } else if (keycode == Input.Keys.BACKSPACE) {
             GameUtils.takeScreenshot();
         } else if (keycode == Input.Keys.SHIFT_RIGHT){
-            EntityManager.spawnZombie(new Vector3(10, 1.3f, 10));
+            entityManager.spawnZombie(new Vector3(10, 1.3f, 10));
         } else if (keycode == Input.Keys.NUM_1) {
             currentMap.setTimeOfDay(new Afternoon());
             environment = new Environment();
@@ -631,7 +635,7 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        EntityManager.getPlayer().fire();
+        entityManager.getPlayer().fire();
         return true;
     }
 

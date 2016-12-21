@@ -13,6 +13,7 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btVector3;
+import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pool;
 import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.physics.CollisionFlags;
@@ -26,49 +27,75 @@ import java.util.Iterator;
  *
  * This class handles all entity and bullet spawning, updating, rendering, and pooling
  */
-public class EntityManager {
+public class EntityManager implements Disposable {
 
-    private static btDiscreteDynamicsWorld dynamicsWorld;
-    private static ArrayList<Entity> entities = new ArrayList<Entity>();
-    private static ArrayList<Bullet> bullets = new ArrayList<Bullet>();
-    private static ArrayList<BulletCasing> bulletCasings = new ArrayList<BulletCasing>();
+    private btDiscreteDynamicsWorld dynamicsWorld;
+    private static EntityManager instance;
 
-    private static Player player;
+    private ArrayList<Entity> entities;
+    private ArrayList<Bullet> bullets;
+    private ArrayList<BulletCasing> bulletCasings;
 
-    private static btRigidBody.btRigidBodyConstructionInfo constructionInfo = new btRigidBody.btRigidBodyConstructionInfo(1, null, null, Vector3.Zero);
-    private static Vector3 tempVec3 = new Vector3();
-    private static Vector3 linearFactor = Vector3.X.add(Vector3.Z);
-    private static Vector3 angularFactor = Vector3.Y;
-    private static Vector3 localInertia = new Vector3();
-    private static btVector3 btLocalInertia = new btVector3();
-    private static BoundingBox boundingBox = new BoundingBox();
+    private Player player;
 
-    private static Pool<Bullet> bulletPool = new Pool<Bullet>() {
-        @Override
-        protected Bullet newObject() {
-            return new Bullet();
+    private btRigidBody.btRigidBodyConstructionInfo constructionInfo = new btRigidBody.btRigidBodyConstructionInfo(1, null, null, Vector3.Zero);
+    private Vector3 tempVec3 = new Vector3();
+    private Vector3 linearFactor = Vector3.X.add(Vector3.Z);
+    private Vector3 angularFactor = Vector3.Y;
+    private Vector3 localInertia = new Vector3();
+    private btVector3 btLocalInertia = new btVector3();
+    private BoundingBox boundingBox = new BoundingBox();
+
+    private Pool<Bullet> bulletPool;
+    private Pool<Zombie> zombiePool;
+
+
+
+    private EntityManager() {
+        entities = new ArrayList<Entity>();
+        bullets = new ArrayList<Bullet>();
+        bulletCasings = new ArrayList<BulletCasing>();
+
+        constructionInfo = new btRigidBody.btRigidBodyConstructionInfo(1, null, null, Vector3.Zero);
+        tempVec3 = new Vector3();
+        linearFactor = Vector3.X.add(Vector3.Z);
+        angularFactor = Vector3.Y;
+        localInertia = new Vector3();
+        btLocalInertia = new btVector3();
+        boundingBox = new BoundingBox();
+
+        bulletPool = new Pool<Bullet>() {
+            @Override
+            protected Bullet newObject() {
+                return new Bullet();
+            }
+        };
+
+        zombiePool = new Pool<Zombie>() {
+            @Override
+            protected Zombie newObject() {
+                return new Zombie();
+            }
+        };
+    }
+
+
+
+    public static EntityManager instance() {
+        if (instance == null) {
+            instance = new EntityManager();
         }
-    };
-    private static Pool<Zombie> zombiePool = new Pool<Zombie>() {
-        @Override
-        protected Zombie newObject() {
-            return new Zombie();
-        }
-    };
-    private static Pool<btRigidBody> bulletCasingCollisionPool = new Pool<btRigidBody>() {
-        @Override
-        protected btRigidBody newObject() {
-            return new btRigidBody(constructionInfo);
-        }
-    };
 
+        return instance;
+    }
 
-
-    public static void setDynamicsWorld(btDiscreteDynamicsWorld world) {
+    public void setDynamicsWorld(btDiscreteDynamicsWorld world) {
         dynamicsWorld = world;
     }
 
-    public static void update(float delta) {
+
+
+    public void update(float delta) {
 
         Iterator<Entity> entityIterator = entities.iterator();
         while(entityIterator.hasNext()) {
@@ -121,13 +148,13 @@ public class EntityManager {
 
     }
 
-    public static void renderEntities(ModelBatch modelBatch, Environment environment) {
+    public void renderEntities(ModelBatch modelBatch, Environment environment) {
         for (Entity entity : entities) {
             entity.render(modelBatch, environment);
         }
     }
 
-    public static void renderBullets(ModelBatch modelBatch, Environment environment) {
+    public void renderBullets(ModelBatch modelBatch, Environment environment) {
         for (Bullet bullet : bullets) {
             bullet.render(modelBatch, environment);
         }
@@ -138,7 +165,7 @@ public class EntityManager {
 
 
 
-    public static void spawnPlayer(Vector3 position, float maxSpeed) {
+    public void spawnPlayer(Vector3 position, float maxSpeed) {
         AssetLoader.player.calculateBoundingBox(boundingBox);
         btCollisionShape collisionShape = new btBoxShape(boundingBox.getDimensions(tempVec3).scl(.5f));
         constructionInfo.setCollisionShape(collisionShape);
@@ -155,7 +182,7 @@ public class EntityManager {
         entities.add(player);
     }
 
-    public static void spawnZombie(Vector3 position) {
+    public void spawnZombie(Vector3 position) {
         Zombie zombie = zombiePool.obtain();
 
         btRigidBody rigidBody;
@@ -187,7 +214,7 @@ public class EntityManager {
         entities.add(zombie);
     }
 
-    public static void spawnBullet(Matrix4 transform, ModelInstance modelInstance, int direction, float velocity, int damage, float accuracy) {
+    public void spawnBullet(Matrix4 transform, ModelInstance modelInstance, int direction, float velocity, int damage, float accuracy) {
         Bullet bullet = bulletPool.obtain();
 
         btRigidBody rigidBody;
@@ -218,7 +245,7 @@ public class EntityManager {
     }
 
     //TODO: this method needs to be updated before it can be used
-    public static void spawnBulletCasing(Matrix4 transform, ModelInstance modelInstance, Vector3 expulsionImpulse) {
+    public void spawnBulletCasing(Matrix4 transform, ModelInstance modelInstance, Vector3 expulsionImpulse) {
         BulletCasing bulletCasing = new BulletCasing();
 
         btRigidBody rigidBody;
@@ -245,19 +272,11 @@ public class EntityManager {
 
 
 
-    public static Player getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 
-
-
-    public static void dispose() {
-        constructionInfo.dispose();
-
-        clear();
-    }
-
-    public static void clear() {
+    public void clear() {
         Iterator<Entity> entityIterator = entities.iterator();
         while(entityIterator.hasNext()) {
             Entity entity = entityIterator.next();
@@ -285,4 +304,14 @@ public class EntityManager {
             bulletCasingIterator.remove();
         }
     }
+
+
+
+    @Override
+    public void dispose() {
+        constructionInfo.dispose();
+
+        clear();
+    }
+
 }
