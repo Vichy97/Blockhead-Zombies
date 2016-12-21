@@ -9,6 +9,12 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.starcat.boxhead.objects.weapons.Gun;
 import com.starcat.boxhead.objects.weapons.Pistol;
 import com.starcat.boxhead.objects.weapons.PistolDual;
+import com.starcat.boxhead.objects.weapons.Shotgun;
+import com.starcat.boxhead.objects.weapons.ShotgunDual;
+import com.starcat.boxhead.objects.weapons.ShotgunShort;
+import com.starcat.boxhead.objects.weapons.ShotgunShortDual;
+import com.starcat.boxhead.objects.weapons.Sniper;
+import com.starcat.boxhead.objects.weapons.SniperCamo;
 import com.starcat.boxhead.objects.weapons.Uzi;
 import com.starcat.boxhead.objects.weapons.UziDual;
 import com.starcat.boxhead.utils.AssetLoader;
@@ -35,7 +41,7 @@ public class Player extends Entity {
         speed = new Vector3(maxSpeed, 0, maxSpeed);
         speed.rotate(rotationVector, -45);
 
-        currentWeapon = new UziDual(this);
+        currentWeapon = new SniperCamo(this);
 
         walkAnimationController = new AnimationController(modelInstance);
         shootAnimationController = new AnimationController(modelInstance);

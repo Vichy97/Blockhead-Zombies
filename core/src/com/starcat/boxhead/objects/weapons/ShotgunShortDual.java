@@ -7,28 +7,28 @@ import com.starcat.boxhead.objects.entities.Player;
 import com.starcat.boxhead.utils.AssetLoader;
 
 /**
- * Created by Vincent on 12/13/2016.
+ * Created by Vincent on 12/19/2016.
  */
 
-public class Shotgun extends Gun {
+public class ShotgunShortDual extends Gun {
 
-    public Shotgun(Player player) {
+    public ShotgunShortDual(Player player) {
         super(player);
 
-        modelInstance = new ModelInstance(AssetLoader.shotgun);
+        modelInstance = new ModelInstance(AssetLoader.shotgunShortDual);
         bulletCasingModel = AssetLoader.casingShotgun;
         sound = AssetLoader.pistolSound;
         animationController = new AnimationController(modelInstance);
         animationController.allowSameAnimation = true;
-        fireAnimation = "fire";
-        fireAnimationAlt = "fire";
-        walkAnimation = "walk_single_wield";
-        poseAnimation = "pose_single_wield";
-        playerFireAnimation = "shoot_single_wield";
-        playerFireAnimationAlt = "shoot_single_wield";
+        fireAnimation = "fire_right";
+        fireAnimationAlt = "fire_left";
+        walkAnimation = "walk_dual_wield";
+        poseAnimation = "pose_dual_wield";
+        playerFireAnimation = "shoot_dual_wield_right";
+        playerFireAnimationAlt = "shoot_dual_wield_left";
 
-        bulletTranslationAlt = new Vector3(WeaponConstants.SHOTGUN_BULLET_TRANSLATION_ALT);
         bulletTranslation = new Vector3(WeaponConstants.SHOTGUN_BULLET_TRANSLATION);
+        bulletTranslationAlt = new Vector3(WeaponConstants.SHOTGUN_BULLET_TRANSLATION_ALT);
         bulletCasingTranslation = new Vector3(WeaponConstants.SHOTGUN_CASING_TRANSLATION);
         bulletCasingTranslationAlt = new Vector3(WeaponConstants.SHOTGUN_CASING_TRANSLATION_ALT);
         bulletCasingExpulsionImpulse = new Vector3(WeaponConstants.SHOTGUN_CASING_EXPULSION_IMPULSE);
@@ -36,6 +36,8 @@ public class Shotgun extends Gun {
         damage = 30;
         accuracy = 5;
         bulletSpeed = .1f;
-        reloadTime = 1;
+        reloadTime = .5f;
+        autofire = true;
     }
+
 }

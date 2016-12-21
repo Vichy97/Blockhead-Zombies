@@ -56,6 +56,7 @@ public class AssetLoader implements Disposable {
     public static Model shotgunShort;
     public static Model shotgunShortDual;
     public static Model sniper;
+    public static Model sniperCamo;
 
     public static Model bulletPistol;
     public static Model bulletSniper;
@@ -117,11 +118,12 @@ public class AssetLoader implements Disposable {
         manager.load("objects/weapons/pistol_dual.g3dj", Model.class);
         manager.load("objects/weapons/uzi.g3dj", Model.class);
         manager.load("objects/weapons/uzi_dual.g3dj", Model.class);
-        //manager.load("objects/weapons/shotgun.g3dj", Model.class);
-        //manager.load("objects/weapons/shotgun_dual.g3dj", Model.class);
-        //manager.load("objects/weapons/shotgun_short.g3dj", Model.class);
-        //manager.load("objects/weapons/shotgun_short_dual.g3dj", Model.class);
-        //manager.load("objects/weapons/sniper.g3dj", Model.class);
+        manager.load("objects/weapons/shotgun.g3dj", Model.class);
+        manager.load("objects/weapons/shotgun_dual.g3dj", Model.class);
+        manager.load("objects/weapons/shotgun_short.g3dj", Model.class);
+        manager.load("objects/weapons/shotgun_short_dual.g3dj", Model.class);
+        manager.load("objects/weapons/sniper.g3dj", Model.class);
+        manager.load("objects/weapons/sniper_camo.g3dj", Model.class);
 
         manager.load("objects/projectiles/bullet_pistol.g3dj", Model.class);
         manager.load("objects/projectiles/bullet_sniper.g3dj", Model.class);
@@ -182,11 +184,12 @@ public class AssetLoader implements Disposable {
         pistolDual = manager.get("objects/weapons/pistol_dual.g3dj", Model.class);
         uzi = manager.get("objects/weapons/uzi.g3dj", Model.class);
         uziDual = manager.get("objects/weapons/uzi_dual.g3dj", Model.class);
-        //shotgun = manager.get("objects/weapons/shotgun.g3dj", Model.class);
-        //shotgunDual = manager.get("objects/weapons/shotgun_dual.g3dj", Model.class);
-        //shotgunShort = manager.get("objects/weapons/shotgun_short.g3dj", Model.class);
-        //shotgunShortDual = manager.get("objects/weapons/shotgun_short_dual.g3dj", Model.class);
-        //sniper = manager.get("objects/weapons/sniper.g3dj", Model.class);
+        shotgun = manager.get("objects/weapons/shotgun.g3dj", Model.class);
+        shotgunDual = manager.get("objects/weapons/shotgun_dual.g3dj", Model.class);
+        shotgunShort = manager.get("objects/weapons/shotgun_short.g3dj", Model.class);
+        shotgunShortDual = manager.get("objects/weapons/shotgun_short_dual.g3dj", Model.class);
+        sniper = manager.get("objects/weapons/sniper.g3dj", Model.class);
+        sniperCamo = manager.get("objects/weapons/sniper_camo.g3dj", Model.class);
 
         bulletPistol = manager.get("objects/projectiles/bullet_pistol.g3dj", Model.class);
         bulletSniper = manager.get("objects/projectiles/bullet_sniper.g3dj", Model.class);

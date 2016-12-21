@@ -7,15 +7,15 @@ import com.starcat.boxhead.objects.entities.Player;
 import com.starcat.boxhead.utils.AssetLoader;
 
 /**
- * Created by Vincent on 12/13/2016.
+ * Created by Vincent on 12/19/2016.
  */
 
-public class Sniper extends Gun {
+public class SniperCamo extends Gun {
 
-    public Sniper(Player player) {
+    public SniperCamo(Player player) {
         super(player);
 
-        modelInstance = new ModelInstance(AssetLoader.sniper);
+        modelInstance = new ModelInstance(AssetLoader.sniperCamo);
         bulletModel = AssetLoader.bulletSniper;
         bulletCasingModel = AssetLoader.casingSniper;
         sound = AssetLoader.pistolSound;

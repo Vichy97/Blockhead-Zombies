@@ -7,15 +7,15 @@ import com.starcat.boxhead.objects.entities.Player;
 import com.starcat.boxhead.utils.AssetLoader;
 
 /**
- * Created by Vincent on 12/13/2016.
+ * Created by Vincent on 12/19/2016.
  */
 
-public class Shotgun extends Gun {
+public class ShotgunShort extends Gun {
 
-    public Shotgun(Player player) {
+    public ShotgunShort(Player player) {
         super(player);
 
-        modelInstance = new ModelInstance(AssetLoader.shotgun);
+        modelInstance = new ModelInstance(AssetLoader.shotgunShort);
         bulletCasingModel = AssetLoader.casingShotgun;
         sound = AssetLoader.pistolSound;
         animationController = new AnimationController(modelInstance);
@@ -36,6 +36,7 @@ public class Shotgun extends Gun {
         damage = 30;
         accuracy = 5;
         bulletSpeed = .1f;
+        autofire = true;
         reloadTime = 1;
     }
 }
