@@ -45,7 +45,7 @@ public class ParticleManager {
         Decal decal = Decal.newDecal(bloodSplatter);
         decal.setRotation(0, 90, 0);
         decal.setScale(.01f);
-        decal.translate(x, .6f, z);
+        decal.translate(x, 0f, z);
         decal.setBlending(GL20.GL_BLEND_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         decals.add(decal);
     }

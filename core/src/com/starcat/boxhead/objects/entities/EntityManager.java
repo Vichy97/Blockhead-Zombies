@@ -29,25 +29,30 @@ import java.util.Iterator;
  */
 public class EntityManager implements Disposable {
 
-    private btDiscreteDynamicsWorld dynamicsWorld;
     private static EntityManager instance;
 
+    private btDiscreteDynamicsWorld dynamicsWorld;
+
+    private Player player;
     private ArrayList<Entity> entities;
     private ArrayList<Bullet> bullets;
     private ArrayList<BulletCasing> bulletCasings;
 
-    private Player player;
-
-    private btRigidBody.btRigidBodyConstructionInfo constructionInfo = new btRigidBody.btRigidBodyConstructionInfo(1, null, null, Vector3.Zero);
-    private Vector3 tempVec3 = new Vector3();
-    private Vector3 linearFactor = Vector3.X.add(Vector3.Z);
-    private Vector3 angularFactor = Vector3.Y;
-    private Vector3 localInertia = new Vector3();
-    private btVector3 btLocalInertia = new btVector3();
-    private BoundingBox boundingBox = new BoundingBox();
+    private btRigidBody.btRigidBodyConstructionInfo constructionInfo;
+    private Vector3 tempVec3;
+    private Vector3 linearFactor;
+    private Vector3 angularFactor;
+    private Vector3 localInertia;
+    private btVector3 btLocalInertia;
+    private BoundingBox boundingBox;
 
     private Pool<Bullet> bulletPool;
     private Pool<Zombie> zombiePool;
+
+    private float currentTime = 0;
+    private WaveDesc currentWave;
+    private Vector3[] spawnPoints;
+    private int zombiesLeftToSpawn = 5;
 
 
 
@@ -244,7 +249,7 @@ public class EntityManager implements Disposable {
         bullets.add(bullet);
     }
 
-    //TODO: this method needs to be updated before it can be used
+    //FIXME: this method needs to be updated before it can be used
     public void spawnBulletCasing(Matrix4 transform, ModelInstance modelInstance, Vector3 expulsionImpulse) {
         BulletCasing bulletCasing = new BulletCasing();
 
@@ -270,6 +275,16 @@ public class EntityManager implements Disposable {
         bulletCasings.add(bulletCasing);
     }
 
+    public void updateWave(float delta) {
+        currentTime += delta;
+
+        if (zombiesLeftToSpawn > 0) {
+            if (currentTime >= currentWave.spawnRate) {
+                currentTime = 0;
+                spawnZombie(spawnPoints[0]);
+            }
+        }
+    }
 
 
     public Player getPlayer() {
@@ -309,6 +324,8 @@ public class EntityManager implements Disposable {
 
     @Override
     public void dispose() {
+        instance = null;
+
         constructionInfo.dispose();
 
         clear();

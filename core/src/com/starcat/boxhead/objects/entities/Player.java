@@ -41,7 +41,7 @@ public class Player extends Entity {
         speed = new Vector3(maxSpeed, 0, maxSpeed);
         speed.rotate(rotationVector, -45);
 
-        currentWeapon = new SniperCamo(this);
+        currentWeapon = new UziDual(this);
 
         walkAnimationController = new AnimationController(modelInstance);
         shootAnimationController = new AnimationController(modelInstance);

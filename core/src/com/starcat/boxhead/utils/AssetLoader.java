@@ -39,7 +39,7 @@ public class AssetLoader implements Disposable {
 
     public static I18NBundle i18NBundle;
 
-    private static BitmapFont largeFont, smallFont;
+    private static BitmapFont largeFont, smallFont, menuFont, menuLabelFont;
     private static TextureAtlas ui;
     public static Skin uiSkin;
 
@@ -75,6 +75,8 @@ public class AssetLoader implements Disposable {
     public static Texture starTexture2;
     public static Texture skinAdventurer;
     public static Texture bloodSpatter;
+    public static Texture libgdxLogo;
+    public static Texture starcatLogo;
 
     public static Sound button_click;
     public static Sound pistolSound;
@@ -87,6 +89,14 @@ public class AssetLoader implements Disposable {
     }
 
 
+
+    public void loadSplashScreen() {
+        manager.load("libgdx_logo.png",Texture.class);
+        manager.load("starcat_logo.png",Texture.class);
+        manager.finishLoading();
+        libgdxLogo = manager.get("libgdx_logo.png", Texture.class);
+        starcatLogo = manager.get("starcat_logo.png", Texture.class);
+    }
 
     //only queues assets to be loaded. calling update() actually does the loading
     public void load() {
@@ -107,9 +117,9 @@ public class AssetLoader implements Disposable {
         manager.load("blood_spatter.png", Texture.class, param);
 
         manager.load("ui/ui.atlas", TextureAtlas.class);
-        manager.load("maps/test_scene/test_scene_base.g3dj", Model.class);
-        manager.load("maps/test_scene/test_scene_objects.g3dj", Model.class);
-        manager.load("maps/test_scene/test_scene_doodads.g3dj", Model.class);
+        manager.load("maps/test_scene/map_1_base.g3dj", Model.class);
+        manager.load("maps/test_scene/map_1_objects.g3dj", Model.class);
+        manager.load("maps/test_scene/map_1_doodads.g3dj", Model.class);
 
         manager.load("objects/entities/player.g3dj", Model.class);
         manager.load("objects/entities/zombie.g3dj", Model.class);
@@ -155,13 +165,17 @@ public class AssetLoader implements Disposable {
 
         largeFont = createFont("DroidSans.ttf", Gdx.graphics.getHeight() / 10, Color.WHITE);
         smallFont = createFont("DroidSans.ttf", Gdx.graphics.getHeight() / 15, Color.WHITE);
+        menuFont = createFont("ZombieNoize.ttf", Gdx.graphics.getHeight() / 6, Color.WHITE);
+        menuLabelFont = createFont("BannanaBrick.ttf", Gdx.graphics.getHeight() / 7, Color.FIREBRICK);
         ui = manager.get("ui/ui.atlas", TextureAtlas.class);
         uiSkin = new Skin(Gdx.files.internal("ui/ui.json"));
         uiSkin.addRegions(ui);
+        uiSkin.get("default", CheckBox.CheckBoxStyle.class).font = smallFont;
         uiSkin.get("large", TextButton.TextButtonStyle.class).font = largeFont;
         uiSkin.get("small", TextButton.TextButtonStyle.class).font = smallFont;
-        uiSkin.get("default", CheckBox.CheckBoxStyle.class).font = smallFont;
+        uiSkin.get("menu", TextButton.TextButtonStyle.class).font = menuFont;
         uiSkin.get("default", Label.LabelStyle.class).font = smallFont;
+        uiSkin.get("title", Label.LabelStyle.class).font = menuLabelFont;
 
         cloudTexture1 = manager.get("cloud_1.png", Texture.class);
         cloudTexture2 = manager.get("cloud_2.png", Texture.class);
@@ -170,9 +184,9 @@ public class AssetLoader implements Disposable {
         starTexture2 = manager.get("starSmall.png", Texture.class);
         bloodSpatter = manager.get("blood_spatter.png", Texture.class);
 
-        mapBase = manager.get("maps/test_scene/test_scene_base.g3dj", Model.class);
-        mapObjects = manager.get("maps/test_scene/test_scene_objects.g3dj", Model.class);
-        mapDoodads = manager.get("maps/test_scene/test_scene_doodads.g3dj", Model.class);
+        mapBase = manager.get("maps/test_scene/map_1_base.g3dj", Model.class);
+        mapObjects = manager.get("maps/test_scene/map_1_objects.g3dj", Model.class);
+        mapDoodads = manager.get("maps/test_scene/map_1_doodads.g3dj", Model.class);
         map = new Map(mapBase, mapObjects, mapDoodads);
 
         player = manager.get("objects/entities/player.g3dj", Model.class);

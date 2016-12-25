@@ -6,14 +6,10 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
-import com.badlogic.gdx.graphics.g3d.model.Node;
-import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
-import com.badlogic.gdx.graphics.g3d.utils.DefaultShaderProvider;
-import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -41,7 +37,6 @@ import com.starcat.boxhead.environment.Evening;
 import com.starcat.boxhead.environment.Night;
 import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.objects.Cloud;
-import com.starcat.boxhead.objects.StaticGameObject;
 import com.starcat.boxhead.objects.Map;
 import com.starcat.boxhead.objects.Star;
 import com.starcat.boxhead.objects.entities.EntityManager;
@@ -50,8 +45,6 @@ import com.starcat.boxhead.physics.MyContactListener;
 import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.physics.CollisionFlags;
 import com.starcat.boxhead.utils.GameUtils;
-
-import java.util.ArrayList;
 
 /**
  * Created by Vincent on 6/19/2015.
@@ -74,9 +67,6 @@ public class GameScreen extends BaseScreen {
     private Touchpad touchpad;
 
     private ModelCache modelCache, shadowCache;
-    private ModelBatch modelBatch, shadowBatch;
-    private ArrayList<StaticGameObject> modelInstances, shadowInstances;
-    private int visibleModelInstanceCount = 0;
 
     private Environment environment;
     private DirectionalShadowLight sunlight;
@@ -109,6 +99,9 @@ public class GameScreen extends BaseScreen {
     public GameScreen(MyGdxGame game) {
         super(game);
 
+        game.getGameViewport().setWorldSize(game.GAME_WIDTH / 90, game.GAME_HEIGHT / 90);
+        game.getGameCamera().position.set(0, 10, 0);
+
         initUI();
         initWorld();
         initLighting();
@@ -116,23 +109,17 @@ public class GameScreen extends BaseScreen {
 
         particleManager = ParticleManager.instance();
         entityManager = EntityManager.instance();
+        entityManager.setDynamicsWorld(dynamicsWorld);
 
         //TODO: wave spawning system (probably handled by entity manager)
-        entityManager.spawnPlayer(new Vector3(10, 1.3f, 10), .055f);
+        entityManager.spawnPlayer(new Vector3(0, .8f, 0), .055f);
         for (int i = 0; i < 5; i++) {
-            entityManager.spawnZombie(new Vector3(15, 1.3f, 15));
+            entityManager.spawnZombie(new Vector3(5,.8f, 5));
         }
 
     }
 
 
-
-    @Override
-    public void show() {
-        super.show();
-
-        Gdx.graphics.setContinuousRendering(true);
-    }
 
     @Override
     public void render(float delta) {
@@ -185,32 +172,20 @@ public class GameScreen extends BaseScreen {
             entityManager.getPlayer().setDirection(direction);
         }
 
-        visibleModelInstanceCount = 0;
-        modelBatch.begin(game.getGameCamera());
-        /*for(GameObject object : modelInstances) {
-            if (isVisible(object)) {
-                modelBatch.render(object, environment);
-                visibleModelInstanceCount++;
-            }
-        }*/
-        modelBatch.render(modelCache, environment);
-        entityManager.renderEntities(modelBatch, environment);
-        entityManager.renderBullets(modelBatch, environment);
-        modelBatch.end();
-
-        particleManager.renderDecals(game.getDecalBatch());
+        game.getModelBatch().begin(game.getGameCamera());
+        game.getModelBatch().render(modelCache, environment);
+        entityManager.renderEntities(game.getModelBatch(), environment);
+        entityManager.renderBullets(game.getModelBatch(), environment);
+        game.getModelBatch().end();
 
         sunlight.begin(Vector3.Zero, game.getGameCamera().direction);
-        shadowBatch.begin(sunlight.getCamera());
-        /*for(GameObject object : shadowInstances) {
-            if (isVisible(object)) {
-                shadowBatch.render(object, environment);
-            }
-        }*/
-        shadowBatch.render(shadowCache);
-        entityManager.renderEntities(shadowBatch, environment);
-        shadowBatch.end();
+        game.getShadowBatch().begin(sunlight.getCamera());
+        game.getShadowBatch().render(shadowCache);
+        entityManager.renderEntities(game.getShadowBatch(), environment);
+        game.getShadowBatch().end();
         sunlight.end();
+
+        particleManager.renderDecals(game.getDecalBatch());
 
         if (!paused) {
             entityManager.update(Gdx.graphics.getDeltaTime());
@@ -263,7 +238,6 @@ public class GameScreen extends BaseScreen {
         soundButton.setVisible(true);
         touchpad.setVisible(false);
 
-        Gdx.graphics.setContinuousRendering(false);
         paused = true;
     }
 
@@ -276,15 +250,15 @@ public class GameScreen extends BaseScreen {
         mapBaseCollisionShape.dispose();
         mapObjectsCollisionShape.dispose();
 
-        EntityManager.instance().clear();
+        modelCache.dispose();
+        shadowCache.dispose();
+
+        entityManager.dispose();
         dynamicsWorld.dispose();
         collisionConfig.dispose();
         broadphase.dispose();
         dispatcher.dispose();
         constraintSolver.dispose();
-
-        modelBatch.dispose();
-        shadowBatch.dispose();
 
         stage.dispose();
 
@@ -292,19 +266,6 @@ public class GameScreen extends BaseScreen {
     }
 
 
-    
-    /*
-     * method to test whether an object is in the camera frustum
-     *
-     * this method is used for frustum culling of objects,
-     * however it is more efficient to cache them, so this
-     * might only be useful for dynamic objects that would
-     * need to be re-cached every frame (making caching
-     * actually less efficient than frustum culling)
-     */
-    private boolean isVisible(StaticGameObject instance) {
-        return game.getGameCamera().frustum.sphereInFrustum(instance.center, instance.radius);
-    }
 
     //method to limit fps (will soon switch game over to 30fps)
     public void sleep(int fps) {
@@ -407,7 +368,6 @@ public class GameScreen extends BaseScreen {
         mapBaseCollisionShape = new btBoxShape(boundingBox.getDimensions(new Vector3()).scl(.5f));
         mapBaseCollisionObject = new btCollisionObject();
         mapBaseCollisionObject.setCollisionShape(mapBaseCollisionShape);
-        mapBaseCollisionObject.setWorldTransform(currentMap.base.transform.translate(0, -.025f, 0));
         mapBaseCollisionObject.setRestitution(.5f);
 
         mapObjectsCollisionShape = Bullet.obtainStaticNodeShape(currentMap.objects.nodes);
@@ -429,9 +389,7 @@ public class GameScreen extends BaseScreen {
         if (MyGdxGame.WIREFRAME) {
             dynamicsWorld.addCollisionObject(mapObjectsCollisionObject, (short) CollisionFlags.OBJECT_FLAG, (short) (CollisionFlags.BULLET_CASING_FLAG | CollisionFlags.ENTITY_FLAG | CollisionFlags.BULLET_FLAG));
         }
-
-        EntityManager.instance().setDynamicsWorld(dynamicsWorld);
-
+        
         contactListener = new MyContactListener();
     }
 
@@ -441,68 +399,15 @@ public class GameScreen extends BaseScreen {
         modelCache = new ModelCache();
         shadowCache = new ModelCache();
 
-        DefaultShader.Config config = new DefaultShader.Config();
-        config.numDirectionalLights = 1;
-        config.numPointLights = 0;
-        config.numBones = 0;
-        config.defaultCullFace = GL20.GL_BACK;
-        modelBatch = new ModelBatch(new DefaultShaderProvider(config));
-        shadowBatch = new ModelBatch(new DepthShaderProvider());
-
-        modelInstances = new ArrayList<StaticGameObject>();
-        shadowInstances = new ArrayList<StaticGameObject>();
-
         modelCache.begin();
-        shadowCache.begin();
-        for (int i = 0; i < AssetLoader.mapBase.nodes.size; i++) {
-            String id = AssetLoader.mapBase.nodes.get(i).id;
-            StaticGameObject instance = new StaticGameObject(AssetLoader.mapBase, id);
-            Node node = instance.getNode(id);
-
-            instance.transform.set(node.globalTransform);
-            node.translation.set(0, 0, 0);
-            node.scale.set(1, 1, 1);
-            node.rotation.idt();
-            instance.calculateTransforms();
-
-            //modelInstances.add(instance);
-            modelCache.add(instance);
-        }
-
-        for (int i = 0; i < AssetLoader.mapObjects.nodes.size; i++) {
-            String id = AssetLoader.mapObjects.nodes.get(i).id;
-            StaticGameObject instance = new StaticGameObject(AssetLoader.mapObjects, id);
-            Node node = instance.getNode(id);
-
-            instance.transform.set(node.globalTransform);
-            node.translation.set(0, 0, 0);
-            node.scale.set(1, 1, 1);
-            node.rotation.idt();
-            instance.calculateTransforms();
-
-            //modelInstances.add(instance);
-            //shadowInstances.add(instance);
-            modelCache.add(instance);
-            shadowCache.add(instance);
-        }
-
-        for (int i = 0; i < AssetLoader.mapDoodads.nodes.size; i++) {
-            String id = AssetLoader.mapDoodads.nodes.get(i).id;
-            StaticGameObject instance = new StaticGameObject(AssetLoader.mapDoodads, id);
-            Node node = instance.getNode(id);
-
-            instance.transform.set(node.globalTransform);
-            node.translation.set(0, 0, 0);
-            node.scale.set(1, 1, 1);
-            node.rotation.idt();
-            instance.calculateTransforms();
-
-            //modelInstances.add(instance);
-            //shadowInstances.add(instance);
-            modelCache.add(instance);
-            shadowCache.add(instance);
-        }
+        modelCache.add(new ModelInstance(currentMap.base));
+        modelCache.add(new ModelInstance(currentMap.objects));
+        modelCache.add(new ModelInstance(currentMap.doodads));
         modelCache.end();
+
+        shadowCache.begin();
+        shadowCache.add(new ModelInstance(currentMap.objects));
+        shadowCache.add(new ModelInstance(currentMap.doodads));
         shadowCache.end();
 
         spawnClouds();
@@ -589,7 +494,7 @@ public class GameScreen extends BaseScreen {
         } else if (keycode == Input.Keys.BACKSPACE) {
             GameUtils.takeScreenshot();
         } else if (keycode == Input.Keys.SHIFT_RIGHT){
-            entityManager.spawnZombie(new Vector3(10, 1.3f, 10));
+            entityManager.spawnZombie(new Vector3(0, .8f, 0));
         } else if (keycode == Input.Keys.NUM_1) {
             currentMap.setTimeOfDay(new Afternoon());
             environment = new Environment();
@@ -653,7 +558,6 @@ public class GameScreen extends BaseScreen {
             touchpad.setVisible(true);
 
             inputMultiplexer.addProcessor(stage);
-            Gdx.graphics.setContinuousRendering(true);
             paused = false;
         }
     };

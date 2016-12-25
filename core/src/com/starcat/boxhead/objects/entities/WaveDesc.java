@@ -7,4 +7,5 @@ package com.starcat.boxhead.objects.entities;
 public class WaveDesc {
     public int numberOfZombies;
     public float zombieSpeed;
+    public float spawnRate;
 }

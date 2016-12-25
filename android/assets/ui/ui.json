@@ -7,6 +7,9 @@
   com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
     default: {
 
+    },
+    title: {
+
     }
   },
   com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
@@ -23,6 +26,9 @@
     },
     large: {
       down: button, up: button
+    },
+    menu: {
+      down: null, up: null
     }
   },
   com.badlogic.gdx.scenes.scene2d.ui.Touchpad$TouchpadStyle: {
