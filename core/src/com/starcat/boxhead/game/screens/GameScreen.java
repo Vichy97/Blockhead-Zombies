@@ -62,7 +62,7 @@ public class GameScreen extends BaseScreen {
 
     private Label debugLabel;
 
-    private ImageButton pauseButton, playButton, musicButton, soundButton;
+    private ImageButton pauseButton, playButton;
     private TextButton menuButton;
     private Touchpad touchpad;
 
@@ -178,14 +178,14 @@ public class GameScreen extends BaseScreen {
         entityManager.renderBullets(game.getModelBatch(), environment);
         game.getModelBatch().end();
 
+        particleManager.renderDecals(game.getDecalBatch());
+
         sunlight.begin(Vector3.Zero, game.getGameCamera().direction);
         game.getShadowBatch().begin(sunlight.getCamera());
         game.getShadowBatch().render(shadowCache);
         entityManager.renderEntities(game.getShadowBatch(), environment);
         game.getShadowBatch().end();
         sunlight.end();
-
-        particleManager.renderDecals(game.getDecalBatch());
 
         if (!paused) {
             entityManager.update(Gdx.graphics.getDeltaTime());
@@ -234,8 +234,6 @@ public class GameScreen extends BaseScreen {
         pauseButton.setVisible(false);
         playButton.setVisible(true);
         menuButton.setVisible(true);
-        musicButton.setVisible(true);
-        soundButton.setVisible(true);
         touchpad.setVisible(false);
 
         paused = true;
@@ -295,14 +293,6 @@ public class GameScreen extends BaseScreen {
         playButton.addListener(playButtonListener);
         playButton.setVisible(false);
 
-        musicButton = new ImageButton(AssetLoader.uiSkin.getDrawable("music_on"), AssetLoader.uiSkin.getDrawable("music_on"), AssetLoader.uiSkin.getDrawable("music_off"));
-        musicButton.addListener(musicButtonListener);
-        musicButton.setVisible(false);
-
-        soundButton = new ImageButton(AssetLoader.uiSkin.getDrawable("sound_on"), AssetLoader.uiSkin.getDrawable("sound_on"), AssetLoader.uiSkin.getDrawable("sound_off"));
-        soundButton.addListener(soundButtonListener);
-        soundButton.setVisible(false);
-
         menuButton = new TextButton(AssetLoader.i18NBundle.get("menu"), AssetLoader.uiSkin, "small");
         menuButton.addListener(menuButtonListener);
         menuButton.setVisible(false);
@@ -324,9 +314,6 @@ public class GameScreen extends BaseScreen {
         playTable.add(pauseButton).top().right();
 
         pauseTable.add(playButton).colspan(2);
-        pauseTable.row();
-        pauseTable.add(soundButton);
-        pauseTable.add(musicButton);
         pauseTable.row();
         pauseTable.add(menuButton).height(128).colspan(2).fillX();
 
@@ -356,8 +343,6 @@ public class GameScreen extends BaseScreen {
 
     private void initPhysics() {
         GameUtils.debug(this, "initPhysics");
-
-        Bullet.init();
 
         BoundingBox boundingBox = new BoundingBox();
         currentMap.base.calculateBoundingBox(boundingBox);
@@ -389,7 +374,7 @@ public class GameScreen extends BaseScreen {
         if (MyGdxGame.WIREFRAME) {
             dynamicsWorld.addCollisionObject(mapObjectsCollisionObject, (short) CollisionFlags.OBJECT_FLAG, (short) (CollisionFlags.BULLET_CASING_FLAG | CollisionFlags.ENTITY_FLAG | CollisionFlags.BULLET_FLAG));
         }
-        
+
         contactListener = new MyContactListener();
     }
 
@@ -552,8 +537,6 @@ public class GameScreen extends BaseScreen {
             AssetLoader.button_click.play();
             playButton.setVisible(false);
             pauseButton.setVisible(true);
-            musicButton.setVisible(false);
-            soundButton.setVisible(false);
             menuButton.setVisible(false);
             touchpad.setVisible(true);
 
@@ -567,20 +550,6 @@ public class GameScreen extends BaseScreen {
         public void clicked(InputEvent event, float x, float y) {
             AssetLoader.button_click.play();
             pause();
-        }
-    };
-
-    private ClickListener musicButtonListener = new ClickListener() {
-        @Override
-        public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
-        }
-    };
-
-    private ClickListener soundButtonListener = new ClickListener() {
-        @Override
-        public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
         }
     };
 

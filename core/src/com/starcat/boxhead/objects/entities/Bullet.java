@@ -65,7 +65,8 @@ public class Bullet extends DynamicGameObject implements Pool.Poolable {
 
         rigidBody.translate(speed);
 
-        if ((position.x > 75 || position.x < -75) || (position.z > 75 || position.z < -75)) {
+        if ((position.x > 50 || position.x < -50) || (position.z > 50 || position.z < -50)) {
+            setShouldRemoveBody(true);
             setShouldPool(true);
         }
     }

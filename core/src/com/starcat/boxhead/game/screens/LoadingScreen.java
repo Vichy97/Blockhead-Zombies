@@ -7,8 +7,6 @@ import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.utils.GameUtils;
 
-import java.util.ArrayList;
-
 /**
  * Created by Vincent on 6/18/2015.
  *
@@ -72,6 +70,7 @@ public class LoadingScreen extends BaseScreen {
         //returns true if it is done loading
         if (game.getAssetLoader().update()) {
             game.getAssetLoader().initAssets();
+
             if (splashLogo2.getColor().a <= .1f) {
                 game.setScreen(new MenuScreen(game));
                 dispose();

@@ -3,17 +3,17 @@ package com.starcat.boxhead.utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.TextureLoader;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
+import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -29,9 +29,6 @@ import com.starcat.boxhead.objects.Map;
  * to load assets asynchronously so you can display other things such
  * as a splash screen or loading bar. (there wont be a huge lag spike when loading)
  * most textures are also stored in texture atlas's for more efficient loading/rendering
- *
- * If ram is short then I could make more methods such as loadMenuAssets
- * then unload before the next screen (probably not necessary)
  */
 public class AssetLoader implements Disposable {
 
@@ -39,7 +36,7 @@ public class AssetLoader implements Disposable {
 
     public static I18NBundle i18NBundle;
 
-    private static BitmapFont largeFont, smallFont, menuFont, menuLabelFont;
+    private static BitmapFont largeFont, smallFont, verySmallFont, menuFont, menuLabelFont;
     private static TextureAtlas ui;
     public static Skin uiSkin;
 
@@ -102,19 +99,61 @@ public class AssetLoader implements Disposable {
     public void load() {
         GameUtils.debug(this, "load");
 
-        TextureLoader.TextureParameter param = new TextureLoader.TextureParameter();
-        param.minFilter = Texture.TextureFilter.Linear;
-        param.magFilter = Texture.TextureFilter.Linear;
-        param.format = Pixmap.Format.RGBA8888;
+        TextureLoader.TextureParameter textureParam = new TextureLoader.TextureParameter();
+        textureParam.minFilter = Texture.TextureFilter.Linear;
+        textureParam.magFilter = Texture.TextureFilter.Linear;
+        textureParam.format = Pixmap.Format.RGBA8888;
+
+        FreetypeFontLoader.FreeTypeFontLoaderParameter verySmallFont = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+        verySmallFont.fontFileName = "fonts/droid_sans.ttf";
+        verySmallFont.fontParameters.color = Color.WHITE;
+        verySmallFont.fontParameters.size = Gdx.graphics.getHeight() / 20;
+        verySmallFont.fontParameters.shadowOffsetX = -3;
+        verySmallFont.fontParameters.shadowOffsetY = 3;
+        verySmallFont.fontParameters.borderWidth = 2;
+        verySmallFont.fontParameters.borderStraight = false;
+        verySmallFont.fontParameters.borderWidth = 2;
+        FreetypeFontLoader.FreeTypeFontLoaderParameter smallFont = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+        smallFont.fontFileName = "fonts/droid_sans.ttf";
+        smallFont.fontParameters.color = Color.WHITE;
+        smallFont.fontParameters.size = Gdx.graphics.getHeight() / 15;
+        smallFont.fontParameters.shadowOffsetX = -3;
+        smallFont.fontParameters.shadowOffsetY = 3;
+        smallFont.fontParameters.borderWidth = 2;
+        smallFont.fontParameters.borderStraight = false;
+        smallFont.fontParameters.borderWidth = 2;
+        FreetypeFontLoader.FreeTypeFontLoaderParameter largeFont = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+        largeFont.fontFileName = "fonts/droid_sans.ttf";
+        largeFont.fontParameters.color = Color.WHITE;
+        largeFont.fontParameters.size = Gdx.graphics.getHeight() / 10;
+        largeFont.fontParameters.shadowOffsetX = -5;
+        largeFont.fontParameters.shadowOffsetY = 5;
+        largeFont.fontParameters.borderStraight = false;
+        largeFont.fontParameters.borderWidth = 2;
+        FreetypeFontLoader.FreeTypeFontLoaderParameter menuFont = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+        menuFont.fontFileName = "fonts/zombie_noize.ttf";
+        menuFont.fontParameters.color = Color.WHITE;
+        menuFont.fontParameters.size = Gdx.graphics.getHeight() / 6;
+        menuFont.fontParameters.shadowOffsetX  = -5;
+        menuFont.fontParameters.shadowOffsetY  = 5;
+        menuFont.fontParameters.borderWidth = 2;
+        FreetypeFontLoader.FreeTypeFontLoaderParameter menuLabelFont = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+        menuLabelFont.fontFileName = "fonts/banana_brick.ttf";
+        menuLabelFont.fontParameters.color = new Color(130f / 255f, 0, 0, 1);
+        menuLabelFont.fontParameters.size = Gdx.graphics.getHeight() / 7;
+        menuLabelFont.fontParameters.shadowOffsetX = -5;
+        menuLabelFont.fontParameters.shadowOffsetY = 5;
+        menuLabelFont.fontParameters.borderStraight = false;
+        menuLabelFont.fontParameters.borderWidth = 5.5f;
 
         manager.load("locales/Boxhead", I18NBundle.class);
 
-        manager.load("cloud_1.png", Texture.class, param);
-        manager.load("cloud_2.png", Texture.class, param);
-        manager.load("cloud_3.png", Texture.class, param);
-        manager.load("starBig.png", Texture.class, param);
-        manager.load("starSmall.png", Texture.class, param);
-        manager.load("blood_spatter.png", Texture.class, param);
+        manager.load("cloud_1.png", Texture.class, textureParam);
+        manager.load("cloud_2.png", Texture.class, textureParam);
+        manager.load("cloud_3.png", Texture.class, textureParam);
+        manager.load("starBig.png", Texture.class, textureParam);
+        manager.load("starSmall.png", Texture.class, textureParam);
+        manager.load("blood_spatter.png", Texture.class, textureParam);
 
         manager.load("ui/ui.atlas", TextureAtlas.class);
         manager.load("maps/test_scene/map_1_base.g3dj", Model.class);
@@ -150,6 +189,15 @@ public class AssetLoader implements Disposable {
 
         manager.load("audio/ui/button_click.ogg", Sound.class);
         manager.load("audio/guns/pistol.ogg", Sound.class);
+
+        manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(new InternalFileHandleResolver()));
+        manager.setLoader(BitmapFont.class, new FreetypeFontLoader(new InternalFileHandleResolver()));
+
+        manager.load("large_font", BitmapFont.class, largeFont);
+        manager.load("menu_font", BitmapFont.class, menuFont);
+        manager.load("small_font", BitmapFont.class, smallFont);
+        manager.load("menu_label_font", BitmapFont.class, menuLabelFont);
+        manager.load("very_small_font", BitmapFont.class, verySmallFont);
     }
 
     public boolean update() {
@@ -163,10 +211,12 @@ public class AssetLoader implements Disposable {
 
         i18NBundle = manager.get("locales/Boxhead");
 
-        largeFont = createFont("DroidSans.ttf", Gdx.graphics.getHeight() / 10, Color.WHITE);
-        smallFont = createFont("DroidSans.ttf", Gdx.graphics.getHeight() / 15, Color.WHITE);
-        menuFont = createFont("ZombieNoize.ttf", Gdx.graphics.getHeight() / 6, Color.WHITE);
-        menuLabelFont = createFont("BannanaBrick.ttf", Gdx.graphics.getHeight() / 7, Color.FIREBRICK);
+        largeFont = manager.get("large_font", BitmapFont.class);
+        smallFont = manager.get("small_font", BitmapFont.class);
+        menuFont = manager.get("menu_font", BitmapFont.class);
+        menuLabelFont = manager.get("menu_label_font", BitmapFont.class);
+        verySmallFont = manager.get("very_small_font", BitmapFont.class);
+
         ui = manager.get("ui/ui.atlas", TextureAtlas.class);
         uiSkin = new Skin(Gdx.files.internal("ui/ui.json"));
         uiSkin.addRegions(ui);
@@ -176,6 +226,10 @@ public class AssetLoader implements Disposable {
         uiSkin.get("menu", TextButton.TextButtonStyle.class).font = menuFont;
         uiSkin.get("default", Label.LabelStyle.class).font = smallFont;
         uiSkin.get("title", Label.LabelStyle.class).font = menuLabelFont;
+        uiSkin.get("large", Label.LabelStyle.class).font = largeFont;
+        uiSkin.get("small", Label.LabelStyle.class).font = smallFont;
+        uiSkin.get("menu", Label.LabelStyle.class).font = menuFont;
+        uiSkin.get("very_small", Label.LabelStyle.class).font = verySmallFont;
 
         cloudTexture1 = manager.get("cloud_1.png", Texture.class);
         cloudTexture2 = manager.get("cloud_2.png", Texture.class);
@@ -218,39 +272,13 @@ public class AssetLoader implements Disposable {
 
         button_click = manager.get("audio/ui/button_click.ogg", Sound.class);
         pistolSound = manager.get("audio/guns/pistol.ogg", Sound.class);
-
-        for (int i = 0; i < mapBase.nodes.size; i++) {
-            String id = mapBase.nodes.get(i).id;
-            ModelInstance instance = new ModelInstance(mapBase, id);
-            Node node = instance.getNode(id);
-
-            instance.transform.set(node.globalTransform);
-            node.translation.set(0, 0, 0);
-            node.scale.set(1, 1, 1);
-            node.rotation.idt();
-            instance.calculateTransforms();
-        }
-
-    }
-
-
-
-    //creates a freetype bitmap font
-    private BitmapFont createFont(String font, int size, Color color) {
-        BitmapFont textFont;
-        FileHandle fontFile = Gdx.files.internal("fonts/" + font);
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(fontFile);
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = size;
-        parameter.color = color;
-        textFont = generator.generateFont(parameter);
-        generator.dispose();
-        return textFont;
     }
 
     public AssetManager getManager() {
         return manager;
     }
+
+
 
     @Override
     public void dispose() {

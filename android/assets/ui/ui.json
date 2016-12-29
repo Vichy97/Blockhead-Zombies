@@ -1,31 +1,42 @@
 {
   com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
     default: {
-      down: button, up: button
+
     }
   },
   com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
     default: {
 
     },
+    menu: {
+
+    },
     title: {
 
-    }
+    },
+    large: {
+
+    },
+    small: {
+
+    }, very_small: {
+
+  }
   },
   com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
     default: {
-      checkboxOn: button, checkboxOff: button
+
     }
   },
   com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
     default: {
-      down: button, up: button
+      down: null, up: null
     },
     small: {
-      down: button, up: button
+      down: null, up: null
     },
     large: {
-      down: button, up: button
+      down: null, up: null
     },
     menu: {
       down: null, up: null

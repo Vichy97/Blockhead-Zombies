@@ -249,7 +249,7 @@ public class EntityManager implements Disposable {
         bullets.add(bullet);
     }
 
-    //FIXME: this method needs to be updated before it can be used
+    //FIXME: causes weird AI behaivor and also slows the game down
     public void spawnBulletCasing(Matrix4 transform, ModelInstance modelInstance, Vector3 expulsionImpulse) {
         BulletCasing bulletCasing = new BulletCasing();
 
@@ -329,6 +329,8 @@ public class EntityManager implements Disposable {
         constructionInfo.dispose();
 
         clear();
+
+        System.gc();
     }
 
 }

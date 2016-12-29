@@ -1,70 +1,160 @@
 
 ui.png
-size: 881,304
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-button
-  rotate: false
-  xy: 304, 92
-  size: 23, 23
-  split: 9, 9, 9, 9
-  orig: 23, 23
-  offset: 0, 0
-  index: -1
-music_off
-  rotate: false
-  xy: 491, 174
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: -1
-music_on
-  rotate: false
-  xy: 621, 174
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: -1
-pause
-  rotate: false
-  xy: 751, 174
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: -1
-play
-  rotate: false
-  xy: 491, 44
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: -1
-sound_off
-  rotate: false
-  xy: 621, 44
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: -1
-sound_on
-  rotate: false
-  xy: 751, 44
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: -1
 touchpad_base
   rotate: false
-  xy: 2, 2
+  xy: 1, 205
   size: 300, 300
   orig: 300, 300
   offset: 0, 0
   index: -1
 touchpad_nob
   rotate: false
-  xy: 304, 117
-  size: 185, 185
-  orig: 185, 185
+  xy: 1, 27
+  size: 176, 176
+  orig: 176, 176
+  offset: 0, 0
+  index: -1
+button
+  rotate: false
+  xy: 303, 345
+  size: 160, 160
+  split: 9, 12, 9, 11
+  orig: 160, 160
+  offset: 0, 0
+  index: -1
+about
+  rotate: false
+  xy: 179, 103
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+achievement
+  rotate: false
+  xy: 303, 243
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+co_op
+  rotate: false
+  xy: 465, 405
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+exit
+  rotate: false
+  xy: 567, 405
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+leaderboard
+  rotate: false
+  xy: 669, 405
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+left
+  rotate: false
+  xy: 771, 405
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+multiplayer
+  rotate: false
+  xy: 873, 405
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+music_off
+  rotate: false
+  xy: 179, 1
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+music_on
+  rotate: false
+  xy: 405, 243
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+options
+  rotate: false
+  xy: 507, 303
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+pause
+  rotate: false
+  xy: 609, 303
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+play
+  rotate: false
+  xy: 711, 303
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+right
+  rotate: false
+  xy: 813, 303
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+share
+  rotate: false
+  xy: 507, 201
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+single_player
+  rotate: false
+  xy: 609, 201
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+sound_off
+  rotate: false
+  xy: 711, 201
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+sound_on
+  rotate: false
+  xy: 813, 201
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+trophy
+  rotate: false
+  xy: 915, 303
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+unlock
+  rotate: false
+  xy: 915, 201
+  size: 100, 100
+  orig: 100, 100
   offset: 0, 0
   index: -1

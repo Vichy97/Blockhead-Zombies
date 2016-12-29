@@ -20,10 +20,12 @@ public class MyContactListener extends ContactListener {
     public void onContactStarted(btCollisionObject colObj0, boolean match0, btCollisionObject colObj1, boolean match1) {
         if (colObj0.userData instanceof Bullet) {
             ((Bullet) colObj0.userData).setShouldPool(true);
+            ((Bullet) colObj0.userData).setShouldRemoveBody(true);
 
             if (colObj1.userData instanceof Zombie) {
                 ((Zombie) colObj1.userData).damage(((Bullet) colObj0.userData).getDamage());
 
+                //FIXME: knockback doesnt work
                 ((Zombie) colObj1.userData).getRigidBody().translate(((Bullet) colObj0.userData).getCurrentSpeed());
 
                 if (((Zombie) colObj1.userData).getHitpoints() <= 0) {
@@ -45,6 +47,7 @@ public class MyContactListener extends ContactListener {
 
         } else if (colObj1.userData instanceof Bullet) {
             ((Bullet) colObj1.userData).setShouldPool(true);
+            ((Bullet) colObj1.userData).setShouldRemoveBody(true);
 
             if (colObj0.userData instanceof Zombie) {
                 ((Zombie) colObj0.userData).damage(((Bullet) colObj1.userData).getDamage());

@@ -17,7 +17,6 @@ public class ZStrategyComparator implements Comparator<Decal> {
         this.camera = camera;
     }
 
-
     @Override
     public int compare(Decal o1, Decal o2) {
         float dist1 = camera.position.dst(0, 0, o1.getPosition().z);
