@@ -231,10 +231,8 @@ public class GameScreen extends BaseScreen {
     public void pause() {
         super.pause();
 
-        pauseButton.setVisible(false);
-        playButton.setVisible(true);
-        menuButton.setVisible(true);
-        touchpad.setVisible(false);
+        playTable.setVisible(false);
+        pauseTable.setVisible(true);
 
         paused = true;
     }
@@ -287,15 +285,14 @@ public class GameScreen extends BaseScreen {
         GameUtils.debug(this,"initUI");
 
         pauseButton = new ImageButton(AssetLoader.uiSkin.getDrawable("pause"));
+        pauseButton.getImageCell().size(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
+        pauseButton.setSize(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
         pauseButton.addListener(pauseButtonListener);
 
         playButton = new ImageButton(AssetLoader.uiSkin.getDrawable("play"));
+        playButton.getImageCell().size(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
+        playButton.setSize(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
         playButton.addListener(playButtonListener);
-        playButton.setVisible(false);
-
-        menuButton = new TextButton(AssetLoader.i18NBundle.get("menu"), AssetLoader.uiSkin, "small");
-        menuButton.addListener(menuButtonListener);
-        menuButton.setVisible(false);
 
         touchpad = new Touchpad(0, AssetLoader.uiSkin);
 
@@ -309,13 +306,13 @@ public class GameScreen extends BaseScreen {
         playTable.setFillParent(true);
         pauseTable = new Table();
         pauseTable.setFillParent(true);
+        pauseTable.setVisible(false);
 
-        playTable.add(touchpad).pad(50).bottom().left().expand();
-        playTable.add(pauseButton).top().right();
+        playTable.add(pauseButton).top().right().expandX();
+        playTable.row();
+        playTable.add(touchpad).bottom().left().pad(Gdx.graphics.getHeight() / 20).expandY();
 
-        pauseTable.add(playButton).colspan(2);
-        pauseTable.row();
-        pauseTable.add(menuButton).height(128).colspan(2).fillX();
+        pauseTable.add(playButton);
 
         stage = new Stage(game.getUIViewport());
         stage.addActor(playTable);
@@ -535,12 +532,9 @@ public class GameScreen extends BaseScreen {
         @Override
         public void clicked(InputEvent event, float x, float y) {
             AssetLoader.button_click.play();
-            playButton.setVisible(false);
-            pauseButton.setVisible(true);
-            menuButton.setVisible(false);
-            touchpad.setVisible(true);
+            pauseTable.setVisible(false);
+            playTable.setVisible(true);
 
-            inputMultiplexer.addProcessor(stage);
             paused = false;
         }
     };
@@ -550,15 +544,6 @@ public class GameScreen extends BaseScreen {
         public void clicked(InputEvent event, float x, float y) {
             AssetLoader.button_click.play();
             pause();
-        }
-    };
-
-    private ClickListener menuButtonListener = new ClickListener() {
-        @Override
-        public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
-            game.setScreen(new MenuScreen(game));
-            dispose();
         }
     };
 

@@ -272,6 +272,11 @@ public class AssetLoader implements Disposable {
 
         button_click = manager.get("audio/ui/button_click.ogg", Sound.class);
         pistolSound = manager.get("audio/guns/pistol.ogg", Sound.class);
+
+        uiSkin.getDrawable("touchpad_nob").setMinHeight(Gdx.graphics.getHeight() / 6);
+        uiSkin.getDrawable("touchpad_nob").setMinWidth(Gdx.graphics.getHeight() / 6);
+        uiSkin.getDrawable("touchpad_base").setMinHeight(Gdx.graphics.getWidth() / 6.5f);
+        uiSkin.getDrawable("touchpad_base").setMinWidth(Gdx.graphics.getWidth() / 6.5f);
     }
 
     public AssetManager getManager() {

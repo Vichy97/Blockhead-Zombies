@@ -14,6 +14,8 @@ import com.starcat.boxhead.game.MyGdxGame;
  */
 public class GameUtils {
 
+    private static int screenshotCounter = 0;
+
     public static int getTouchpadFourDirection(float touchpadPercentX, float touchpadPercentY) {
         float angle = (float)(180 + Math.atan2(touchpadPercentY, touchpadPercentX) * 180.0d / Math.PI);
 
@@ -73,8 +75,10 @@ public class GameUtils {
 
         Pixmap pixmap = new Pixmap(Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), Pixmap.Format.RGBA8888);
         BufferUtils.copy(pixels, 0, pixmap.getPixels(), pixels.length);
-        PixmapIO.writePNG(Gdx.files.external("screenshot.png"), pixmap);
+        PixmapIO.writePNG(Gdx.files.local("screenshot_"+ screenshotCounter + ".png"), pixmap);
         pixmap.dispose();
+
+        screenshotCounter++;
     }
 
     public static void debug(Object object, String message) {

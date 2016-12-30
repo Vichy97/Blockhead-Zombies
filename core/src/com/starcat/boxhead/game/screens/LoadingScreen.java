@@ -25,11 +25,13 @@ public class LoadingScreen extends BaseScreen {
 
         game.getAssetLoader().loadSplashScreen();
         splashLogo = new Sprite(AssetLoader.libgdxLogo);
-        splashLogo.setX(game.GAME_WIDTH / 2 - splashLogo.getWidth() / 2);
-        splashLogo.setY(game.GAME_HEIGHT / 2 - splashLogo.getHeight() / 2);
+        splashLogo.setSize(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
+        splashLogo.setX(Gdx.graphics.getWidth() / 2 - splashLogo.getWidth() / 2);
+        splashLogo.setY(Gdx.graphics.getHeight() / 2 - splashLogo.getHeight() / 2);
         splashLogo2 = new Sprite(AssetLoader.starcatLogo);
-        splashLogo2.setX(game.GAME_WIDTH / 2 - splashLogo2.getWidth() / 2);
-        splashLogo2.setY(game.GAME_HEIGHT / 2 - splashLogo2.getHeight() / 2);
+        splashLogo2.setSize(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
+        splashLogo2.setX(Gdx.graphics.getWidth() / 2 - splashLogo2.getWidth() / 2);
+        splashLogo2.setY(Gdx.graphics.getHeight() / 2 - splashLogo2.getHeight() / 2);
 
         game.getAssetLoader().load();
     }
@@ -76,7 +78,6 @@ public class LoadingScreen extends BaseScreen {
                 dispose();
             }
         }
-
     }
 
 }
