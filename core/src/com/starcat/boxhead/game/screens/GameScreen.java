@@ -41,7 +41,6 @@ import com.starcat.boxhead.objects.Map;
 import com.starcat.boxhead.objects.Star;
 import com.starcat.boxhead.objects.entities.EntityManager;
 import com.starcat.boxhead.particles.ParticleManager;
-import com.starcat.boxhead.physics.MyContactListener;
 import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.physics.CollisionFlags;
 import com.starcat.boxhead.utils.GameUtils;
@@ -49,7 +48,7 @@ import com.starcat.boxhead.utils.GameUtils;
 /**
  * Created by Vincent on 6/19/2015.
  *
- * This Screen is where all actual gameplay takes place
+ * This Screen is where all actual game play takes place
  */
 public class GameScreen extends BaseScreen {
 
@@ -90,7 +89,6 @@ public class GameScreen extends BaseScreen {
     private btDefaultCollisionConfiguration collisionConfig;
     private btCollisionShape mapObjectsCollisionShape;
     private btCollisionObject mapBaseCollisionObject;
-    private MyContactListener contactListener;
 
     private long diff, start = System.currentTimeMillis();
 
@@ -205,10 +203,10 @@ public class GameScreen extends BaseScreen {
 
         Gdx.gl.glClearColor(currentMap.getTimeOfDay().skyColor.r, currentMap.getTimeOfDay().skyColor.g, currentMap.getTimeOfDay().skyColor.b, 1);
 
-        if (MyGdxGame.DEBUG && !paused) {
-            debugDrawer.begin(game.getGameCamera());
-            dynamicsWorld.debugDrawWorld();
-            debugDrawer.end();
+        if (MyGdxGame.DEBUG && MyGdxGame.WIREFRAME &&  !paused) {
+              debugDrawer.begin(game.getGameCamera());
+              dynamicsWorld.debugDrawWorld();
+              debugDrawer.end();
         }
 
         game.getStringBuilder().setLength(0);
@@ -241,6 +239,9 @@ public class GameScreen extends BaseScreen {
     public void dispose() {
         super.dispose();
 
+        entityManager.clear();
+        particleManager.clear();
+
         game.getStringBuilder().setLength(0);
 
         mapBaseCollisionShape.dispose();
@@ -249,7 +250,6 @@ public class GameScreen extends BaseScreen {
         modelCache.dispose();
         shadowCache.dispose();
 
-        entityManager.dispose();
         dynamicsWorld.dispose();
         collisionConfig.dispose();
         broadphase.dispose();
@@ -368,11 +368,7 @@ public class GameScreen extends BaseScreen {
         dynamicsWorld.setDebugDrawer(debugDrawer);
 
         dynamicsWorld.addCollisionObject(mapBaseCollisionObject, (short) CollisionFlags.GROUND_FLAG, (short)(CollisionFlags.OBJECT_FLAG | CollisionFlags.ENTITY_FLAG | CollisionFlags.BULLET_CASING_FLAG));
-        if (MyGdxGame.WIREFRAME) {
-            dynamicsWorld.addCollisionObject(mapObjectsCollisionObject, (short) CollisionFlags.OBJECT_FLAG, (short) (CollisionFlags.BULLET_CASING_FLAG | CollisionFlags.ENTITY_FLAG | CollisionFlags.BULLET_FLAG));
-        }
-
-        contactListener = new MyContactListener();
+        dynamicsWorld.addCollisionObject(mapObjectsCollisionObject, (short) CollisionFlags.OBJECT_FLAG, (short) (CollisionFlags.BULLET_CASING_FLAG | CollisionFlags.ENTITY_FLAG | CollisionFlags.BULLET_FLAG));
     }
 
     private void initWorld() {

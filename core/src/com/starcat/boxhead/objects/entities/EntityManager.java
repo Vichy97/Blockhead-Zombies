@@ -13,10 +13,9 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btVector3;
-import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pool;
-import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.physics.CollisionFlags;
+import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.physics.CollisionMasks;
 
 import java.util.ArrayList;
@@ -27,9 +26,9 @@ import java.util.Iterator;
  *
  * This class handles all entity and bullet spawning, updating, rendering, and pooling
  */
-public class EntityManager implements Disposable {
+public class EntityManager {
 
-    private static EntityManager instance;
+    private static final EntityManager instance = new EntityManager();
 
     private btDiscreteDynamicsWorld dynamicsWorld;
 
@@ -87,10 +86,6 @@ public class EntityManager implements Disposable {
 
 
     public static EntityManager instance() {
-        if (instance == null) {
-            instance = new EntityManager();
-        }
-
         return instance;
     }
 
@@ -249,7 +244,7 @@ public class EntityManager implements Disposable {
         bullets.add(bullet);
     }
 
-    //FIXME: causes weird AI behaivor and also slows the game down
+    //FIXME: causes weird AI behavior and also slows the game down
     public void spawnBulletCasing(Matrix4 transform, ModelInstance modelInstance, Vector3 expulsionImpulse) {
         BulletCasing bulletCasing = new BulletCasing();
 
@@ -318,19 +313,8 @@ public class EntityManager implements Disposable {
 
             bulletCasingIterator.remove();
         }
+
+        bulletPool.clear();
+        zombiePool.clear();
     }
-
-
-
-    @Override
-    public void dispose() {
-        instance = null;
-
-        constructionInfo.dispose();
-
-        clear();
-
-        System.gc();
-    }
-
 }

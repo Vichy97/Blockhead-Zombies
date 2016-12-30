@@ -13,9 +13,11 @@ import java.util.ArrayList;
  */
 
 public class ParticleManager {
+
+    private static final ParticleManager instance = new ParticleManager();
+
     private ArrayList<Decal> decals;
     private TextureRegion bloodSplatter;
-    private static ParticleManager instance;
 
 
 
@@ -27,10 +29,6 @@ public class ParticleManager {
 
 
     public static ParticleManager instance() {
-        if(instance == null) {
-            instance = new ParticleManager();
-        }
-
         return instance;
     }
 
@@ -52,5 +50,9 @@ public class ParticleManager {
 
     public ArrayList<Decal>  getDecals() {
         return decals;
+    }
+
+    public void clear() {
+        decals.clear();
     }
 }

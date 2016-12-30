@@ -26,7 +26,7 @@ public class MyContactListener extends ContactListener {
                 ((Zombie) colObj1.userData).damage(((Bullet) colObj0.userData).getDamage());
 
                 //FIXME: knockback doesnt work
-                ((Zombie) colObj1.userData).getRigidBody().translate(((Bullet) colObj0.userData).getCurrentSpeed());
+                //((Zombie) colObj1.userData).getRigidBody().translate(((Bullet) colObj0.userData).getCurrentSpeed());
 
                 if (((Zombie) colObj1.userData).getHitpoints() <= 0) {
                     if (((Zombie) colObj1.userData).stateMachine.getCurrentState() != ZombieState.DIE) {

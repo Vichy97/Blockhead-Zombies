@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.starcat.boxhead.game.screens.LoadingScreen;
 import com.starcat.boxhead.particles.ZStrategyComparator;
+import com.starcat.boxhead.physics.MyContactListener;
 import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.utils.GameUtils;
 
@@ -59,7 +60,7 @@ public class MyGdxGame extends Game {
         gameCamera.rotate(-30, 1, 0, 0);
         gameCamera.rotate(225, 0, 1, 0);
         gameCamera.position.set(-40, 35, -40);
-        gameCamera.near = 1;
+        gameCamera.near = 0;
         gameCamera.far = 200;
         gameCamera.update();
 
@@ -81,6 +82,7 @@ public class MyGdxGame extends Game {
         fpsLogger = new FPSLogger();
 
         Bullet.init();
+        MyContactListener contactListener = new MyContactListener();
 
         setScreen(new LoadingScreen(this));
     }
