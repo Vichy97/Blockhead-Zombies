@@ -248,11 +248,11 @@ public class MenuScreen extends BaseScreen {
         cloudArray = new Cloud[6];
         for (int i = 0; i < cloudArray.length; i++) {
             if (i % 3 == 0) {
-                cloudArray[i] = new Cloud(1920 - i * 350, AssetLoader.cloudTexture1);
+                cloudArray[i] = new Cloud(1920 - i * 350, AssetLoader.textures.findRegion("cloud_1"));
             } else if (i % 2 == 0) {
-                cloudArray[i] = new Cloud(1920 - i * 350, AssetLoader.cloudTexture2);
+                cloudArray[i] = new Cloud(1920 - i * 350, AssetLoader.textures.findRegion("cloud_2"));
             } else {
-                cloudArray[i] = new Cloud(1920 - i * 350, AssetLoader.cloudTexture3);
+                cloudArray[i] = new Cloud(1920 - i * 350, AssetLoader.textures.findRegion("cloud_3"));
             }
         }
     }

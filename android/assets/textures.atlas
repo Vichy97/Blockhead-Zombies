@@ -1,0 +1,200 @@
+textures.png
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+blood_spatter_1
+  rotate: false
+  xy: 1, 318
+  size: 178, 189
+  orig: 178, 189
+  offset: 0, 0
+  index: -1
+cloud_1
+  rotate: false
+  xy: 181, 383
+  size: 228, 124
+  orig: 228, 124
+  offset: 0, 0
+  index: -1
+blood_spatter_2
+  rotate: false
+  xy: 1, 159
+  size: 173, 157
+  orig: 173, 157
+  offset: 0, 0
+  index: -1
+cloud_2
+  rotate: false
+  xy: 411, 388
+  size: 210, 119
+  orig: 210, 119
+  offset: 0, 0
+  index: -1
+cloud_3
+  rotate: false
+  xy: 623, 380
+  size: 190, 127
+  orig: 190, 127
+  offset: 0, 0
+  index: -1
+blood_spatter_3
+  rotate: false
+  xy: 1, 1
+  size: 137, 156
+  orig: 137, 156
+  offset: 0, 0
+  index: -1
+sniper
+  rotate: false
+  xy: 181, 319
+  size: 229, 62
+  orig: 229, 62
+  offset: 0, 0
+  index: -1
+rocket_launcher_modern
+  rotate: false
+  xy: 815, 433
+  size: 172, 74
+  orig: 172, 74
+  offset: 0, 0
+  index: -1
+rocket_launcher
+  rotate: false
+  xy: 181, 236
+  size: 225, 81
+  orig: 225, 81
+  offset: 0, 0
+  index: -1
+assault_rifle
+  rotate: false
+  xy: 412, 328
+  size: 158, 58
+  orig: 158, 58
+  offset: 0, 0
+  index: -1
+uzi_dual
+  rotate: false
+  xy: 176, 140
+  size: 116, 94
+  orig: 116, 94
+  offset: 0, 0
+  index: -1
+shotgun_dual
+  rotate: false
+  xy: 815, 381
+  size: 130, 50
+  orig: 130, 50
+  offset: 0, 0
+  index: -1
+uzi
+  rotate: false
+  xy: 294, 161
+  size: 96, 73
+  orig: 96, 73
+  offset: 0, 0
+  index: -1
+knife
+  rotate: false
+  xy: 140, 38
+  size: 25, 119
+  orig: 25, 119
+  offset: 0, 0
+  index: -1
+pistol_dual
+  rotate: false
+  xy: 167, 68
+  size: 84, 70
+  orig: 84, 70
+  offset: 0, 0
+  index: -1
+shotgun
+  rotate: false
+  xy: 412, 296
+  size: 110, 30
+  orig: 110, 30
+  offset: 0, 0
+  index: -1
+pistol
+  rotate: false
+  xy: 408, 244
+  size: 64, 50
+  orig: 64, 50
+  offset: 0, 0
+  index: -1
+ammo_rocket
+  rotate: false
+  xy: 989, 415
+  size: 27, 92
+  orig: 27, 92
+  offset: 0, 0
+  index: -1
+grenade_old
+  rotate: false
+  xy: 253, 53
+  size: 21, 85
+  orig: 21, 85
+  offset: 0, 0
+  index: -1
+ammo_rocket_modern
+  rotate: false
+  xy: 572, 338
+  size: 18, 48
+  orig: 18, 48
+  offset: 0, 0
+  index: -1
+grenade
+  rotate: false
+  xy: 474, 256
+  size: 25, 38
+  orig: 25, 38
+  offset: 0, 0
+  index: -1
+ammo_uzi
+  rotate: false
+  xy: 167, 140
+  size: 7, 17
+  orig: 7, 17
+  offset: 0, 0
+  index: -1
+star_big
+  rotate: false
+  xy: 140, 15
+  size: 23, 21
+  orig: 23, 21
+  offset: 0, 0
+  index: -1
+ammo_sniper
+  rotate: false
+  xy: 392, 204
+  size: 9, 30
+  orig: 9, 30
+  offset: 0, 0
+  index: -1
+ammo_assault_rifle
+  rotate: false
+  xy: 524, 304
+  size: 7, 22
+  orig: 7, 22
+  offset: 0, 0
+  index: -1
+ammo_pistol
+  rotate: false
+  xy: 294, 142
+  size: 9, 17
+  orig: 9, 17
+  offset: 0, 0
+  index: -1
+ammo_shotgun
+  rotate: false
+  xy: 947, 413
+  size: 7, 18
+  orig: 7, 18
+  offset: 0, 0
+  index: -1
+star_small
+  rotate: false
+  xy: 167, 55
+  size: 11, 11
+  orig: 11, 11
+  offset: 0, 0
+  index: -1

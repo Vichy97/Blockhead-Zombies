@@ -3,6 +3,8 @@ package com.starcat.boxhead.objects;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 
 /**
@@ -15,7 +17,7 @@ public class Cloud {
     private Sprite sprite;
     private final int SPEED_X = 20;
 
-    public Cloud(int x, Texture texture) {
+    public Cloud(int x, TextureRegion texture) {
         sprite = new Sprite(texture);
         sprite.setX(x);
         sprite.setY(MathUtils.random(0, 1080 - sprite.getHeight()));

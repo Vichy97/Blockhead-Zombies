@@ -111,7 +111,7 @@ public class GameScreen extends BaseScreen {
 
         //TODO: wave spawning system (probably handled by entity manager)
         entityManager.spawnPlayer(new Vector3(0, .8f, 0), .055f);
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 100; i++) {
             entityManager.spawnZombie(new Vector3(5,.8f, 5));
         }
 
@@ -396,36 +396,36 @@ public class GameScreen extends BaseScreen {
         cloudArray = new Cloud[6];
         for (int i = 0; i < cloudArray.length; i++) {
             if (i % 3 == 0) {
-                cloudArray[i] = new Cloud(1920 - i * 350, AssetLoader.cloudTexture1);
+                cloudArray[i] = new Cloud(1920 - i * 350, AssetLoader.textures.findRegion("cloud_1"));
             } else if (i % 2 == 0) {
-                cloudArray[i] = new Cloud(1920 - i * 350, AssetLoader.cloudTexture2);
+                cloudArray[i] = new Cloud(1920 - i * 350, AssetLoader.textures.findRegion("cloud_2"));
             } else {
-                cloudArray[i] = new Cloud(1920 - i * 350, AssetLoader.cloudTexture3);
+                cloudArray[i] = new Cloud(1920 - i * 350, AssetLoader.textures.findRegion("cloud_3"));
             }
         }
     }
 
     private void spawnStars() {
         stars = new Star[18];
-        stars[0] = new Star(105, 1000, AssetLoader.starTexture2);
-        stars[1] = new Star(540, 1040, AssetLoader.starTexture2);
-        stars[2] = new Star(1045, 980, AssetLoader.starTexture2);
-        stars[3] = new Star(380, 800, AssetLoader.starTexture2);
-        stars[4] = new Star(1000, 650, AssetLoader.starTexture2);
-        stars[5] = new Star(1450, 450, AssetLoader.starTexture2);
-        stars[6] = new Star(1820, 350, AssetLoader.starTexture2);
-        stars[7] = new Star(580, 200, AssetLoader.starTexture2);
-        stars[8] = new Star(1485, 100, AssetLoader.starTexture2);
+        stars[0] = new Star(105, 1000, AssetLoader.textures.findRegion("star_small"));
+        stars[1] = new Star(540, 1040, AssetLoader.textures.findRegion("star_small"));
+        stars[2] = new Star(1045, 980, AssetLoader.textures.findRegion("star_small"));
+        stars[3] = new Star(380, 800, AssetLoader.textures.findRegion("star_small"));
+        stars[4] = new Star(1000, 650, AssetLoader.textures.findRegion("star_small"));
+        stars[5] = new Star(1450, 450, AssetLoader.textures.findRegion("star_small"));
+        stars[6] = new Star(1820, 350, AssetLoader.textures.findRegion("star_small"));
+        stars[7] = new Star(580, 200, AssetLoader.textures.findRegion("star_small"));
+        stars[8] = new Star(1485, 100, AssetLoader.textures.findRegion("star_small"));
 
-        stars[9] = new Star(250, 900, AssetLoader.starTexture1);
-        stars[10] = new Star(800, 840, AssetLoader.starTexture1);
-        stars[11] = new Star(1300, 800, AssetLoader.starTexture1);
-        stars[12] = new Star(1580, 1000, AssetLoader.starTexture1);
-        stars[13] = new Star(600, 460, AssetLoader.starTexture1);
-        stars[14] = new Star(1200, 260, AssetLoader.starTexture1);
-        stars[15] = new Star(240, 280, AssetLoader.starTexture1);
-        stars[16] = new Star(170, 540, AssetLoader.starTexture2);
-        stars[17] = new Star(1730, 840, AssetLoader.starTexture2);
+        stars[9] = new Star(250, 900, AssetLoader.textures.findRegion("star_big"));
+        stars[10] = new Star(800, 840, AssetLoader.textures.findRegion("star_big"));
+        stars[11] = new Star(1300, 800, AssetLoader.textures.findRegion("star_big"));
+        stars[12] = new Star(1580, 1000, AssetLoader.textures.findRegion("star_big"));
+        stars[13] = new Star(600, 460, AssetLoader.textures.findRegion("star_big"));
+        stars[14] = new Star(1200, 260, AssetLoader.textures.findRegion("star_big"));
+        stars[15] = new Star(240, 280, AssetLoader.textures.findRegion("star_big"));
+        stars[16] = new Star(170, 540, AssetLoader.textures.findRegion("star_small"));
+        stars[17] = new Star(1730, 840, AssetLoader.textures.findRegion("star_small"));
     }
 
     private void renderStars() {

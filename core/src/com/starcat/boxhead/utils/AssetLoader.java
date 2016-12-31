@@ -38,6 +38,7 @@ public class AssetLoader implements Disposable {
 
     private static BitmapFont largeFont, smallFont, verySmallFont, menuFont, menuLabelFont;
     private static TextureAtlas ui;
+    public static TextureAtlas textures;
     public static Skin uiSkin;
 
     public static Map map;
@@ -65,13 +66,7 @@ public class AssetLoader implements Disposable {
     public static Model casingShotgun;
     public static Model casingAssaultRifle;
 
-    public static Texture cloudTexture1;
-    public static Texture cloudTexture2;
-    public static Texture cloudTexture3;
-    public static Texture starTexture1;
-    public static Texture starTexture2;
     public static Texture skinAdventurer;
-    public static Texture bloodSpatter;
     public static Texture libgdxLogo;
     public static Texture starcatLogo;
 
@@ -148,14 +143,9 @@ public class AssetLoader implements Disposable {
 
         manager.load("locales/Boxhead", I18NBundle.class);
 
-        manager.load("cloud_1.png", Texture.class, textureParam);
-        manager.load("cloud_2.png", Texture.class, textureParam);
-        manager.load("cloud_3.png", Texture.class, textureParam);
-        manager.load("starBig.png", Texture.class, textureParam);
-        manager.load("starSmall.png", Texture.class, textureParam);
-        manager.load("blood_spatter.png", Texture.class, textureParam);
-
         manager.load("ui/ui.atlas", TextureAtlas.class);
+        manager.load("textures.atlas", TextureAtlas.class);
+
         manager.load("maps/test_scene/map_1_base.g3dj", Model.class);
         manager.load("maps/test_scene/map_1_objects.g3dj", Model.class);
         manager.load("maps/test_scene/map_1_doodads.g3dj", Model.class);
@@ -231,12 +221,7 @@ public class AssetLoader implements Disposable {
         uiSkin.get("menu", Label.LabelStyle.class).font = menuFont;
         uiSkin.get("very_small", Label.LabelStyle.class).font = verySmallFont;
 
-        cloudTexture1 = manager.get("cloud_1.png", Texture.class);
-        cloudTexture2 = manager.get("cloud_2.png", Texture.class);
-        cloudTexture3 = manager.get("cloud_3.png", Texture.class);
-        starTexture1 = manager.get("starBig.png", Texture.class);
-        starTexture2 = manager.get("starSmall.png", Texture.class);
-        bloodSpatter = manager.get("blood_spatter.png", Texture.class);
+        textures = manager.get("textures.atlas", TextureAtlas.class);
 
         mapBase = manager.get("maps/test_scene/map_1_base.g3dj", Model.class);
         mapObjects = manager.get("maps/test_scene/map_1_objects.g3dj", Model.class);
