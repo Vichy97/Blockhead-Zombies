@@ -9,7 +9,7 @@ import com.badlogic.gdx.math.Vector3;
  * weapon models
  */
 
-public class WeaponConstants {
+public final class WeaponConstants {
 
     public static final Vector3 PISTOL_BULLET_TRANSLATION = new Vector3(-.3f, .487f, .75f);
     public static final Vector3 PISTOL_BULLET_TRANSLATION_ALT = new Vector3(.3f, .487f, .75f);
@@ -32,5 +32,4 @@ public class WeaponConstants {
     public static final Vector3 SNIPER_BULLET_TRANSLATION = new Vector3(-.29f, .485f, 1.55f);
     public static final Vector3 SNIPER_CASING_TRANSLATION = new Vector3(-.29f, .485f, .675f);
     public static final Vector3 SNIPER_CASING_EXPULSION_IMPULSE = new Vector3(2, 2, .2f);
-
 }

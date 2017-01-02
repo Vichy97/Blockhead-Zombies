@@ -1,3 +1,4 @@
+
 textures.png
 format: RGBA8888
 filter: Linear,Linear
@@ -177,18 +178,18 @@ ammo_assault_rifle
   orig: 7, 22
   offset: 0, 0
   index: -1
-ammo_pistol
-  rotate: false
-  xy: 294, 142
-  size: 9, 17
-  orig: 9, 17
-  offset: 0, 0
-  index: -1
 ammo_shotgun
   rotate: false
-  xy: 947, 413
+  xy: 294, 141
   size: 7, 18
   orig: 7, 18
+  offset: 0, 0
+  index: -1
+ammo_pistol
+  rotate: false
+  xy: 947, 416
+  size: 8, 15
+  orig: 8, 15
   offset: 0, 0
   index: -1
 star_small

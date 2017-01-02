@@ -37,6 +37,7 @@ public class AssetLoader implements Disposable {
     public static I18NBundle i18NBundle;
 
     private static BitmapFont largeFont, smallFont, verySmallFont, menuFont, menuLabelFont;
+    public static BitmapFont tinyFont;
     private static TextureAtlas ui;
     public static TextureAtlas textures;
     public static Skin uiSkin;
@@ -99,6 +100,10 @@ public class AssetLoader implements Disposable {
         textureParam.magFilter = Texture.TextureFilter.Linear;
         textureParam.format = Pixmap.Format.RGBA8888;
 
+        FreetypeFontLoader.FreeTypeFontLoaderParameter tinyFont = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+        tinyFont.fontFileName = "fonts/droid_sans.ttf";
+        tinyFont.fontParameters.color = Color.BLACK;
+        tinyFont.fontParameters.size = Gdx.graphics.getHeight() / 30;
         FreetypeFontLoader.FreeTypeFontLoaderParameter verySmallFont = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         verySmallFont.fontFileName = "fonts/droid_sans.ttf";
         verySmallFont.fontParameters.color = Color.WHITE;
@@ -188,6 +193,7 @@ public class AssetLoader implements Disposable {
         manager.load("small_font", BitmapFont.class, smallFont);
         manager.load("menu_label_font", BitmapFont.class, menuLabelFont);
         manager.load("very_small_font", BitmapFont.class, verySmallFont);
+        manager.load("tiny_font", BitmapFont.class, tinyFont);
     }
 
     public boolean update() {
@@ -206,6 +212,7 @@ public class AssetLoader implements Disposable {
         menuFont = manager.get("menu_font", BitmapFont.class);
         menuLabelFont = manager.get("menu_label_font", BitmapFont.class);
         verySmallFont = manager.get("very_small_font", BitmapFont.class);
+        tinyFont = manager.get("tiny_font", BitmapFont.class);
 
         ui = manager.get("ui/ui.atlas", TextureAtlas.class);
         uiSkin = new Skin(Gdx.files.internal("ui/ui.json"));
@@ -258,8 +265,8 @@ public class AssetLoader implements Disposable {
         button_click = manager.get("audio/ui/button_click.ogg", Sound.class);
         pistolSound = manager.get("audio/guns/pistol.ogg", Sound.class);
 
-        uiSkin.getDrawable("touchpad_nob").setMinHeight(Gdx.graphics.getHeight() / 6);
-        uiSkin.getDrawable("touchpad_nob").setMinWidth(Gdx.graphics.getHeight() / 6);
+        uiSkin.getDrawable("touchpad_knob").setMinHeight(Gdx.graphics.getHeight() / 6);
+        uiSkin.getDrawable("touchpad_knob").setMinWidth(Gdx.graphics.getHeight() / 6);
         uiSkin.getDrawable("touchpad_base").setMinHeight(Gdx.graphics.getWidth() / 6.5f);
         uiSkin.getDrawable("touchpad_base").setMinWidth(Gdx.graphics.getWidth() / 6.5f);
     }

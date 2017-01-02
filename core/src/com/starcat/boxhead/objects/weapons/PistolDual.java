@@ -10,7 +10,7 @@ import com.starcat.boxhead.utils.AssetLoader;
  * Created by Vincent on 12/11/2016.
  */
 
-public class PistolDual extends Gun {
+public final class PistolDual extends DualWieldGun {
 
     public PistolDual(Player player) {
         super(player);
@@ -37,7 +37,7 @@ public class PistolDual extends Gun {
         damage = 34;
         accuracy = 5;
         bulletSpeed = .1f;
-        reloadTime = .2f;
+        rateOfFire = .2f;
         autofire = true;
     }
 

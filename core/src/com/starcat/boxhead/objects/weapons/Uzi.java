@@ -10,7 +10,7 @@ import com.starcat.boxhead.utils.AssetLoader;
  * Created by Vincent on 12/12/2016.
  */
 
-public class Uzi extends Gun {
+public final class Uzi extends Gun {
 
     public Uzi(Player player) {
         super(player);
@@ -22,22 +22,18 @@ public class Uzi extends Gun {
         animationController = new AnimationController(modelInstance);
         animationController.allowSameAnimation = true;
         fireAnimation = "fire";
-        fireAnimationAlt = "fire";
         walkAnimation = "walk_single_wield";
         poseAnimation = "pose_single_wield";
         playerFireAnimation = "shoot_single_wield";
-        playerFireAnimationAlt = "shoot_single_wield";
 
         bulletTranslation = new Vector3(WeaponConstants.UZI_BULLET_TRANSLATION);
-        bulletTranslationAlt = new Vector3(WeaponConstants.UZI_BULLET_TRANSLATION);
         bulletCasingTranslation = new Vector3(WeaponConstants.UZI_CASING_TRANSLATION);
-        bulletCasingTranslationAlt = new Vector3(WeaponConstants.UZI_CASING_TRANSLATION);
         bulletCasingExpulsionImpulse = new Vector3(WeaponConstants.UZI_CASING_EXPULSION_IMPULSE);
 
         damage = 20;
         accuracy = 10;
         bulletSpeed = .15f;
-        reloadTime = .1f;
+        rateOfFire = .1f;
         autofire = true;
     }
 }

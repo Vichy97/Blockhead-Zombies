@@ -54,6 +54,7 @@ public class GameScreen extends BaseScreen {
 
     private boolean paused = false;
     private boolean leftPressed, rightPressed, upPressed, downPressed = false;
+    private boolean touched = false;
 
     private InputMultiplexer inputMultiplexer;
     private Stage stage;
@@ -61,7 +62,7 @@ public class GameScreen extends BaseScreen {
 
     private Label debugLabel;
 
-    private ImageButton pauseButton, playButton;
+    private ImageButton pauseButton, playButton, nextWeaponButton, previousWeaponButton;
     private TextButton menuButton;
     private Touchpad touchpad;
 
@@ -111,7 +112,7 @@ public class GameScreen extends BaseScreen {
 
         //TODO: wave spawning system (probably handled by entity manager)
         entityManager.spawnPlayer(new Vector3(0, .8f, 0), .055f);
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 5; i++) {
             entityManager.spawnZombie(new Vector3(5,.8f, 5));
         }
 
@@ -193,7 +194,7 @@ public class GameScreen extends BaseScreen {
                 dispose();
             }
 
-            if (entityManager.getPlayer().getCurrentWeapon().isAutofire() && entityManager.getPlayer().getCurrentWeapon().isAutofire() && (Gdx.input.isKeyPressed(Input.Keys.SPACE) || Gdx.input.isTouched())) {
+            if (entityManager.getPlayer().getCurrentWeapon().isAutofire() && entityManager.getPlayer().getCurrentWeapon().isAutofire() && (Gdx.input.isKeyPressed(Input.Keys.SPACE) || touched)) {
                 entityManager.getPlayer().fire();
             }
         }
@@ -218,6 +219,7 @@ public class GameScreen extends BaseScreen {
         game.getGameCamera().update();
 
         renderPlayerHP();
+        entityManager.getPlayer().getCurrentWeapon().renderUI(game.getSpriteBatch(), game.getShapeRenderer());
 
         stage.act();
         stage.draw();
@@ -294,6 +296,16 @@ public class GameScreen extends BaseScreen {
         playButton.setSize(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
         playButton.addListener(playButtonListener);
 
+        nextWeaponButton = new ImageButton(AssetLoader.uiSkin.getDrawable("right"));
+        nextWeaponButton.getImageCell().size(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
+        nextWeaponButton.setSize(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
+        nextWeaponButton.addListener(nextWeaponButtonListener);
+
+        previousWeaponButton = new ImageButton(AssetLoader.uiSkin.getDrawable("left"));
+        previousWeaponButton.getImageCell().size(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
+        previousWeaponButton.setSize(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
+        previousWeaponButton.addListener(previousWeaponButtonListener);
+
         touchpad = new Touchpad(0, AssetLoader.uiSkin);
 
         debugLabel = new Label("debugLabel", AssetLoader.uiSkin);
@@ -308,9 +320,12 @@ public class GameScreen extends BaseScreen {
         pauseTable.setFillParent(true);
         pauseTable.setVisible(false);
 
-        playTable.add(pauseButton).top().right().expandX();
+        playTable.add(pauseButton).colspan(2).top().right().expandX();
         playTable.row();
-        playTable.add(touchpad).bottom().left().pad(Gdx.graphics.getHeight() / 20).expandY();
+        playTable.add(previousWeaponButton);
+        playTable.add(nextWeaponButton);
+        playTable.row();
+        playTable.add(touchpad).colspan(2).bottom().left().pad(Gdx.graphics.getHeight() / 20).expandY();
 
         pauseTable.add(playButton);
 
@@ -519,6 +534,13 @@ public class GameScreen extends BaseScreen {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         entityManager.getPlayer().fire();
+        touched = true;
+        return true;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        touched = false;
         return true;
     }
 
@@ -542,5 +564,20 @@ public class GameScreen extends BaseScreen {
             pause();
         }
     };
+
+    private ClickListener nextWeaponButtonListener = new ClickListener() {
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+            AssetLoader.button_click.play();
+        }
+    };
+
+    private ClickListener previousWeaponButtonListener = new ClickListener() {
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+            AssetLoader.button_click.play();
+        }
+    };
+
 
 }

@@ -10,7 +10,7 @@ import com.starcat.boxhead.utils.AssetLoader;
  * Created by Vincent on 12/19/2016.
  */
 
-public class ShotgunShortDual extends Gun {
+public final class ShotgunShortDual extends DualWieldGun {
 
     public ShotgunShortDual(Player player) {
         super(player);
@@ -36,7 +36,7 @@ public class ShotgunShortDual extends Gun {
         damage = 30;
         accuracy = 5;
         bulletSpeed = .1f;
-        reloadTime = .5f;
+        rateOfFire = .5f;
         autofire = true;
     }
 

@@ -10,7 +10,7 @@ import com.starcat.boxhead.utils.AssetLoader;
  * Created by Vincent on 12/13/2016.
  */
 
-public class Shotgun extends Gun {
+public final class Shotgun extends Gun {
 
     public Shotgun(Player player) {
         super(player);
@@ -21,21 +21,17 @@ public class Shotgun extends Gun {
         animationController = new AnimationController(modelInstance);
         animationController.allowSameAnimation = true;
         fireAnimation = "fire";
-        fireAnimationAlt = "fire";
         walkAnimation = "walk_single_wield";
         poseAnimation = "pose_single_wield";
         playerFireAnimation = "shoot_single_wield";
-        playerFireAnimationAlt = "shoot_single_wield";
 
-        bulletTranslationAlt = new Vector3(WeaponConstants.SHOTGUN_BULLET_TRANSLATION_ALT);
         bulletTranslation = new Vector3(WeaponConstants.SHOTGUN_BULLET_TRANSLATION);
         bulletCasingTranslation = new Vector3(WeaponConstants.SHOTGUN_CASING_TRANSLATION);
-        bulletCasingTranslationAlt = new Vector3(WeaponConstants.SHOTGUN_CASING_TRANSLATION_ALT);
         bulletCasingExpulsionImpulse = new Vector3(WeaponConstants.SHOTGUN_CASING_EXPULSION_IMPULSE);
 
         damage = 30;
         accuracy = 5;
         bulletSpeed = .1f;
-        reloadTime = 1;
+        rateOfFire = 1;
     }
 }

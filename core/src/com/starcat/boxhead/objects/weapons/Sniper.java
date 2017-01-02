@@ -10,7 +10,7 @@ import com.starcat.boxhead.utils.AssetLoader;
  * Created by Vincent on 12/13/2016.
  */
 
-public class Sniper extends Gun {
+public final class Sniper extends Gun {
 
     public Sniper(Player player) {
         super(player);
@@ -22,20 +22,16 @@ public class Sniper extends Gun {
         animationController = new AnimationController(modelInstance);
         animationController.allowSameAnimation = true;
         fireAnimation = "fire";
-        fireAnimationAlt = "fire";
         walkAnimation = "walk_large_weapon";
         playerFireAnimation = "shoot_large_weapon";
-        playerFireAnimationAlt = "shoot_large_weapon";
 
         bulletTranslation = new Vector3(WeaponConstants.SNIPER_BULLET_TRANSLATION);
-        bulletTranslationAlt = new Vector3(WeaponConstants.SNIPER_BULLET_TRANSLATION);
         bulletCasingTranslation = new Vector3(WeaponConstants.SNIPER_CASING_TRANSLATION);
-        bulletCasingTranslationAlt = new Vector3(WeaponConstants.SNIPER_CASING_TRANSLATION);
         bulletCasingExpulsionImpulse = new Vector3(WeaponConstants.SNIPER_CASING_EXPULSION_IMPULSE);
 
         damage = 100;
         accuracy = 1;
         bulletSpeed = .2f;
-        reloadTime = 2;
+        rateOfFire = 2;
     }
 }

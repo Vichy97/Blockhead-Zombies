@@ -133,11 +133,13 @@ public class MenuScreen extends BaseScreen {
         shareButton = new ImageButton(AssetLoader.uiSkin.getDrawable("share"));
         shareButton.getImageCell().width(Gdx.graphics.getWidth() / 16).height(Gdx.graphics.getWidth() / 16);
         shareButton.setSize(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
+        shareButton.background(AssetLoader.uiSkin.getDrawable("background"));
         shareButton.addListener(shareListener);
         achievementsButton = new ImageButton(AssetLoader.uiSkin.getDrawable("achievement"));
         achievementsButton.addListener(achievementsListener);
         achievementsButton.getImageCell().width(Gdx.graphics.getWidth() / 16).height(Gdx.graphics.getWidth() / 16);
         achievementsButton.setSize(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
+        achievementsButton.background(AssetLoader.uiSkin.getDrawable("background"));
 
         menuTable.top();
         menuTable.add(titleLabel).pad(Gdx.graphics.getHeight() / 10, 0, Gdx.graphics.getHeight() / 15, 0).expandX().colspan(3);;
@@ -181,7 +183,7 @@ public class MenuScreen extends BaseScreen {
         optionsTable.setWidth(Gdx.graphics.getWidth() / 2 - Gdx.graphics.getWidth() / 10);
         optionsTable.setHeight(Gdx.graphics.getHeight() / 2 - Gdx.graphics.getHeight() / 20);
         optionsTable.setPosition(Gdx.graphics.getWidth() / 2 - optionsTable.getWidth() / 2, Gdx.graphics.getHeight() / 2 - optionsTable.getHeight() / 2);
-        optionsTable.background(AssetLoader.uiSkin.getDrawable("button"));
+        optionsTable.background(AssetLoader.uiSkin.getDrawable("background"));
 
 
 
@@ -189,7 +191,7 @@ public class MenuScreen extends BaseScreen {
         aboutTable.setWidth(Gdx.graphics.getWidth() / 2 + Gdx.graphics.getWidth() / 12);
         aboutTable.setHeight(Gdx.graphics.getHeight() / 2 + Gdx.graphics.getHeight() / 4);
         aboutTable.setPosition(Gdx.graphics.getWidth() / 2 - aboutTable.getWidth() / 2, Gdx.graphics.getHeight() / 2 - aboutTable.getHeight() / 2);
-        aboutTable.setBackground(AssetLoader.uiSkin.getDrawable("button"));
+        aboutTable.setBackground(AssetLoader.uiSkin.getDrawable("background"));
         aboutTable.setVisible(false);
 
         aboutLabel = new Label(AssetLoader.i18NBundle.get("about"), AssetLoader.uiSkin, "large");
