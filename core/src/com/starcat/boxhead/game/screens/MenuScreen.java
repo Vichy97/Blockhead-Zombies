@@ -19,6 +19,7 @@ import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.objects.Cloud;
 import com.starcat.boxhead.objects.Map;
 import com.starcat.boxhead.utils.AssetLoader;
+import com.starcat.boxhead.utils.Dimensions;
 import com.starcat.boxhead.utils.GameUtils;
 
 /**
@@ -26,7 +27,7 @@ import com.starcat.boxhead.utils.GameUtils;
  *
  * This screens is the main menu of the game
  */
-public class MenuScreen extends BaseScreen {
+public final class MenuScreen extends BaseScreen {
 
     private InputMultiplexer inputMultiplexer;
 
@@ -64,7 +65,7 @@ public class MenuScreen extends BaseScreen {
         super(game);
 
         game.getGameCamera().position.set(-40, 35, -40);
-        game.getGameViewport().setWorldSize(game.GAME_WIDTH / 30, game.GAME_HEIGHT / 30);
+        game.getGameViewport().setWorldSize(Dimensions.getGameWidth()/ 30, Dimensions.getGameHeight() / 30);
 
         initUI();
         initWorld();
@@ -128,21 +129,21 @@ public class MenuScreen extends BaseScreen {
         exitButton.addListener(exitListener);
         aboutButton = new ImageButton(AssetLoader.uiSkin.getDrawable("about"));
         aboutButton.addListener(aboutListener);
-        aboutButton.getImageCell().width(Gdx.graphics.getWidth() / 16).height(Gdx.graphics.getWidth() / 16);
-        aboutButton.setSize(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
+        aboutButton.getImageCell().width(Dimensions.scaleWidth(120)).height(Dimensions.scaleWidth(120));
+        aboutButton.setSize(Dimensions.scaleWidth(120), Dimensions.scaleWidth(120));
         shareButton = new ImageButton(AssetLoader.uiSkin.getDrawable("share"));
-        shareButton.getImageCell().width(Gdx.graphics.getWidth() / 16).height(Gdx.graphics.getWidth() / 16);
-        shareButton.setSize(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
+        shareButton.getImageCell().width(Dimensions.scaleWidth(120)).height(Dimensions.scaleWidth(120));
+        shareButton.setSize(Dimensions.scaleWidth(120), Dimensions.scaleWidth(120));
         shareButton.background(AssetLoader.uiSkin.getDrawable("background"));
         shareButton.addListener(shareListener);
         achievementsButton = new ImageButton(AssetLoader.uiSkin.getDrawable("achievement"));
         achievementsButton.addListener(achievementsListener);
-        achievementsButton.getImageCell().width(Gdx.graphics.getWidth() / 16).height(Gdx.graphics.getWidth() / 16);
-        achievementsButton.setSize(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
+        achievementsButton.getImageCell().width(Dimensions.scaleWidth(120)).height(Dimensions.scaleWidth(120));
+        achievementsButton.setSize(Dimensions.scaleWidth(120), Dimensions.scaleWidth(120));
         achievementsButton.background(AssetLoader.uiSkin.getDrawable("background"));
 
         menuTable.top();
-        menuTable.add(titleLabel).pad(Gdx.graphics.getHeight() / 10, 0, Gdx.graphics.getHeight() / 15, 0).expandX().colspan(3);;
+        menuTable.add(titleLabel).pad(Dimensions.scaleHeight(100), 0, Dimensions.scaleHeight(70), 0).expandX().colspan(3);;
         menuTable.row();
         menuTable.add(playButton).colspan(3);;
         menuTable.row();
@@ -164,12 +165,12 @@ public class MenuScreen extends BaseScreen {
         musicLabel = new Label(AssetLoader.i18NBundle.get("music"), AssetLoader.uiSkin, "small");
 
         musicButton = new ImageButton(AssetLoader.uiSkin.getDrawable("music_on"), AssetLoader.uiSkin.getDrawable("music_on"), AssetLoader.uiSkin.getDrawable("music_off"));
-        musicButton.getImageCell().width(Gdx.graphics.getWidth() / 16).height(Gdx.graphics.getWidth() / 16);
-        musicButton.setSize(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
+        musicButton.getImageCell().width(Dimensions.scaleWidth(120)).height(Dimensions.scaleWidth(120));
+        musicButton.setSize(Dimensions.scaleWidth(120), Dimensions.scaleWidth(120));
         musicButton.addListener(musicListener);
         soundButton = new ImageButton(AssetLoader.uiSkin.getDrawable("sound_on"), AssetLoader.uiSkin.getDrawable("sound_on"), AssetLoader.uiSkin.getDrawable("sound_off"));
-        soundButton.getImageCell().width(Gdx.graphics.getWidth() / 16).height(Gdx.graphics.getWidth() / 16);
-        soundButton.setSize(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
+        soundButton.getImageCell().width(Dimensions.scaleWidth(120)).height(Dimensions.scaleWidth(120));
+        soundButton.setSize(Dimensions.scaleWidth(120), Dimensions.scaleWidth(120));
         soundButton.addListener(soundListener);
 
         optionsTable.add(optionsLabel).colspan(2).pad(0, optionsLabel.getWidth() / 3, optionsLabel.getHeight() / 2, optionsLabel.getWidth() / 3);
@@ -180,17 +181,17 @@ public class MenuScreen extends BaseScreen {
         optionsTable.add(soundButton);
         optionsTable.add(musicButton);
 
-        optionsTable.setWidth(Gdx.graphics.getWidth() / 2 - Gdx.graphics.getWidth() / 10);
-        optionsTable.setHeight(Gdx.graphics.getHeight() / 2 - Gdx.graphics.getHeight() / 20);
-        optionsTable.setPosition(Gdx.graphics.getWidth() / 2 - optionsTable.getWidth() / 2, Gdx.graphics.getHeight() / 2 - optionsTable.getHeight() / 2);
+        optionsTable.setWidth(Dimensions.scaleWidth(775));
+        optionsTable.setHeight(Dimensions.scaleHeight(500));
+        optionsTable.setPosition(Dimensions.getHalfScreenWidth() - optionsTable.getWidth() / 2, Dimensions.getHalfScreenHeight() - optionsTable.getHeight() / 2);
         optionsTable.background(AssetLoader.uiSkin.getDrawable("background"));
 
 
 
         aboutTable = new Table();
-        aboutTable.setWidth(Gdx.graphics.getWidth() / 2 + Gdx.graphics.getWidth() / 12);
-        aboutTable.setHeight(Gdx.graphics.getHeight() / 2 + Gdx.graphics.getHeight() / 4);
-        aboutTable.setPosition(Gdx.graphics.getWidth() / 2 - aboutTable.getWidth() / 2, Gdx.graphics.getHeight() / 2 - aboutTable.getHeight() / 2);
+        aboutTable.setWidth(Dimensions.scaleWidth(1100));
+        aboutTable.setHeight(Dimensions.scaleHeight(800));
+        aboutTable.setPosition(Dimensions.getHalfScreenWidth() - aboutTable.getWidth() / 2, Dimensions.getHalfScreenHeight() - aboutTable.getHeight() / 2);
         aboutTable.setBackground(AssetLoader.uiSkin.getDrawable("background"));
         aboutTable.setVisible(false);
 
@@ -208,6 +209,11 @@ public class MenuScreen extends BaseScreen {
         aboutTable.add(aboutTextLabel);
 
 
+        if (MyGdxGame.DEBUG) {
+            aboutTable.debug();
+            optionsTable.debug();
+            menuTable.debug();
+        }
 
         stage.addActor(menuTable);
         stage.addActor(optionsTable);

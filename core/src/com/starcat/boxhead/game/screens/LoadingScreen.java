@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.utils.AssetLoader;
+import com.starcat.boxhead.utils.Dimensions;
 import com.starcat.boxhead.utils.GameUtils;
 
 /**
@@ -12,7 +13,7 @@ import com.starcat.boxhead.utils.GameUtils;
  *
  * this is the loading screen before the menu
  */
-public class LoadingScreen extends BaseScreen {
+public final class LoadingScreen extends BaseScreen {
 
     private Sprite splashLogo;
     private Sprite splashLogo2;
@@ -25,13 +26,13 @@ public class LoadingScreen extends BaseScreen {
 
         game.getAssetLoader().loadSplashScreen();
         splashLogo = new Sprite(AssetLoader.libgdxLogo);
-        splashLogo.setSize(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
-        splashLogo.setX(Gdx.graphics.getWidth() / 2 - splashLogo.getWidth() / 2);
-        splashLogo.setY(Gdx.graphics.getHeight() / 2 - splashLogo.getHeight() / 2);
+        splashLogo.setSize(Dimensions.scaleWidth((int)splashLogo.getWidth()), Dimensions.scaleHeight((int)splashLogo.getHeight()));
+        splashLogo.setX(Dimensions.getHalfScreenWidth() - splashLogo.getWidth() / 2);
+        splashLogo.setY(Dimensions.getHalfScreenHeight() - splashLogo.getHeight() / 2);
         splashLogo2 = new Sprite(AssetLoader.starcatLogo);
-        splashLogo2.setSize(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
-        splashLogo2.setX(Gdx.graphics.getWidth() / 2 - splashLogo2.getWidth() / 2);
-        splashLogo2.setY(Gdx.graphics.getHeight() / 2 - splashLogo2.getHeight() / 2);
+        splashLogo2.setSize(Dimensions.scaleWidth((int)splashLogo2.getWidth()),Dimensions.scaleHeight((int)splashLogo2.getHeight()));
+        splashLogo2.setX(Dimensions.getHalfScreenWidth() - splashLogo2.getWidth() / 2);
+        splashLogo2.setY(Dimensions.getHalfScreenHeight() - splashLogo2.getHeight() / 2);
 
         game.getAssetLoader().load();
     }

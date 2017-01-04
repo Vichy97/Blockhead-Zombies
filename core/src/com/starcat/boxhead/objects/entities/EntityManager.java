@@ -26,7 +26,7 @@ import java.util.Iterator;
  *
  * This class handles all entity and bullet spawning, updating, rendering, and pooling
  */
-public class EntityManager {
+public final class EntityManager {
 
     private static final EntityManager instance = new EntityManager();
 

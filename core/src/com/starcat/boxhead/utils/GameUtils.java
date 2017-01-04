@@ -12,7 +12,7 @@ import com.starcat.boxhead.game.MyGdxGame;
  *
  * various utility methods
  */
-public class GameUtils {
+public final class GameUtils {
 
     private static int screenshotCounter = 0;
 

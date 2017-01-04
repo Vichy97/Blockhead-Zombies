@@ -30,7 +30,7 @@ import com.starcat.boxhead.objects.Map;
  * as a splash screen or loading bar. (there wont be a huge lag spike when loading)
  * most textures are also stored in texture atlas's for more efficient loading/rendering
  */
-public class AssetLoader implements Disposable {
+public final class AssetLoader implements Disposable {
 
     private static AssetManager manager;
 

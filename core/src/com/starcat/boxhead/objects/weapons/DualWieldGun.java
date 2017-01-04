@@ -70,36 +70,39 @@ public abstract class DualWieldGun extends Gun {
 
     @Override
     public void renderUI(SpriteBatch spriteBatch, ShapeRenderer shapeRenderer) {
+        int halfAmmo = ammoInClip / 2;
+        int halfClip = clipSize / 2;
+        float startX = (Gdx.graphics.getWidth() / 2) - (ammoSilhouette.getWidth() * .375f * clipSize);
+        float widthX = ammoSilhouette.getWidth() * 1.5f;
+
         spriteBatch.begin();
         silhouette.draw(spriteBatch);
-
-        AssetLoader.tinyFont.draw(spriteBatch, " x" + extraClips, Gdx.graphics.getWidth() / 2 - (ammoSilhouette.getWidth()  * clipSize / 2 * .75f) + (clipSize * ammoSilhouette.getWidth() * .75f), Gdx.graphics.getHeight() / 8);
-
-        int halfClip = ammoInClip / 2;
-
-        for (int i = 0; i < halfClip; i++) {
-            ammoSilhouette.setX(Gdx.graphics.getWidth() / 2 - (ammoSilhouette.getWidth()  * clipSize / 2 * .75f) + (i * ammoSilhouette.getWidth() * 1.5f));
-            ammoSilhouette.setY(Gdx.graphics.getHeight() / 8.5f);
-            ammoSilhouette.draw(spriteBatch);
-        }
-
-        for (int i = 0; i < ammoInClip - halfClip; i++) {
-            ammoSilhouette.setX(Gdx.graphics.getWidth() / 2 - (ammoSilhouette.getWidth()  * clipSize / 2 * .75f) + (i * ammoSilhouette.getWidth() * 1.5f));
-            ammoSilhouette.setY(Gdx.graphics.getHeight() / 10f);
-            ammoSilhouette.draw(spriteBatch);
-        }
-
         if (!reloading) {
-            for (int i = 0; i < clipSize / 2; i++) {
-                ammoSilhouette.setX(Gdx.graphics.getWidth() / 2 - (ammoSilhouette.getWidth() * clipSize / 2 * .75f) + (i * ammoSilhouette.getWidth() * 1.5f));
-                ammoSilhouette.setY(Gdx.graphics.getHeight() / 8.5f);
+            AssetLoader.tinyFont.draw(spriteBatch, " x" + extraClips, startX + (clipSize * ammoSilhouette.getWidth() * .75f), Gdx.graphics.getHeight() / 8);
+
+
+            ammoSilhouette.setY(Gdx.graphics.getHeight() / 8.5f);
+            ammoSilhouette.setX(startX);
+            for (int i = 0; i < halfClip; i++) {
                 ammoSilhouette.draw(spriteBatch, .2f);
+
+                if (i < halfAmmo) {
+                    ammoSilhouette.draw(spriteBatch);
+                }
+
+                ammoSilhouette.translateX(widthX);
             }
 
-            for (int i = 0; i < clipSize / 2; i++) {
-                ammoSilhouette.setX(Gdx.graphics.getWidth() / 2 - (ammoSilhouette.getWidth() * clipSize / 2 * .75f) + (i * ammoSilhouette.getWidth() * 1.5f));
-                ammoSilhouette.setY(Gdx.graphics.getHeight() / 10);
+            ammoSilhouette.setY(Gdx.graphics.getHeight() / 10);
+            ammoSilhouette.setX(startX);
+            for (int i = 0; i < halfClip; i++) {
                 ammoSilhouette.draw(spriteBatch, .2f);
+
+                if (i < ammoInClip - halfAmmo) {
+                    ammoSilhouette.draw(spriteBatch);
+                }
+
+                ammoSilhouette.translateX(widthX);
             }
         }
         spriteBatch.end();
@@ -107,16 +110,13 @@ public abstract class DualWieldGun extends Gun {
         if (reloading) {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             shapeRenderer.setColor(0, 0, 0, 1);
-            shapeRenderer.rect(Gdx.graphics.getWidth() / 2 - (ammoSilhouette.getWidth()  * clipSize / 2), Gdx.graphics.getHeight() / 12, clipSize / 2 * ammoSilhouette.getWidth() * 2, Gdx.graphics.getHeight() / 100);
-            shapeRenderer.end();
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.setColor(0, 1, 0, 1);
-            shapeRenderer.rect(Gdx.graphics.getWidth() / 2 - (ammoSilhouette.getWidth()  * clipSize / 2), Gdx.graphics.getHeight() / 12, clipSize / 2 * ammoSilhouette.getWidth() * 2 * (timer / reloadTime), Gdx.graphics.getHeight() / 100);
+            shapeRenderer.rect(startX, Gdx.graphics.getHeight() / 12, halfClip * widthX, Gdx.graphics.getHeight() / 100);
             shapeRenderer.end();
 
-            spriteBatch.begin();
-            AssetLoader.tinyFont.draw(spriteBatch, "reloading...", Gdx.graphics.getWidth() / 2 - Gdx.graphics.getWidth() / 20, Gdx.graphics.getHeight() / 8);
-            spriteBatch.end();
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.setColor(0, 1, 0, 1);
+            shapeRenderer.rect(startX, Gdx.graphics.getHeight() / 12, halfClip * widthX * (timer / reloadTime), Gdx.graphics.getHeight() / 100);
+            shapeRenderer.end();
         }
     }
 

@@ -5,7 +5,7 @@ package com.starcat.boxhead.physics;
  *
  * flags used for collision filters
  */
-public class CollisionFlags {
+public final class CollisionFlags {
     public static final int GROUND_FLAG = 1 << 2;
     public static final int OBJECT_FLAG = 1 << 3;
     public static final int ENTITY_FLAG = 1 << 4;

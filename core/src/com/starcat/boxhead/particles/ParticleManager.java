@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * Created by Vincent on 12/18/2016.
  */
 
-public class ParticleManager {
+public final class ParticleManager {
 
     private static final ParticleManager instance = new ParticleManager();
 

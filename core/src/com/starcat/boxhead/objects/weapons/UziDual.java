@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.objects.entities.Player;
 import com.starcat.boxhead.utils.AssetLoader;
+import com.starcat.boxhead.utils.Dimensions;
 
 /**
  * Created by Vincent on 12/12/2016.
@@ -34,7 +35,7 @@ public final class UziDual extends DualWieldGun {
         silhouette = new Sprite(AssetLoader.textures.findRegion("uzi_dual"));
         ammoSilhouette = new Sprite(AssetLoader.textures.findRegion("ammo_uzi"));
 
-        silhouette.setSize(Gdx.graphics.getWidth() / MyGdxGame.GAME_WIDTH * silhouette.getRegionWidth(), Gdx.graphics.getHeight() / MyGdxGame.GAME_HEIGHT * silhouette.getRegionHeight());
+        silhouette.setSize(Dimensions.getGameScreenWidthRatio() * silhouette.getRegionWidth(), Dimensions.getGameScreenHeightRatio() * silhouette.getRegionHeight());
         silhouette.setX(Gdx.graphics.getWidth() / 2 - silhouette.getWidth() / 2);
         silhouette.setY(Gdx.graphics.getHeight() / 7);
 
@@ -51,8 +52,8 @@ public final class UziDual extends DualWieldGun {
         bulletSpeed = .2f;
         rateOfFire = .05f;
         reloadTime = 2;
-        clipSize = 60;
-        ammoInClip = 60;
+        clipSize = 30;
+        ammoInClip = 30;
         extraClips = 3;
         autofire = true;
     }

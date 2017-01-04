@@ -14,7 +14,7 @@ import com.starcat.boxhead.particles.ParticleManager;
  *
  * This class is used to trigger collision based events
  */
-public class MyContactListener extends ContactListener {
+public final class MyContactListener extends ContactListener {
 
     @Override
     public void onContactStarted(btCollisionObject colObj0, boolean match0, btCollisionObject colObj1, boolean match1) {

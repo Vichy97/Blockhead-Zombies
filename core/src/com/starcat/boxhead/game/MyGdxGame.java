@@ -1,7 +1,6 @@
 package com.starcat.boxhead.game;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -22,16 +21,13 @@ import com.starcat.boxhead.game.screens.LoadingScreen;
 import com.starcat.boxhead.particles.ZStrategyComparator;
 import com.starcat.boxhead.physics.MyContactListener;
 import com.starcat.boxhead.utils.AssetLoader;
+import com.starcat.boxhead.utils.Dimensions;
 import com.starcat.boxhead.utils.GameUtils;
 
 public class MyGdxGame extends Game {
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public static final boolean WIREFRAME = false;
-
-    public static final int GAME_WIDTH = 1920;
-    public static final int GAME_HEIGHT = 1080;
-    public static float ASPECT_RATIO;
 
     private OrthographicCamera UICamera;
     private OrthographicCamera gameCamera;
@@ -53,10 +49,10 @@ public class MyGdxGame extends Game {
     public void create() {
         GameUtils.debug(this, "created");
 
-        ASPECT_RATIO = (float) Gdx.graphics.getHeight() / (float) Gdx.graphics.getWidth();
+        Dimensions.init();
 
-        UICamera = new OrthographicCamera(GAME_HEIGHT/ASPECT_RATIO, GAME_HEIGHT);
-        gameCamera = new OrthographicCamera(GAME_HEIGHT/ASPECT_RATIO, GAME_HEIGHT);
+        UICamera = new OrthographicCamera(Dimensions.getGameHeight()/Dimensions.getAspectRatio(), Dimensions.getGameHeight());
+        gameCamera = new OrthographicCamera(Dimensions.getGameHeight()/Dimensions.getAspectRatio(), Dimensions.getGameHeight());
         gameCamera.rotate(-30, 1, 0, 0);
         gameCamera.rotate(225, 0, 1, 0);
         gameCamera.position.set(-40, 35, -40);
@@ -65,7 +61,7 @@ public class MyGdxGame extends Game {
         gameCamera.update();
 
         UIViewport = new ScreenViewport(UICamera);
-        gameViewport = new FillViewport(GAME_WIDTH / 30, GAME_HEIGHT / 30, gameCamera);
+        gameViewport = new FillViewport(Dimensions.getGameWidth() / 30, Dimensions.getGameHeight() / 30, gameCamera);
 
         assetLoader = new AssetLoader();
         spriteBatch = new SpriteBatch();

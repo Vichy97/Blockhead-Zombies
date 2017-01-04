@@ -43,6 +43,7 @@ import com.starcat.boxhead.objects.entities.EntityManager;
 import com.starcat.boxhead.particles.ParticleManager;
 import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.physics.CollisionFlags;
+import com.starcat.boxhead.utils.Dimensions;
 import com.starcat.boxhead.utils.GameUtils;
 
 /**
@@ -50,7 +51,7 @@ import com.starcat.boxhead.utils.GameUtils;
  *
  * This Screen is where all actual game play takes place
  */
-public class GameScreen extends BaseScreen {
+public final class GameScreen extends BaseScreen {
 
     private boolean paused = false;
     private boolean leftPressed, rightPressed, upPressed, downPressed = false;
@@ -98,7 +99,8 @@ public class GameScreen extends BaseScreen {
     public GameScreen(MyGdxGame game) {
         super(game);
 
-        game.getGameViewport().setWorldSize(game.GAME_WIDTH / 90, game.GAME_HEIGHT / 90);
+        //FIXME: 90 should maybe not be 90 lol
+        game.getGameViewport().setWorldSize(Dimensions.getGameWidth() / 90,Dimensions.getGameHeight() / 90);
         game.getGameCamera().position.set(0, 10, 0);
 
         initUI();
@@ -218,13 +220,12 @@ public class GameScreen extends BaseScreen {
         game.getUIViewport().apply();
         game.getGameCamera().update();
 
-        renderPlayerHP();
-        entityManager.getPlayer().getCurrentWeapon().renderUI(game.getSpriteBatch(), game.getShapeRenderer());
+        if (!paused) {
+            entityManager.getPlayer().renderUI(game.getSpriteBatch(), game.getShapeRenderer());
+        }
 
         stage.act();
         stage.draw();
-
-        //sleep(30);
     }
 
     @Override
@@ -287,29 +288,29 @@ public class GameScreen extends BaseScreen {
         GameUtils.debug(this,"initUI");
 
         pauseButton = new ImageButton(AssetLoader.uiSkin.getDrawable("pause"));
-        pauseButton.getImageCell().size(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
-        pauseButton.setSize(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
+        pauseButton.getImageCell().size(120 * Dimensions.getGameScreenWidthRatio(), 120 * Dimensions.getGameScreenWidthRatio());
+        pauseButton.setSize(120 * Dimensions.getGameScreenWidthRatio(), 120 * Dimensions.getGameScreenWidthRatio());
         pauseButton.addListener(pauseButtonListener);
 
         playButton = new ImageButton(AssetLoader.uiSkin.getDrawable("play"));
-        playButton.getImageCell().size(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
-        playButton.setSize(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
+        playButton.getImageCell().size(120 * Dimensions.getGameScreenWidthRatio(), 120 * Dimensions.getGameScreenWidthRatio());
+        playButton.setSize(120 * Dimensions.getGameScreenWidthRatio(), 120 * Dimensions.getGameScreenWidthRatio());
         playButton.addListener(playButtonListener);
 
         nextWeaponButton = new ImageButton(AssetLoader.uiSkin.getDrawable("right"));
-        nextWeaponButton.getImageCell().size(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
-        nextWeaponButton.setSize(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
+        nextWeaponButton.getImageCell().size(120 * Dimensions.getGameScreenWidthRatio(), 120 * Dimensions.getGameScreenWidthRatio());
+        nextWeaponButton.setSize(120 * Dimensions.getGameScreenWidthRatio(), 120 * Dimensions.getGameScreenWidthRatio());
         nextWeaponButton.addListener(nextWeaponButtonListener);
 
         previousWeaponButton = new ImageButton(AssetLoader.uiSkin.getDrawable("left"));
-        previousWeaponButton.getImageCell().size(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
-        previousWeaponButton.setSize(Gdx.graphics.getWidth() / 16, Gdx.graphics.getWidth() / 16);
+        previousWeaponButton.getImageCell().size(120 * Dimensions.getGameScreenWidthRatio(), 120 * Dimensions.getGameScreenWidthRatio());
+        previousWeaponButton.setSize(120 * Dimensions.getGameScreenWidthRatio(), 120 * Dimensions.getGameScreenWidthRatio());
         previousWeaponButton.addListener(previousWeaponButtonListener);
 
         touchpad = new Touchpad(0, AssetLoader.uiSkin);
 
         debugLabel = new Label("debugLabel", AssetLoader.uiSkin);
-        debugLabel.setY(MyGdxGame.GAME_HEIGHT - debugLabel.getHeight());
+        debugLabel.setY(Dimensions.getScreenHeight() - debugLabel.getHeight());
 
         game.getUIViewport().apply();
         game.getUICamera().position.set(game.getUICamera().viewportWidth / 2, game.getUICamera().viewportHeight / 2, 0);
@@ -319,13 +320,16 @@ public class GameScreen extends BaseScreen {
         pauseTable = new Table();
         pauseTable.setFillParent(true);
         pauseTable.setVisible(false);
+        if (MyGdxGame.DEBUG) {
+            playTable.debug();
+            pauseTable.debug();
+        }
 
-        playTable.add(pauseButton).colspan(2).top().right().expandX();
+        playTable.add(pauseButton).colspan(3).top().right().expandX();
         playTable.row();
-        playTable.add(previousWeaponButton);
-        playTable.add(nextWeaponButton);
-        playTable.row();
-        playTable.add(touchpad).colspan(2).bottom().left().pad(Gdx.graphics.getHeight() / 20).expandY();
+        playTable.add(touchpad).bottom().left().pad(Dimensions.getGameScreenHeightRatio() * 50).expandY();
+        playTable.add(previousWeaponButton).expandX().bottom().right().padBottom(Dimensions.getGameScreenHeightRatio() * 150).padRight(Dimensions.getGameScreenWidthRatio() * 300);
+        playTable.add(nextWeaponButton).bottom().left().padBottom(Dimensions.getGameScreenHeightRatio() * 150).padRight(Dimensions.getGameScreenWidthRatio() * 700);
 
         pauseTable.add(playButton);
 
@@ -456,18 +460,6 @@ public class GameScreen extends BaseScreen {
             }
             aCloudArray.render(game.getSpriteBatch());
         }
-    }
-
-    private void renderPlayerHP() {
-        game.getShapeRenderer().begin(ShapeRenderer.ShapeType.Line);
-        game.getShapeRenderer().setColor(0, 0, 0, 1);
-        game.getShapeRenderer().rect(game.GAME_WIDTH / 2 - 50, game.GAME_HEIGHT / 2 + 75, 100, 10);
-        game.getShapeRenderer().end();
-
-        game.getShapeRenderer().begin(ShapeRenderer.ShapeType.Filled);
-        game.getShapeRenderer().setColor(1 - entityManager.getPlayer().getHitpoints() / 100, entityManager.getPlayer().getHitpoints() / 100, 0, 1);
-        game.getShapeRenderer().rect(game.GAME_WIDTH / 2 - 50, game.GAME_HEIGHT / 2 + 75, entityManager.getPlayer().getHitpoints(), 10);
-        game.getShapeRenderer().end();
     }
 
 

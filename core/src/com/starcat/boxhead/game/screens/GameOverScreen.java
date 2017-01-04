@@ -15,7 +15,7 @@ import com.starcat.boxhead.utils.AssetLoader;
  * Created by Vincent on 11/29/2016.
  */
 
-public class GameOverScreen extends BaseScreen {
+public final class GameOverScreen extends BaseScreen {
 
     private Stage stage;
     private Table table;
