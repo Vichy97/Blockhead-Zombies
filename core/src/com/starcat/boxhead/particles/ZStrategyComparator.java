@@ -22,5 +22,6 @@ public class ZStrategyComparator implements Comparator<Decal> {
         float dist1 = camera.position.dst(0, 0, o1.getPosition().z);
         float dist2 = camera.position.dst(0, 0, o2.getPosition().z);
         return (int)Math.signum(dist1 - dist2);
+
     }
 }

@@ -39,7 +39,8 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
     protected Arrive<Vector3> behavior;
     protected SteeringAcceleration<Vector3> steeringOutput;
 
-    private float hitpoints = 100;
+    protected float hitpoints = 100;
+    protected float maxHitpoints = 100;
 
 
 
@@ -132,6 +133,10 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
 
     public void heal(float hitpoints) {
         this.hitpoints += hitpoints;
+
+        if (hitpoints > maxHitpoints) {
+            hitpoints = maxHitpoints;
+        }
     }
 
 

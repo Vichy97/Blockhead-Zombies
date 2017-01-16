@@ -95,7 +95,14 @@ public enum ZombieState implements State<Zombie> {
     DIE() {
         @Override
         public void update(Zombie zombie) {
-                zombie.getAnimationController().update(Gdx.graphics.getDeltaTime());
+            zombie.getAnimationController().update(Gdx.graphics.getDeltaTime());
+
+            if (zombie.shouldFade()) {
+                zombie.setOpacity(zombie.getOpacity() - .01f);
+                if (zombie.getOpacity() <= .25f) {
+                    zombie.setShouldPool(true);
+                }
+            }
         }
 
         @Override
@@ -109,7 +116,8 @@ public enum ZombieState implements State<Zombie> {
                     Timer.instance().scheduleTask(new Timer.Task() {
                         @Override
                         public void run() {
-                            zombie.setShouldPool(true);
+
+                            zombie.setFade(true);
                         }
                     }, 2);
                 }

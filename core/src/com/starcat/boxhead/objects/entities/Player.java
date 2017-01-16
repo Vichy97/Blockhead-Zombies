@@ -1,24 +1,20 @@
 package com.starcat.boxhead.objects.entities;
 
+import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
+import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
+import com.starcat.boxhead.objects.entities.Behavior.PlayerState;
 import com.starcat.boxhead.objects.weapons.Gun;
-import com.starcat.boxhead.objects.weapons.Pistol;
-import com.starcat.boxhead.objects.weapons.PistolDual;
-import com.starcat.boxhead.objects.weapons.Shotgun;
-import com.starcat.boxhead.objects.weapons.ShotgunDual;
-import com.starcat.boxhead.objects.weapons.ShotgunShort;
-import com.starcat.boxhead.objects.weapons.ShotgunShortDual;
-import com.starcat.boxhead.objects.weapons.Sniper;
-import com.starcat.boxhead.objects.weapons.SniperCamo;
-import com.starcat.boxhead.objects.weapons.Uzi;
 import com.starcat.boxhead.objects.weapons.UziDual;
 import com.starcat.boxhead.utils.AssetLoader;
+import com.starcat.boxhead.utils.Dimensions;
 
 /**
  * Created by Vincent on 8/12/2016.
@@ -32,6 +28,8 @@ public class Player extends Entity {
     private int direction = 2;
     private AnimationController walkAnimationController;
     private AnimationController shootAnimationController;
+
+    public StateMachine<Player, PlayerState> stateMachine;
 
 
 
@@ -47,30 +45,41 @@ public class Player extends Entity {
         walkAnimationController = new AnimationController(modelInstance);
         shootAnimationController = new AnimationController(modelInstance);
         shootAnimationController.allowSameAnimation = true;
+
+        stateMachine = new DefaultStateMachine<Player, PlayerState>(this, PlayerState.ALIVE);
     }
 
     @Override
     public void update(float delta) {
         super.update(delta);
+        stateMachine.update();
 
-        rigidBody.setAngularVelocity(Vector3.Zero);
-        rigidBody.setLinearVelocity(Vector3.Zero);
-
-        if (moving) {
-            rigidBody.translate(speed);
-        }
-
-        currentWeapon.update(delta);
-
-        if (getHitpoints() < 100) {
-            heal(.025f);
+        if (hitpoints <= 0) {
+            stateMachine.changeState(PlayerState.DEAD);
         }
     }
 
     @Override
     public void render(ModelBatch modelBatch, Environment environment) {
         super.render(modelBatch, environment);
-        currentWeapon.render(modelBatch, environment);
+        if (hitpoints > 0) {
+            currentWeapon.render(modelBatch, environment);
+        }
+    }
+
+    public void renderUI(SpriteBatch spriteBatch, ShapeRenderer shapeRenderer) {
+        if (hitpoints > 0) {
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.setColor(0, 0, 0, 1);
+            shapeRenderer.rect(Dimensions.getHalfScreenWidth() - 50 * Dimensions.getGameScreenWidthRatio(), Dimensions.getHalfScreenHeight() + 40 * Dimensions.getGameScreenHeightRatio(), 100 * Dimensions.getGameScreenWidthRatio(), 10 * Dimensions.getGameScreenHeightRatio());
+            shapeRenderer.end();
+
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.setColor(1 - hitpoints / 100, hitpoints / 100, 0, 1);
+            shapeRenderer.rect(Dimensions.getHalfScreenWidth() - 50 * Dimensions.getGameScreenWidthRatio(), Dimensions.getHalfScreenHeight() + 40 * Dimensions.getGameScreenHeightRatio(), hitpoints * Dimensions.getGameScreenWidthRatio(), 10 * Dimensions.getGameScreenHeightRatio());
+            shapeRenderer.end();
+            currentWeapon.renderUI(spriteBatch, shapeRenderer);
+        }
     }
 
     public void fire() {
@@ -148,6 +157,10 @@ public class Player extends Entity {
 
     public float getMaxSpeed() {
         return maxSpeed;
+    }
+
+    public Vector3 getCurrentSpeed() {
+        return speed;
     }
 
     public boolean isMoving() {

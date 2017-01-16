@@ -28,6 +28,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
@@ -59,13 +60,16 @@ public final class GameScreen extends BaseScreen {
 
     private InputMultiplexer inputMultiplexer;
     private Stage stage;
-    private Table pauseTable, playTable;
+    private Table pauseTable, playTable, gameOverTable;
 
-    private Label debugLabel;
+    private Label debugLabel, gameOverLabel, continueLabel;
 
     private ImageButton pauseButton, playButton, nextWeaponButton, previousWeaponButton;
     private TextButton menuButton;
     private Touchpad touchpad;
+
+    private float gameOverTableOpacity = 0;
+    private float gameOverTableTint = 0;
 
     private ModelCache modelCache, shadowCache;
 
@@ -192,8 +196,8 @@ public final class GameScreen extends BaseScreen {
             entityManager.update(Gdx.graphics.getDeltaTime());
 
             if (entityManager.getPlayer().getHitpoints() <= 0) {
-                game.setScreen(new GameOverScreen(game));
-                dispose();
+                gameOverTable.setVisible(true);
+                playTable.setVisible(false);
             }
 
             if (entityManager.getPlayer().getCurrentWeapon().isAutofire() && entityManager.getPlayer().getCurrentWeapon().isAutofire() && (Gdx.input.isKeyPressed(Input.Keys.SPACE) || touched)) {
@@ -224,8 +228,28 @@ public final class GameScreen extends BaseScreen {
             entityManager.getPlayer().renderUI(game.getSpriteBatch(), game.getShapeRenderer());
         }
 
+        if (gameOverTable.isVisible()) {
+            if (gameOverTableOpacity < 1) {
+                gameOverTableOpacity += .01f;
+            }
+
+            if (gameOverTableTint < .5f) {
+                gameOverTableTint += .01f;
+            }
+
+            Gdx.gl.glEnable(GL20.GL_BLEND);
+            Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+            game.getShapeRenderer().begin(ShapeRenderer.ShapeType.Filled);
+            game.getShapeRenderer().setColor(1, 0, 0, gameOverTableTint);
+            game.getShapeRenderer().rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            game.getShapeRenderer().end();
+
+            gameOverTable.setColor(1, 0, 0, gameOverTableOpacity);
+        }
+
         stage.act();
         stage.draw();
+
     }
 
     @Override
@@ -312,30 +336,38 @@ public final class GameScreen extends BaseScreen {
         debugLabel = new Label("debugLabel", AssetLoader.uiSkin);
         debugLabel.setY(Dimensions.getScreenHeight() - debugLabel.getHeight());
 
-        game.getUIViewport().apply();
-        game.getUICamera().position.set(game.getUICamera().viewportWidth / 2, game.getUICamera().viewportHeight / 2, 0);
+        gameOverLabel = new Label("GAME OVER", AssetLoader.uiSkin, "menu");
+        continueLabel = new Label("touch to continue...", AssetLoader.uiSkin, "small");
 
         playTable = new Table();
         playTable.setFillParent(true);
-        pauseTable = new Table();
-        pauseTable.setFillParent(true);
-        pauseTable.setVisible(false);
-        if (MyGdxGame.DEBUG) {
-            playTable.debug();
-            pauseTable.debug();
-        }
-
         playTable.add(pauseButton).colspan(3).top().right().expandX();
         playTable.row();
         playTable.add(touchpad).bottom().left().pad(Dimensions.getGameScreenHeightRatio() * 50).expandY();
         playTable.add(previousWeaponButton).expandX().bottom().right().padBottom(Dimensions.getGameScreenHeightRatio() * 150).padRight(Dimensions.getGameScreenWidthRatio() * 300);
         playTable.add(nextWeaponButton).bottom().left().padBottom(Dimensions.getGameScreenHeightRatio() * 150).padRight(Dimensions.getGameScreenWidthRatio() * 700);
 
+        pauseTable = new Table();
+        pauseTable.setFillParent(true);
+        pauseTable.setVisible(false);
         pauseTable.add(playButton);
+
+        gameOverTable = new Table();
+        gameOverTable.setFillParent(true);
+        gameOverTable.setVisible(false);
+        gameOverTable.add(gameOverLabel);
+        gameOverTable.row();
+        gameOverTable.add(continueLabel);
+
+        if (MyGdxGame.DEBUG) {
+            playTable.debug();
+            pauseTable.debug();
+        }
 
         stage = new Stage(game.getUIViewport());
         stage.addActor(playTable);
         stage.addActor(pauseTable);
+        stage.addActor(gameOverTable);
         stage.addActor(debugLabel);
 
         inputMultiplexer = new InputMultiplexer();

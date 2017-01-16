@@ -1,4 +1,4 @@
-package com.starcat.boxhead.objects.entities;
+package com.starcat.boxhead.objects;
 
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.MathUtils;

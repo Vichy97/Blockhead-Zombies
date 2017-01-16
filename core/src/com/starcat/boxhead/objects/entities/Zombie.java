@@ -2,7 +2,9 @@ package com.starcat.boxhead.objects.entities;
 
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
@@ -15,8 +17,10 @@ import com.starcat.boxhead.utils.AssetLoader;
 
 public class Zombie extends Entity {
 
+    private boolean fade = false;
     private AnimationController animationController;
     public StateMachine<Zombie, ZombieState> stateMachine;
+    private BlendingAttribute blendingAttribute;
 
     public Zombie() {
         super();
@@ -27,7 +31,10 @@ public class Zombie extends Entity {
         super.init(position, new ModelInstance(AssetLoader.zombie), rigidBody);
         animationController = new AnimationController(modelInstance);
         animationController.allowSameAnimation = true;
-        animationController.setAnimation("walk", -1).speed = .2f;
+
+        blendingAttribute = new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        blendingAttribute.opacity = 1;
+        modelInstance.materials.get(0).set(blendingAttribute);
 
         stateMachine.changeState(ZombieState.CHASE);
     }
@@ -36,6 +43,10 @@ public class Zombie extends Entity {
     public void update(float delta) {
         super.update(delta);
         stateMachine.update();
+
+        if (hitpoints <= 0 && stateMachine.getCurrentState() != ZombieState.DIE) {
+            stateMachine.changeState(ZombieState.DIE);
+        }
     }
 
     public AnimationController getAnimationController() {
@@ -45,4 +56,20 @@ public class Zombie extends Entity {
     public StateMachine<Zombie, ZombieState> getStateMachine() {
         return stateMachine;
     }
-}
+
+    public boolean shouldFade() {
+        return fade;
+    }
+
+    public void setFade(boolean fade) {
+        this.fade = fade;
+    }
+
+    public void setOpacity(float opacity) {
+        blendingAttribute.opacity = opacity;
+    }
+
+    public float getOpacity() {
+        return blendingAttribute.opacity;
+    }
+ }

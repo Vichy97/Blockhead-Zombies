@@ -124,8 +124,8 @@ public abstract class Gun {
         } else {
             player.getWalkAnimationController().setAnimation(walkAnimation, -1).speed = .5f;
         }
-        player.getWalkAnimationController().update(delta);
-        player.getShootAnimationController().update(delta);
+        //player.getWalkAnimationController().update(delta);
+        //player.getShootAnimationController().update(delta);
         animationController.update(delta);
 
         if (!canShoot && timer > 0) {

@@ -14,6 +14,7 @@ import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btVector3;
 import com.badlogic.gdx.utils.Pool;
+import com.starcat.boxhead.objects.Bullet;
 import com.starcat.boxhead.physics.CollisionFlags;
 import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.physics.CollisionMasks;
@@ -34,8 +35,8 @@ public final class EntityManager {
 
     private Player player;
     private ArrayList<Entity> entities;
-    private ArrayList<Bullet> bullets;
-    private ArrayList<BulletCasing> bulletCasings;
+    private ArrayList<com.starcat.boxhead.objects.Bullet> bullets;
+    private ArrayList<com.starcat.boxhead.objects.BulletCasing> bulletCasings;
 
     private btRigidBody.btRigidBodyConstructionInfo constructionInfo;
     private Vector3 tempVec3;
@@ -45,7 +46,7 @@ public final class EntityManager {
     private btVector3 btLocalInertia;
     private BoundingBox boundingBox;
 
-    private Pool<Bullet> bulletPool;
+    private Pool<com.starcat.boxhead.objects.Bullet> bulletPool;
     private Pool<Zombie> zombiePool;
 
     private float currentTime = 0;
@@ -57,8 +58,8 @@ public final class EntityManager {
 
     private EntityManager() {
         entities = new ArrayList<Entity>();
-        bullets = new ArrayList<Bullet>();
-        bulletCasings = new ArrayList<BulletCasing>();
+        bullets = new ArrayList<com.starcat.boxhead.objects.Bullet>();
+        bulletCasings = new ArrayList<com.starcat.boxhead.objects.BulletCasing>();
 
         constructionInfo = new btRigidBody.btRigidBodyConstructionInfo(1, null, null, Vector3.Zero);
         tempVec3 = new Vector3();
@@ -68,10 +69,10 @@ public final class EntityManager {
         btLocalInertia = new btVector3();
         boundingBox = new BoundingBox();
 
-        bulletPool = new Pool<Bullet>() {
+        bulletPool = new Pool<com.starcat.boxhead.objects.Bullet>() {
             @Override
-            protected Bullet newObject() {
-                return new Bullet();
+            protected com.starcat.boxhead.objects.Bullet newObject() {
+                return new com.starcat.boxhead.objects.Bullet();
             }
         };
 
@@ -105,7 +106,7 @@ public final class EntityManager {
                 if (entity instanceof Zombie) {
                     zombiePool.free((Zombie)entity);
                     entityIterator.remove();
-                }
+                } 
             } else {
                 entity.update(delta);
             }
@@ -115,9 +116,9 @@ public final class EntityManager {
             }
         }
 
-        Iterator<Bullet> bulletIterator = bullets.iterator();
+        Iterator<com.starcat.boxhead.objects.Bullet> bulletIterator = bullets.iterator();
         while(bulletIterator.hasNext()) {
-            Bullet bullet = bulletIterator.next();
+            com.starcat.boxhead.objects.Bullet bullet = bulletIterator.next();
 
             if (bullet.getShouldPool()) {
                 bulletPool.free(bullet);
@@ -131,9 +132,9 @@ public final class EntityManager {
             }
         }
 
-        Iterator<BulletCasing> bulletCasingIterator = bulletCasings.iterator();
+        Iterator<com.starcat.boxhead.objects.BulletCasing> bulletCasingIterator = bulletCasings.iterator();
         while(bulletCasingIterator.hasNext()) {
-            BulletCasing bulletCasing = bulletCasingIterator.next();
+            com.starcat.boxhead.objects.BulletCasing bulletCasing = bulletCasingIterator.next();
 
             bulletCasing.update(delta);
 
@@ -155,10 +156,10 @@ public final class EntityManager {
     }
 
     public void renderBullets(ModelBatch modelBatch, Environment environment) {
-        for (Bullet bullet : bullets) {
+        for (com.starcat.boxhead.objects.Bullet bullet : bullets) {
             bullet.render(modelBatch, environment);
         }
-        for (BulletCasing bulletCasing : bulletCasings) {
+        for (com.starcat.boxhead.objects.BulletCasing bulletCasing : bulletCasings) {
             bulletCasing.render(modelBatch, environment);
         }
     }
@@ -215,7 +216,7 @@ public final class EntityManager {
     }
 
     public void spawnBullet(Matrix4 transform, ModelInstance modelInstance, int direction, float velocity, int damage, float accuracy) {
-        Bullet bullet = bulletPool.obtain();
+        com.starcat.boxhead.objects.Bullet bullet = bulletPool.obtain();
 
         btRigidBody rigidBody;
         if (bullet.getRigidBody() == null) {
@@ -246,7 +247,7 @@ public final class EntityManager {
 
     //FIXME: causes weird AI behavior and also slows the game down
     public void spawnBulletCasing(Matrix4 transform, ModelInstance modelInstance, Vector3 expulsionImpulse) {
-        BulletCasing bulletCasing = new BulletCasing();
+        com.starcat.boxhead.objects.BulletCasing bulletCasing = new com.starcat.boxhead.objects.BulletCasing();
 
         btRigidBody rigidBody;
         modelInstance.calculateBoundingBox(boundingBox);
@@ -296,7 +297,7 @@ public final class EntityManager {
             entityIterator.remove();
         }
 
-        Iterator<Bullet> bulletIterator = bullets.iterator();
+        Iterator<com.starcat.boxhead.objects.Bullet> bulletIterator = bullets.iterator();
         while(bulletIterator.hasNext()) {
             Bullet bullet = bulletIterator.next();
 
@@ -305,9 +306,9 @@ public final class EntityManager {
             bulletIterator.remove();
         }
 
-        Iterator<BulletCasing> bulletCasingIterator = bulletCasings.iterator();
+        Iterator<com.starcat.boxhead.objects.BulletCasing> bulletCasingIterator = bulletCasings.iterator();
         while(bulletCasingIterator.hasNext()) {
-            BulletCasing bulletCasing = bulletCasingIterator.next();
+            com.starcat.boxhead.objects.BulletCasing bulletCasing = bulletCasingIterator.next();
 
             bulletCasing.dispose();
 
