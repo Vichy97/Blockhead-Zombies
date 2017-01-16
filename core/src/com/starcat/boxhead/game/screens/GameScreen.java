@@ -28,7 +28,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
@@ -37,9 +36,7 @@ import com.starcat.boxhead.environment.Afternoon;
 import com.starcat.boxhead.environment.Evening;
 import com.starcat.boxhead.environment.Night;
 import com.starcat.boxhead.game.MyGdxGame;
-import com.starcat.boxhead.objects.Cloud;
 import com.starcat.boxhead.objects.Map;
-import com.starcat.boxhead.objects.Star;
 import com.starcat.boxhead.objects.entities.EntityManager;
 import com.starcat.boxhead.particles.ParticleManager;
 import com.starcat.boxhead.utils.AssetLoader;
@@ -83,9 +80,6 @@ public final class GameScreen extends BaseScreen {
     private ParticleManager particleManager;
 
     private Map currentMap;
-
-    private Cloud[] cloudArray;
-    private Star[] stars;
 
     private btDiscreteDynamicsWorld dynamicsWorld;
     private DebugDrawer debugDrawer;
@@ -135,11 +129,7 @@ public final class GameScreen extends BaseScreen {
         game.getGameViewport().apply();
         game.getGameCamera().update();
 
-        if (currentMap.getTimeOfDay() instanceof Night) {
-            renderStars();
-        } else {
-            renderClouds(delta);
-        }
+        currentMap.renderSky(game.getSpriteBatch());
 
         if (!paused) {
             dynamicsWorld.stepSimulation(delta, 10, 1f/75f);
@@ -233,7 +223,7 @@ public final class GameScreen extends BaseScreen {
                 gameOverTableOpacity += .01f;
             }
 
-            if (gameOverTableTint < .5f) {
+            if (gameOverTableTint < .6f) {
                 gameOverTableTint += .01f;
             }
 
@@ -423,7 +413,7 @@ public final class GameScreen extends BaseScreen {
     }
 
     private void initWorld() {
-        currentMap = AssetLoader.map;
+        currentMap = AssetLoader.map2;
 
         modelCache = new ModelCache();
         shadowCache = new ModelCache();
@@ -431,67 +421,20 @@ public final class GameScreen extends BaseScreen {
         modelCache.begin();
         modelCache.add(new ModelInstance(currentMap.base));
         modelCache.add(new ModelInstance(currentMap.objects));
-        modelCache.add(new ModelInstance(currentMap.doodads));
+        if (currentMap.doodads != null) {
+            modelCache.add(new ModelInstance(currentMap.doodads));
+        }
         modelCache.end();
 
         shadowCache.begin();
-        shadowCache.add(new ModelInstance(currentMap.objects));
-        shadowCache.add(new ModelInstance(currentMap.doodads));
+        if (currentMap.objects != null) {
+            shadowCache.add(new ModelInstance(currentMap.objects));
+        }
+        if (currentMap.doodads != null) {
+            shadowCache.add(new ModelInstance(currentMap.doodads));
+        }
         shadowCache.end();
 
-        spawnClouds();
-        spawnStars();
-    }
-
-    private void spawnClouds() {
-        cloudArray = new Cloud[6];
-        for (int i = 0; i < cloudArray.length; i++) {
-            if (i % 3 == 0) {
-                cloudArray[i] = new Cloud(1920 - i * 350, AssetLoader.textures.findRegion("cloud_1"));
-            } else if (i % 2 == 0) {
-                cloudArray[i] = new Cloud(1920 - i * 350, AssetLoader.textures.findRegion("cloud_2"));
-            } else {
-                cloudArray[i] = new Cloud(1920 - i * 350, AssetLoader.textures.findRegion("cloud_3"));
-            }
-        }
-    }
-
-    private void spawnStars() {
-        stars = new Star[18];
-        stars[0] = new Star(105, 1000, AssetLoader.textures.findRegion("star_small"));
-        stars[1] = new Star(540, 1040, AssetLoader.textures.findRegion("star_small"));
-        stars[2] = new Star(1045, 980, AssetLoader.textures.findRegion("star_small"));
-        stars[3] = new Star(380, 800, AssetLoader.textures.findRegion("star_small"));
-        stars[4] = new Star(1000, 650, AssetLoader.textures.findRegion("star_small"));
-        stars[5] = new Star(1450, 450, AssetLoader.textures.findRegion("star_small"));
-        stars[6] = new Star(1820, 350, AssetLoader.textures.findRegion("star_small"));
-        stars[7] = new Star(580, 200, AssetLoader.textures.findRegion("star_small"));
-        stars[8] = new Star(1485, 100, AssetLoader.textures.findRegion("star_small"));
-
-        stars[9] = new Star(250, 900, AssetLoader.textures.findRegion("star_big"));
-        stars[10] = new Star(800, 840, AssetLoader.textures.findRegion("star_big"));
-        stars[11] = new Star(1300, 800, AssetLoader.textures.findRegion("star_big"));
-        stars[12] = new Star(1580, 1000, AssetLoader.textures.findRegion("star_big"));
-        stars[13] = new Star(600, 460, AssetLoader.textures.findRegion("star_big"));
-        stars[14] = new Star(1200, 260, AssetLoader.textures.findRegion("star_big"));
-        stars[15] = new Star(240, 280, AssetLoader.textures.findRegion("star_big"));
-        stars[16] = new Star(170, 540, AssetLoader.textures.findRegion("star_small"));
-        stars[17] = new Star(1730, 840, AssetLoader.textures.findRegion("star_small"));
-    }
-
-    private void renderStars() {
-        for (Star star : stars) {
-            star.render(game.getSpriteBatch());
-        }
-    }
-
-    private void renderClouds(float delta) {
-        for (Cloud aCloudArray : cloudArray) {
-            if (!paused) {
-                aCloudArray.update(delta);
-            }
-            aCloudArray.render(game.getSpriteBatch());
-        }
     }
 
 
@@ -602,6 +545,5 @@ public final class GameScreen extends BaseScreen {
             AssetLoader.button_click.play();
         }
     };
-
 
 }

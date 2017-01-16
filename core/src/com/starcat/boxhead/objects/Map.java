@@ -1,9 +1,13 @@
 package com.starcat.boxhead.objects;
 
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.starcat.boxhead.environment.Afternoon;
 import com.starcat.boxhead.environment.TimeOfDay;
+
+import java.util.ArrayList;
 
 /**
  * Created by Vincent on 8/15/2016.
@@ -11,13 +15,19 @@ import com.starcat.boxhead.environment.TimeOfDay;
 public class Map {
 
     public ModelInstance base, objects, doodads;
-
     private TimeOfDay timeOfDay;
+    private ArrayList<Sprite> sky;
 
     public Map(Model base, Model objects, Model doodads) {
-        this.base = new ModelInstance(base);
-        this.objects = new ModelInstance(objects);
-        this.doodads = new ModelInstance(doodads);
+        if (base != null) {
+            this.base = new ModelInstance(base);
+        }
+        if (objects != null) {
+            this.objects = new ModelInstance(objects);
+        }
+        if (doodads != null) {
+            this.doodads = new ModelInstance(doodads);
+        }
 
         timeOfDay = new Afternoon();
     }
@@ -28,5 +38,9 @@ public class Map {
 
     public void setTimeOfDay(TimeOfDay timeOfDay) {
         this.timeOfDay = timeOfDay;
+    }
+
+    public void renderSky(SpriteBatch spriteBatch) {
+        timeOfDay.renderSky(spriteBatch);
     }
 }

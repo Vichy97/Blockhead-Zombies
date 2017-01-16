@@ -16,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.starcat.boxhead.game.MyGdxGame;
-import com.starcat.boxhead.objects.Cloud;
 import com.starcat.boxhead.objects.Map;
 import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.utils.Dimensions;
@@ -57,7 +56,6 @@ public final class MenuScreen extends BaseScreen {
     private DirectionalShadowLight sunlight;
 
     private Map currentMap;
-    private Cloud[] cloudArray;
 
 
 
@@ -93,7 +91,7 @@ public final class MenuScreen extends BaseScreen {
         game.getGameViewport().apply();
         game.getGameCamera().update();
 
-        renderClouds(delta);
+        currentMap.renderSky(game.getSpriteBatch());
         game.getModelBatch().begin(game.getGameCamera());
         game.getModelBatch().render(modelCache, environment);
         game.getModelBatch().end();
@@ -248,31 +246,7 @@ public final class MenuScreen extends BaseScreen {
         shadowCache.add(currentMap.objects);
         shadowCache.add(currentMap.doodads);
         shadowCache.end();
-
-        spawnClouds();
     }
-
-    private void spawnClouds() {
-        cloudArray = new Cloud[6];
-        for (int i = 0; i < cloudArray.length; i++) {
-            if (i % 3 == 0) {
-                cloudArray[i] = new Cloud(1920 - i * 350, AssetLoader.textures.findRegion("cloud_1"));
-            } else if (i % 2 == 0) {
-                cloudArray[i] = new Cloud(1920 - i * 350, AssetLoader.textures.findRegion("cloud_2"));
-            } else {
-                cloudArray[i] = new Cloud(1920 - i * 350, AssetLoader.textures.findRegion("cloud_3"));
-            }
-        }
-    }
-
-    private void renderClouds(float delta) {
-        for (Cloud cloud : cloudArray) {
-            cloud.update(delta);
-            cloud.render(game.getSpriteBatch());
-        }
-    }
-
-
 
     @Override
     public void dispose() {

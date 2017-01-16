@@ -134,8 +134,8 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
     public void heal(float hitpoints) {
         this.hitpoints += hitpoints;
 
-        if (hitpoints > maxHitpoints) {
-            hitpoints = maxHitpoints;
+        if (this.hitpoints > maxHitpoints) {
+            this.hitpoints = maxHitpoints;
         }
     }
 

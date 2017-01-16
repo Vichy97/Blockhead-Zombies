@@ -42,9 +42,13 @@ public final class AssetLoader implements Disposable {
     public static TextureAtlas textures;
     public static Skin uiSkin;
 
+    public static Model player, zombie;
+
     public static Map map;
     public static Model mapBase, mapObjects, mapDoodads;
-    public static Model player, zombie;
+
+    public static Map map2;
+    public static Model map2Base, map2Objects;
 
     public static Model pistol;
     public static Model pistolDual;
@@ -151,9 +155,13 @@ public final class AssetLoader implements Disposable {
         manager.load("ui/ui.atlas", TextureAtlas.class);
         manager.load("textures.atlas", TextureAtlas.class);
 
-        manager.load("maps/test_scene/map_1_base.g3dj", Model.class);
-        manager.load("maps/test_scene/map_1_objects.g3dj", Model.class);
-        manager.load("maps/test_scene/map_1_doodads.g3dj", Model.class);
+        manager.load("maps/map_1/map_1_base.g3dj", Model.class);
+        manager.load("maps/map_1/map_1_objects.g3dj", Model.class);
+        manager.load("maps/map_1/map_1_doodads.g3dj", Model.class);
+
+
+        manager.load("maps/map_2/map_2_base.g3dj", Model.class);
+        manager.load("maps/map_2/map_2_objects.g3dj", Model.class);
 
         manager.load("objects/entities/player.g3dj", Model.class);
         manager.load("objects/entities/zombie.g3dj", Model.class);
@@ -230,10 +238,14 @@ public final class AssetLoader implements Disposable {
 
         textures = manager.get("textures.atlas", TextureAtlas.class);
 
-        mapBase = manager.get("maps/test_scene/map_1_base.g3dj", Model.class);
-        mapObjects = manager.get("maps/test_scene/map_1_objects.g3dj", Model.class);
-        mapDoodads = manager.get("maps/test_scene/map_1_doodads.g3dj", Model.class);
+        mapBase = manager.get("maps/map_1/map_1_base.g3dj", Model.class);
+        mapObjects = manager.get("maps/map_1/map_1_objects.g3dj", Model.class);
+        mapDoodads = manager.get("maps/map_1/map_1_doodads.g3dj", Model.class);
         map = new Map(mapBase, mapObjects, mapDoodads);
+
+        map2Base = manager.get("maps/map_2/map_2_base.g3dj", Model.class);
+        map2Objects = manager.get("maps/map_2/map_2_objects.g3dj", Model.class);
+        map2 = new Map(map2Base, map2Objects, null);
 
         player = manager.get("objects/entities/player.g3dj", Model.class);
         zombie = manager.get("objects/entities/zombie.g3dj", Model.class);
