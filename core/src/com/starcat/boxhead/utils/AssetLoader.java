@@ -44,9 +44,8 @@ public final class AssetLoader implements Disposable {
 
     public static Model player, zombie;
 
-    public static Map map;
+    public static Map map1;
     public static Model mapBase, mapObjects, mapDoodads;
-
     public static Map map2;
     public static Model map2Base, map2Objects;
 
@@ -241,7 +240,7 @@ public final class AssetLoader implements Disposable {
         mapBase = manager.get("maps/map_1/map_1_base.g3dj", Model.class);
         mapObjects = manager.get("maps/map_1/map_1_objects.g3dj", Model.class);
         mapDoodads = manager.get("maps/map_1/map_1_doodads.g3dj", Model.class);
-        map = new Map(mapBase, mapObjects, mapDoodads);
+        map1 = new Map(mapBase, mapObjects, mapDoodads);
 
         map2Base = manager.get("maps/map_2/map_2_base.g3dj", Model.class);
         map2Objects = manager.get("maps/map_2/map_2_objects.g3dj", Model.class);

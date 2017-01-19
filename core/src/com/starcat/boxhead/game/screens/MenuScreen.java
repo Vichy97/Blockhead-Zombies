@@ -231,7 +231,7 @@ public final class MenuScreen extends BaseScreen {
     }
 
     private void initWorld() {
-        currentMap = AssetLoader.map;
+        currentMap = AssetLoader.map1;
 
         modelCache = new ModelCache();
         shadowCache = new ModelCache();
@@ -239,12 +239,16 @@ public final class MenuScreen extends BaseScreen {
         modelCache.begin();
         modelCache.add(currentMap.base);
         modelCache.add(currentMap.objects);
-        modelCache.add(currentMap.doodads);
+        if (currentMap.doodads != null) {
+            modelCache.add(currentMap.doodads);
+        }
         modelCache.end();
 
         shadowCache.begin();
         shadowCache.add(currentMap.objects);
-        shadowCache.add(currentMap.doodads);
+        if (currentMap.doodads != null) {
+            shadowCache.add(currentMap.doodads);
+        }
         shadowCache.end();
     }
 

@@ -13,5 +13,6 @@ public class Evening extends Day {
         ambientColor = new Color(.2f, .2f, .2f, 1);
         sunlightColor = new Color(.5f, .4f, .4f, 1);
         sunlightDirection = new Vector3(1f, -.5f, .4f);
+        cloudSpeed = 10;
     }
 }

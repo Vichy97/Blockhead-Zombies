@@ -29,7 +29,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.starcat.boxhead.environment.Afternoon;
@@ -52,7 +51,6 @@ import com.starcat.boxhead.utils.GameUtils;
 public final class GameScreen extends BaseScreen {
 
     private boolean paused = false;
-    private boolean leftPressed, rightPressed, upPressed, downPressed = false;
     private boolean touched = false;
 
     private InputMultiplexer inputMultiplexer;
@@ -62,7 +60,6 @@ public final class GameScreen extends BaseScreen {
     private Label debugLabel, gameOverLabel, continueLabel;
 
     private ImageButton pauseButton, playButton, nextWeaponButton, previousWeaponButton;
-    private TextButton menuButton;
     private Touchpad touchpad;
 
     private float gameOverTableOpacity = 0;
@@ -110,8 +107,13 @@ public final class GameScreen extends BaseScreen {
         entityManager = EntityManager.instance();
         entityManager.setDynamicsWorld(dynamicsWorld);
 
-        //TODO: wave spawning system (probably handled by entity manager)
         entityManager.spawnPlayer(new Vector3(0, .8f, 0), .055f);
+        entityManager.getPlayer().addController(touchpad);
+        inputMultiplexer.addProcessor(entityManager.getPlayer());
+
+
+
+        //TODO: wave spawning system (probably handled by entity manager)
         for (int i = 0; i < 5; i++) {
             entityManager.spawnZombie(new Vector3(5,.8f, 5));
         }
@@ -134,37 +136,6 @@ public final class GameScreen extends BaseScreen {
         if (!paused) {
             dynamicsWorld.stepSimulation(delta, 10, 1f/75f);
             GdxAI.getTimepiece().update(delta);
-        }
-
-        int direction;
-        if (upPressed) {
-            if (leftPressed) {
-                direction = 8;
-            } else if (rightPressed) {
-                direction = 2;
-            } else {
-                direction = 1;
-            }
-        } else if (downPressed) {
-            if (leftPressed) {
-                direction = 6;
-            } else if (rightPressed) {
-                direction = 4;
-            } else {
-                direction = 5;
-            }
-        } else if (leftPressed) {
-            direction = 7;
-        } else if (rightPressed) {
-            direction = 3;
-        } else {
-            direction = GameUtils.getTouchpadEightDirection(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
-        }
-
-        if (!entityManager.getPlayer().isMoving()) {
-            entityManager.getPlayer().setDirection(direction);
-        } else if (entityManager.getPlayer().getDirection() != direction) {
-            entityManager.getPlayer().setDirection(direction);
         }
 
         game.getModelBatch().begin(game.getGameCamera());
@@ -239,7 +210,6 @@ public final class GameScreen extends BaseScreen {
 
         stage.act();
         stage.draw();
-
     }
 
     @Override
@@ -413,7 +383,7 @@ public final class GameScreen extends BaseScreen {
     }
 
     private void initWorld() {
-        currentMap = AssetLoader.map2;
+        currentMap = AssetLoader.map1;
 
         modelCache = new ModelCache();
         shadowCache = new ModelCache();
@@ -441,17 +411,7 @@ public final class GameScreen extends BaseScreen {
 
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.UP) {
-            upPressed = true;
-        } else if (keycode == Input.Keys.RIGHT) {
-            rightPressed = true;
-        } else if (keycode == Input.Keys.DOWN) {
-            downPressed = true;
-        } else if (keycode == Input.Keys.LEFT) {
-            leftPressed = true;
-        } else if (keycode == Input.Keys.SPACE) {
-            entityManager.getPlayer().fire();
-        } else if (keycode == Input.Keys.BACKSPACE) {
+        if (keycode == Input.Keys.BACKSPACE) {
             GameUtils.takeScreenshot();
         } else if (keycode == Input.Keys.SHIFT_RIGHT){
             entityManager.spawnZombie(new Vector3(0, .8f, 0));
@@ -481,28 +441,13 @@ public final class GameScreen extends BaseScreen {
             environment.shadowMap = sunlight;
         }
 
-        return true;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        if (keycode == Input.Keys.UP) {
-            upPressed = false;
-        } else if (keycode == Input.Keys.RIGHT) {
-            rightPressed = false;
-        } else if (keycode == Input.Keys.DOWN) {
-            downPressed = false;
-        } else if (keycode == Input.Keys.LEFT) {
-            leftPressed = false;
-        }
-        return true;
+        return false;
     }
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        entityManager.getPlayer().fire();
         touched = true;
-        return true;
+        return false;
     }
 
     @Override

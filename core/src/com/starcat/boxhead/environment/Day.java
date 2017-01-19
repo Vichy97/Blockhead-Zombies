@@ -12,9 +12,8 @@ import com.starcat.boxhead.utils.AssetLoader;
 
 public abstract class Day extends TimeOfDay {
 
-    private static final int CLOUD_SPEED = 20;
     private Sprite[] clouds;
-
+    protected float cloudSpeed;
 
 
     public Day() {
@@ -40,12 +39,16 @@ public abstract class Day extends TimeOfDay {
         for (int i = 0; i < clouds.length; i++) {
             clouds[i].draw(spriteBatch);
 
-            clouds[i].setX(clouds[i].getX() - CLOUD_SPEED * Gdx.graphics.getDeltaTime());
+            clouds[i].setX(clouds[i].getX() - cloudSpeed * Gdx.graphics.getDeltaTime());
             if (clouds[i].getX() < -clouds[i].getWidth()) {
                 clouds[i].setPosition(1920, MathUtils.random(0, 1080 - clouds[i].getHeight()));
             }
 
         }
         spriteBatch.end();
+    }
+
+    public void setCloudSpeed(float cloudSpeed) {
+        this.cloudSpeed = cloudSpeed;
     }
 }
