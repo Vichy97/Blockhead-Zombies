@@ -1,5 +1,6 @@
 package com.starcat.boxhead.environment;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
@@ -17,4 +18,8 @@ public abstract class TimeOfDay {
     public Vector3 sunlightDirection;
 
     public abstract void renderSky(SpriteBatch spriteBatch);
+
+    public void clearSkyColor() {
+        Gdx.gl.glClearColor(skyColor.r, skyColor.g, skyColor.b, 1);
+    }
 }

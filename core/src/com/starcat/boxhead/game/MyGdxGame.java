@@ -26,8 +26,8 @@ import com.starcat.boxhead.utils.GameUtils;
 
 public class MyGdxGame extends Game {
 
-    public static final boolean DEBUG = false;
-    public static final boolean WIREFRAME = false;
+    public static final boolean DEBUG = true;
+    public static final boolean WIREFRAME = true;
 
     private OrthographicCamera UICamera;
     private OrthographicCamera gameCamera;

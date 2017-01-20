@@ -108,15 +108,12 @@ public final class GameScreen extends BaseScreen {
         entityManager.setDynamicsWorld(dynamicsWorld);
 
         entityManager.spawnPlayer(new Vector3(0, .8f, 0), .055f);
-        entityManager.getPlayer().addController(touchpad);
-        inputMultiplexer.addProcessor(entityManager.getPlayer());
-
-
-
         //TODO: wave spawning system (probably handled by entity manager)
         for (int i = 0; i < 5; i++) {
             entityManager.spawnZombie(new Vector3(5,.8f, 5));
         }
+
+        initInput();
 
     }
 
@@ -124,19 +121,12 @@ public final class GameScreen extends BaseScreen {
 
     @Override
     public void render(float delta) {
-        super.render(delta);
-
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         game.getGameViewport().apply();
         game.getGameCamera().update();
 
         currentMap.renderSky(game.getSpriteBatch());
-
-        if (!paused) {
-            dynamicsWorld.stepSimulation(delta, 10, 1f/75f);
-            GdxAI.getTimepiece().update(delta);
-        }
 
         game.getModelBatch().begin(game.getGameCamera());
         game.getModelBatch().render(modelCache, environment);
@@ -153,8 +143,23 @@ public final class GameScreen extends BaseScreen {
         game.getShadowBatch().end();
         sunlight.end();
 
+        currentMap.clearSkyColor();
+
+        if (MyGdxGame.DEBUG && MyGdxGame.WIREFRAME &&  !paused) {
+              debugDrawer.begin(game.getGameCamera());
+              dynamicsWorld.debugDrawWorld();
+              debugDrawer.end();
+        }
+
+        renderUI();
+
+        super.render(delta);
+    }
+
+    @Override
+    public void update(float delta) {
         if (!paused) {
-            entityManager.update(Gdx.graphics.getDeltaTime());
+            entityManager.update(delta);
 
             if (entityManager.getPlayer().getHitpoints() <= 0) {
                 gameOverTable.setVisible(true);
@@ -164,19 +169,16 @@ public final class GameScreen extends BaseScreen {
             if (entityManager.getPlayer().getCurrentWeapon().isAutofire() && entityManager.getPlayer().getCurrentWeapon().isAutofire() && (Gdx.input.isKeyPressed(Input.Keys.SPACE) || touched)) {
                 entityManager.getPlayer().fire();
             }
+
+            dynamicsWorld.stepSimulation(delta, 10, 1f/75f);
+            GdxAI.getTimepiece().update(delta);
         }
 
         Vector3 position = entityManager.getPlayer().getPosition();
         game.getGameCamera().position.set(position.x - 10, 10, position.z - 10);
+    }
 
-        Gdx.gl.glClearColor(currentMap.getTimeOfDay().skyColor.r, currentMap.getTimeOfDay().skyColor.g, currentMap.getTimeOfDay().skyColor.b, 1);
-
-        if (MyGdxGame.DEBUG && MyGdxGame.WIREFRAME &&  !paused) {
-              debugDrawer.begin(game.getGameCamera());
-              dynamicsWorld.debugDrawWorld();
-              debugDrawer.end();
-        }
-
+    private void renderUI() {
         game.getStringBuilder().setLength(0);
         game.getStringBuilder().append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
 
@@ -211,6 +213,8 @@ public final class GameScreen extends BaseScreen {
         stage.act();
         stage.draw();
     }
+
+
 
     @Override
     public void pause() {
@@ -329,11 +333,6 @@ public final class GameScreen extends BaseScreen {
         stage.addActor(pauseTable);
         stage.addActor(gameOverTable);
         stage.addActor(debugLabel);
-
-        inputMultiplexer = new InputMultiplexer();
-        inputMultiplexer.addProcessor(stage);
-        inputMultiplexer.addProcessor(this);
-        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
     private void initLighting() {
@@ -405,6 +404,15 @@ public final class GameScreen extends BaseScreen {
         }
         shadowCache.end();
 
+    }
+
+    private void initInput() {
+        inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(stage);
+        inputMultiplexer.addProcessor(this);
+        inputMultiplexer.addProcessor(entityManager.getPlayer());
+        entityManager.getPlayer().addController(touchpad);
+        Gdx.input.setInputProcessor(inputMultiplexer);
     }
 
 

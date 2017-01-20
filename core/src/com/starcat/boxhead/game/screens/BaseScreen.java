@@ -29,6 +29,10 @@ public class BaseScreen implements Screen, InputProcessor {
 
     @Override
     public void render(float delta) {
+        update(delta);
+    }
+
+    public void update(float delta) {
 
     }
 

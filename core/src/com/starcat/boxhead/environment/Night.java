@@ -6,8 +6,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.starcat.boxhead.utils.AssetLoader;
 
-import java.util.ArrayList;
-
 /**
  * Created by Vincent on 8/15/2016.
  */
