@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -240,11 +241,11 @@ public final class AssetLoader implements Disposable {
         mapBase = manager.get("maps/map_1/map_1_base.g3dj", Model.class);
         mapObjects = manager.get("maps/map_1/map_1_objects.g3dj", Model.class);
         mapDoodads = manager.get("maps/map_1/map_1_doodads.g3dj", Model.class);
-        map1 = new Map(mapBase, mapObjects, mapDoodads);
+        map1 = new Map(mapBase, mapObjects, mapDoodads, 30);
 
         map2Base = manager.get("maps/map_2/map_2_base.g3dj", Model.class);
         map2Objects = manager.get("maps/map_2/map_2_objects.g3dj", Model.class);
-        map2 = new Map(map2Base, map2Objects, null);
+        map2 = new Map(map2Base, map2Objects, null, 70);
 
         player = manager.get("objects/entities/player.g3dj", Model.class);
         zombie = manager.get("objects/entities/zombie.g3dj", Model.class);

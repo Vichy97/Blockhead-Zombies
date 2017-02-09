@@ -117,9 +117,13 @@ public class Player extends Entity implements InputProcessor {
         }
     }
 
+
+
     public void fire() {
         currentWeapon.fire();
     }
+
+
 
     public void setDirection(int direction) {
 

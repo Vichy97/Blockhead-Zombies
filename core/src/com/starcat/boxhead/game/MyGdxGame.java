@@ -26,8 +26,8 @@ import com.starcat.boxhead.utils.GameUtils;
 
 public class MyGdxGame extends Game {
 
-    public static final boolean DEBUG = true;
-    public static final boolean WIREFRAME = true;
+    public static final boolean DEBUG = false;
+    public static final boolean WIREFRAME = false;
 
     private OrthographicCamera UICamera;
     private OrthographicCamera gameCamera;
@@ -51,8 +51,8 @@ public class MyGdxGame extends Game {
 
         Dimensions.init();
 
-        UICamera = new OrthographicCamera(Dimensions.getGameHeight()/Dimensions.getAspectRatio(), Dimensions.getGameHeight());
-        gameCamera = new OrthographicCamera(Dimensions.getGameHeight()/Dimensions.getAspectRatio(), Dimensions.getGameHeight());
+        UICamera = new OrthographicCamera(Dimensions.getGameHeight() / Dimensions.getAspectRatio(), Dimensions.getGameHeight());
+        gameCamera = new OrthographicCamera(Dimensions.getGameHeight() / Dimensions.getAspectRatio(), Dimensions.getGameHeight());
         gameCamera.rotate(-30, 1, 0, 0);
         gameCamera.rotate(225, 0, 1, 0);
         gameCamera.position.set(-40, 35, -40);
@@ -69,7 +69,7 @@ public class MyGdxGame extends Game {
         config.numDirectionalLights = 1;
         config.numPointLights = 0;
         config.numBones = 0;
-        config.defaultCullFace = GL20.GL_BACK;
+        config.defaultCullFace = GL20.GL_NONE;
         modelBatch = new ModelBatch(new DefaultShaderProvider(config));
         shadowBatch = new ModelBatch(new DepthShaderProvider());
         decalBatch = new DecalBatch(new CameraGroupStrategy(gameCamera, new ZStrategyComparator(gameCamera)));

@@ -94,7 +94,6 @@ public final class GameScreen extends BaseScreen {
     public GameScreen(MyGdxGame game) {
         super(game);
 
-        //FIXME: 90 should maybe not be 90 lol
         game.getGameViewport().setWorldSize(Dimensions.getGameWidth() / 90,Dimensions.getGameHeight() / 90);
         game.getGameCamera().position.set(0, 10, 0);
 
@@ -114,7 +113,6 @@ public final class GameScreen extends BaseScreen {
         }
 
         initInput();
-
     }
 
 
