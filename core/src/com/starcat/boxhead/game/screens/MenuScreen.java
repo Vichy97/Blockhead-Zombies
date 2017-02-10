@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
@@ -40,6 +41,7 @@ public final class MenuScreen extends BaseScreen {
     private Table optionsTable;
     private Table aboutTable;
     private Table mapSelectTable;
+    private Table mapSelectTable2;
 
     private TextButton playButton;
     private TextButton exitButton;
@@ -74,16 +76,14 @@ public final class MenuScreen extends BaseScreen {
     private int currentMap = 0;
     private float worldSize = 30;
 
-    private Map[] maps;
-
-    private Vector3 cameraTargetVector;
-    /*
-     *TODO: this could be used to have a smaller section of shadow where the player is walking
-     *this would require less resources for higher quality shadows (no shadows off camera)
-    */
+     //TODO: this could be used to have a smaller section of shadow where the player is walking
+     //this would require less resources for higher quality shadows (no shadows off camera)
     private Vector3 sunlightVector;
+    private Vector3 cameraTargetVector;
+
     private Viewport playerViewport;
     private OrthographicCamera playerCamera;
+    private int currentSkin;
 
 
 
@@ -108,11 +108,7 @@ public final class MenuScreen extends BaseScreen {
         sunlightVector = new Vector3(0, 0, 0);
 
         currentMap = 0;
-        maps = new Map[2];
-        maps[0] = AssetLoader.map1;
-        maps[1] = AssetLoader.map2;
-
-        maps[1].setTranslation(-60, 0, 60);
+        currentSkin = 0;
 
         initUI();
         initWorld();
@@ -120,11 +116,12 @@ public final class MenuScreen extends BaseScreen {
 
         playerModel = new ModelInstance(AssetLoader.player);
         playerModel.transform.rotate(0, 1, 0, 180);
-        playerModel.transform.scl(5);
-        playerModel.transform.setTranslation(playerCamera.position.x + 22, playerCamera.position.y - 15, playerCamera.position.z - 13);
+        playerModel.transform.scl(4.5f);
+        playerModel.transform.setTranslation(-25, 20, -60);
 
         playerAnimationController = new AnimationController(playerModel);
         playerAnimationController.setAnimation("pose_single_wield");
+        playerAnimationController.update(Gdx.graphics.getDeltaTime());
     }
 
 
@@ -151,7 +148,7 @@ public final class MenuScreen extends BaseScreen {
         game.getGameViewport().apply();
         game.getGameCamera().update();
 
-        maps[0].renderSky(game.getSpriteBatch());
+        AssetLoader.map1.renderSky(game.getSpriteBatch());
         game.getModelBatch().begin(game.getGameCamera());
         game.getModelBatch().render(modelCache, environment);
         game.getModelBatch().end();
@@ -162,7 +159,7 @@ public final class MenuScreen extends BaseScreen {
         game.getShadowBatch().end();
         sunlight.end();
 
-        maps[0].clearSkyColor();
+        AssetLoader.map1.clearSkyColor();
 
 
 
@@ -217,9 +214,9 @@ public final class MenuScreen extends BaseScreen {
             }
         }
 
-        if (worldSize < maps[currentMap].getWorldSize()) {
+        if (worldSize < AssetLoader.maps[currentMap].getWorldSize()) {
             game.getGameViewport().setWorldSize(Dimensions.getGameWidth() / ++worldSize, Dimensions.getGameHeight() / ++worldSize);
-        } else if (worldSize > maps[currentMap].getWorldSize()) {
+        } else if (worldSize > AssetLoader.maps[currentMap].getWorldSize()) {
             game.getGameViewport().setWorldSize(Dimensions.getGameWidth() / --worldSize, Dimensions.getGameHeight() / --worldSize);
         }
     }
@@ -332,6 +329,9 @@ public final class MenuScreen extends BaseScreen {
         mapSelectTable = new Table();
         mapSelectTable.setFillParent(true);
         mapSelectTable.setVisible(false);
+        mapSelectTable2 = new Table();
+        mapSelectTable2.setFillParent(true);
+        mapSelectTable2.setVisible(false);
 
         nextMapButton = new ImageButton(AssetLoader.uiSkin.getDrawable("right"));
         nextMapButton.getImageCell().width(Dimensions.scaleWidth(225)).height(Dimensions.scaleWidth(225));
@@ -357,17 +357,19 @@ public final class MenuScreen extends BaseScreen {
         previousPlayerButton.setSize(Dimensions.scaleWidth(100), Dimensions.scaleWidth(100));
         previousPlayerButton.addListener(previousPlayerListener);
 
-        shopButton = new TextButton(AssetLoader.i18NBundle.get("shop"), AssetLoader.uiSkin, "menu");
+        shopButton = new TextButton(AssetLoader.i18NBundle.get("shop"), AssetLoader.uiSkin, "large");
         shopButton.addListener(shopListener);
 
-        mapSelectTable.top();
-        mapSelectTable.add(previousMapButton).padTop(Dimensions.scaleHeight((int)(Dimensions.getGameHeight() / 2 - previousMapButton.getHeight() / 2)));
-        mapSelectTable.add(startButton).center().expandX().padTop(Dimensions.scaleHeight((int)(Dimensions.getGameHeight() / 2 - previousMapButton.getHeight() / 2)));
-        mapSelectTable.add(nextMapButton).padTop(Dimensions.scaleHeight((int)(Dimensions.getGameHeight() / 2 - previousMapButton.getHeight() / 2)));
-        mapSelectTable.row();
-        mapSelectTable.add(previousPlayerButton).padTop(Dimensions.scaleHeight(200));
-        mapSelectTable.add(playerNextButton).padTop(Dimensions.scaleHeight(200));
-        mapSelectTable.add(shopButton).padTop(Dimensions.scaleHeight(200)).padRight((Dimensions.scaleWidth(50)));
+        mapSelectTable.center();
+        mapSelectTable.add(previousMapButton).expandX().left().padLeft(Dimensions.scaleWidth(25));
+        mapSelectTable.add(startButton).expandX();
+        mapSelectTable.add(nextMapButton).expandX().right().padRight(Dimensions.scaleWidth(25));
+
+        mapSelectTable2.bottom();
+        mapSelectTable2.add(previousPlayerButton).padLeft(Dimensions.scaleWidth(50));
+        mapSelectTable2.add(playerNextButton).expandX().left().padLeft(Dimensions.scaleWidth(140));
+        mapSelectTable2.add(shopButton).expandX().right().padRight(Dimensions.scaleWidth(50));
+        mapSelectTable2.padBottom(Dimensions.scaleHeight(100));
 
 
 
@@ -376,12 +378,14 @@ public final class MenuScreen extends BaseScreen {
             optionsTable.debug();
             menuTable.debug();
             mapSelectTable.debug();
+            mapSelectTable2.debug();
         }
 
         stage.addActor(menuTable);
         stage.addActor(optionsTable);
         stage.addActor(aboutTable);
         stage.addActor(mapSelectTable);
+        stage.addActor(mapSelectTable2);
 
         game.getUIViewport().apply();
         game.getUICamera().position.set(game.getUICamera().viewportWidth / 2, game.getUICamera().viewportHeight / 2, 0);
@@ -390,8 +394,8 @@ public final class MenuScreen extends BaseScreen {
     private void initLighting() {
         environment = new Environment();
         sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 70f, 70f, 1, 75);
-        sunlight.set(maps[0].getTimeOfDay().sunlightColor, maps[0].getTimeOfDay().sunlightDirection);
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, maps[0].getTimeOfDay().ambientColor));
+        sunlight.set(AssetLoader.maps[0].getTimeOfDay().sunlightColor, AssetLoader.maps[0].getTimeOfDay().sunlightDirection);
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, AssetLoader.maps[0].getTimeOfDay().ambientColor));
         environment.add(sunlight);
         environment.shadowMap = sunlight;
     }
@@ -402,32 +406,32 @@ public final class MenuScreen extends BaseScreen {
         shadowCache = new ModelCache();
 
         modelCache.begin();
-        modelCache.add(maps[currentMap].base);
-        modelCache.add(maps[currentMap].objects);
-        if (maps[currentMap].doodads != null) {
-            modelCache.add(maps[currentMap].doodads);
+        modelCache.add(AssetLoader.maps[currentMap].base);
+        modelCache.add(AssetLoader.maps[currentMap].objects);
+        if (AssetLoader.maps[currentMap].doodads != null) {
+            modelCache.add(AssetLoader.maps[currentMap].doodads);
         }
 
         if (currentMap > 0) {
-            modelCache.add(maps[currentMap - 1].base);
-            modelCache.add(maps[currentMap - 1].objects);
-            if (maps[currentMap - 1].doodads != null) {
-                modelCache.add(maps[currentMap - 1].doodads);
+            modelCache.add(AssetLoader.maps[currentMap - 1].base);
+            modelCache.add(AssetLoader.maps[currentMap - 1].objects);
+            if (AssetLoader.maps[currentMap - 1].doodads != null) {
+                modelCache.add(AssetLoader.maps[currentMap - 1].doodads);
             }
         }
-        if (currentMap < maps.length - 1) {
-            modelCache.add(maps[currentMap + 1].base);
-            modelCache.add(maps[currentMap + 1].objects);
-            if (maps[currentMap + 1].doodads != null) {
-                modelCache.add(maps[currentMap + 1].doodads);
+        if (currentMap < AssetLoader.maps.length - 1) {
+            modelCache.add(AssetLoader.maps[currentMap + 1].base);
+            modelCache.add(AssetLoader.maps[currentMap + 1].objects);
+            if (AssetLoader.maps[currentMap + 1].doodads != null) {
+                modelCache.add(AssetLoader.maps[currentMap + 1].doodads);
             }
         }
         modelCache.end();
 
         shadowCache.begin();
-        shadowCache.add(maps[currentMap].objects);
-        if (maps[currentMap].doodads != null) {
-            shadowCache.add(maps[currentMap].doodads);
+        shadowCache.add(AssetLoader.maps[currentMap].objects);
+        if (AssetLoader.maps[currentMap].doodads != null) {
+            shadowCache.add(AssetLoader.maps[currentMap].doodads);
         }
         shadowCache.end();
     }
@@ -472,6 +476,7 @@ public final class MenuScreen extends BaseScreen {
 
             menuTable.setVisible(false);
             mapSelectTable.setVisible(true);
+            mapSelectTable2.setVisible(true);
         }
     };
 
@@ -533,15 +538,16 @@ public final class MenuScreen extends BaseScreen {
         @Override
         public void clicked(InputEvent event, float x, float y) {
             AssetLoader.button_click.play();
-            if (currentMap < maps.length - 1) {
+            if (currentMap < AssetLoader.maps.length - 1) {
                 currentMap++;
                 initWorld();
             }
 
-            if (currentMap == maps.length - 1) {
-                previousMapButton.setVisible(true);
+            if (currentMap == AssetLoader.maps.length - 1) {
                 nextMapButton.setVisible(false);
             }
+            previousMapButton.setVisible(true);
+
             cameraTargetVector.add(-60, 0, 60);
             sunlightVector.add(-60, 0, 60);
         }
@@ -559,8 +565,8 @@ public final class MenuScreen extends BaseScreen {
 
             if (currentMap == 0) {
                 previousMapButton.setVisible(false);
-                nextMapButton.setVisible(true);
             }
+            nextMapButton.setVisible(true);
 
             cameraTargetVector.add(60, 0, -60);
             sunlightVector.add(60, 0, -60);
@@ -572,6 +578,16 @@ public final class MenuScreen extends BaseScreen {
         public void clicked(InputEvent event, float x, float y) {
             AssetLoader.button_click.play();
 
+            if (currentSkin > 0) {
+                currentSkin --;
+
+                playerModel.materials.get(1).set(new TextureAttribute(TextureAttribute.Diffuse, AssetLoader.playerSkins[currentSkin]));
+            }
+
+            if (currentSkin == 0) {
+                previousPlayerButton.setVisible(false);
+            }
+            playerNextButton.setVisible(true);
         }
     };
 
@@ -579,6 +595,17 @@ public final class MenuScreen extends BaseScreen {
         @Override
         public void clicked(InputEvent event, float x, float y) {
             AssetLoader.button_click.play();
+
+            if (currentSkin < AssetLoader.playerSkins.length) {
+                currentSkin++;
+
+                playerModel.materials.get(1).set(new TextureAttribute(TextureAttribute.Diffuse, AssetLoader.playerSkins[currentSkin]));
+            }
+
+            if (currentSkin == AssetLoader.playerSkins.length - 1) {
+                playerNextButton.setVisible(false);
+            }
+            previousPlayerButton.setVisible(true);
         }
     };
 
@@ -594,7 +621,7 @@ public final class MenuScreen extends BaseScreen {
         public void clicked(InputEvent event, float x, float y) {
             AssetLoader.button_click.play();
 
-            game.setScreen(new GameScreen(game));
+            game.setScreen(new GameScreen(game, AssetLoader.maps[currentMap], AssetLoader.playerSkins[currentSkin]));
             dispose();
         }
     };

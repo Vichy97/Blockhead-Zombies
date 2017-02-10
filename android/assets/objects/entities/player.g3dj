@@ -283,7 +283,7 @@
 			"textures": [
             				{
             					"id": "file1",
-            					"filename": "skin_adventurer.png",
+            					"filename": "man.png",
             					"type": "DIFFUSE"
             				}
             			]

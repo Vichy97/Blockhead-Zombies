@@ -4,10 +4,12 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
@@ -37,11 +39,15 @@ public class Player extends Entity implements InputProcessor {
     private boolean upPressed, downPressed, leftPressed, rightPressed = false;
     private Touchpad controller;
 
+    private boolean grounded;
 
 
-    public void init(Vector3 position, float maxSpeed, btRigidBody rigidBody) {
+
+    public void init(Vector3 position, float maxSpeed, btRigidBody rigidBody, Texture skin) {
         super.init(position, new ModelInstance(AssetLoader.player), rigidBody);
         this.maxSpeed = maxSpeed;
+
+        modelInstance.materials.get(1).set(new TextureAttribute(TextureAttribute.Diffuse, skin));
 
         speed = new Vector3(maxSpeed, 0, maxSpeed);
         speed.rotate(rotationVector, -45);
@@ -53,6 +59,8 @@ public class Player extends Entity implements InputProcessor {
         shootAnimationController.allowSameAnimation = true;
 
         stateMachine = new DefaultStateMachine<Player, PlayerState>(this, PlayerState.ALIVE);
+
+        grounded = false;
     }
 
 
@@ -103,15 +111,15 @@ public class Player extends Entity implements InputProcessor {
     }
 
     public void renderUI(SpriteBatch spriteBatch, ShapeRenderer shapeRenderer) {
-        if (hitpoints > 0) {
+        if (hitpoints > 0 && grounded) {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             shapeRenderer.setColor(0, 0, 0, 1);
-            shapeRenderer.rect(Dimensions.getHalfScreenWidth() - 50 * Dimensions.getGameScreenWidthRatio(), Dimensions.getHalfScreenHeight() + 40 * Dimensions.getGameScreenHeightRatio(), 100 * Dimensions.getGameScreenWidthRatio(), 10 * Dimensions.getGameScreenHeightRatio());
+            shapeRenderer.rect(Dimensions.getHalfScreenWidth() - Dimensions.scaleWidth(50), Dimensions.getHalfScreenHeight() + Dimensions.scaleHeight(100), Dimensions.scaleWidth(100), Dimensions.scaleHeight(10));
             shapeRenderer.end();
 
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             shapeRenderer.setColor(1 - hitpoints / 100, hitpoints / 100, 0, 1);
-            shapeRenderer.rect(Dimensions.getHalfScreenWidth() - 50 * Dimensions.getGameScreenWidthRatio(), Dimensions.getHalfScreenHeight() + 40 * Dimensions.getGameScreenHeightRatio(), hitpoints * Dimensions.getGameScreenWidthRatio(), 10 * Dimensions.getGameScreenHeightRatio());
+            shapeRenderer.rect(Dimensions.getHalfScreenWidth() - Dimensions.scaleWidth(50), Dimensions.getHalfScreenHeight() + Dimensions.scaleHeight(100), Dimensions.scaleWidth((int)hitpoints), Dimensions.scaleHeight(10));
             shapeRenderer.end();
             currentWeapon.renderUI(spriteBatch, shapeRenderer);
         }
@@ -137,57 +145,49 @@ public class Player extends Entity implements InputProcessor {
                     rigidBody.setWorldTransform(rigidBody.getWorldTransform().rotate(rotation));
                     currentRotationAngle = 45;
                     break;
-                }
-                case 2: {
+                } case 2: {
                     speed.rotate(rotationVector, 360 - currentRotationAngle);
                     rotation.set(rotationVector, 360 - currentRotationAngle);
                     rigidBody.setWorldTransform(rigidBody.getWorldTransform().rotate(rotation));
                     currentRotationAngle = 360;
                     break;
-                }
-                case 3: {
+                } case 3: {
                     speed.rotate(rotationVector, 315 - currentRotationAngle);
                     rotation.set(rotationVector, 315 - currentRotationAngle);
                     rigidBody.setWorldTransform(rigidBody.getWorldTransform().rotate(rotation));
                     currentRotationAngle = 315;
                     break;
-                }
-                case 4: {
+                } case 4: {
                     speed.rotate(rotationVector, 270 - currentRotationAngle);
                     rotation.set(rotationVector, 270 - currentRotationAngle);
                     rigidBody.setWorldTransform(rigidBody.getWorldTransform().rotate(rotation));
                     currentRotationAngle = 270;
                     break;
-                }
-                case 5: {
+                } case 5: {
                     speed.rotate(rotationVector, 225 - currentRotationAngle);
                     rotation.set(rotationVector, 225 - currentRotationAngle);
                     rigidBody.setWorldTransform(rigidBody.getWorldTransform().rotate(rotation));
                     currentRotationAngle = 225;
                     break;
-                }
-                case 6: {
+                } case 6: {
                     speed.rotate(rotationVector, 180 - currentRotationAngle);
                     rotation.set(rotationVector, 180 - currentRotationAngle);
                     rigidBody.setWorldTransform(rigidBody.getWorldTransform().rotate(rotation));
                     currentRotationAngle = 180;
                     break;
-                }
-                case 7: {
+                } case 7: {
                     speed.rotate(rotationVector, 135 - currentRotationAngle);
                     rotation.set(rotationVector, 135 - currentRotationAngle);
                     rigidBody.setWorldTransform(rigidBody.getWorldTransform().rotate(rotation));
                     currentRotationAngle = 135;
                     break;
-                }
-                case 8: {
+                } case 8: {
                     speed.rotate(rotationVector, 90 - currentRotationAngle);
                     rotation.set(rotationVector, 90 - currentRotationAngle);
                     rigidBody.setWorldTransform(rigidBody.getWorldTransform().rotate(rotation));
                     currentRotationAngle = 90;
                     break;
-                }
-                default: {
+                } default: {
                     moving = false;
                 }
             }
@@ -234,6 +234,13 @@ public class Player extends Entity implements InputProcessor {
         this.controller = controller;
     }
 
+    public boolean isGrounded() {
+        return grounded;
+    }
+
+    public void setGrounded(boolean grounded) {
+        this.grounded = grounded;
+    }
 
 
     @Override

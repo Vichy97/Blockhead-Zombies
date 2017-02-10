@@ -1,6 +1,7 @@
 package com.starcat.boxhead.objects.entities;
 
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btVector3;
 import com.badlogic.gdx.utils.Pool;
 import com.starcat.boxhead.objects.Bullet;
+import com.starcat.boxhead.objects.BulletCasing;
 import com.starcat.boxhead.physics.CollisionFlags;
 import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.physics.CollisionMasks;
@@ -46,7 +48,7 @@ public final class EntityManager {
     private btVector3 btLocalInertia;
     private BoundingBox boundingBox;
 
-    private Pool<com.starcat.boxhead.objects.Bullet> bulletPool;
+    private Pool<Bullet> bulletPool;
     private Pool<Zombie> zombiePool;
 
     private float currentTime = 0;
@@ -63,8 +65,8 @@ public final class EntityManager {
 
         constructionInfo = new btRigidBody.btRigidBodyConstructionInfo(1, null, null, Vector3.Zero);
         tempVec3 = new Vector3();
-        linearFactor = Vector3.X.add(Vector3.Z);
-        angularFactor = Vector3.Y;
+        linearFactor = new Vector3(1, 0, 1);
+        angularFactor = new Vector3(0, 1, 0);
         localInertia = new Vector3();
         btLocalInertia = new btVector3();
         boundingBox = new BoundingBox();
@@ -166,18 +168,18 @@ public final class EntityManager {
 
 
 
-    public void spawnPlayer(Vector3 position, float maxSpeed) {
+    public void spawnPlayer(Vector3 position, float maxSpeed, Texture skin) {
         AssetLoader.player.calculateBoundingBox(boundingBox);
         btCollisionShape collisionShape = new btBoxShape(boundingBox.getDimensions(tempVec3).scl(.5f));
         constructionInfo.setCollisionShape(collisionShape);
         btRigidBody rigidBody = new btRigidBody(constructionInfo);
         rigidBody.setAngularFactor(angularFactor);
-        rigidBody.setLinearFactor(linearFactor);
+        rigidBody.setLinearFactor(Vector3.Y);
         rigidBody.setContactCallbackFlag(CollisionFlags.ENTITY_FLAG);
         rigidBody.setActivationState(Collision.DISABLE_DEACTIVATION);
 
         player = new Player();
-        player.init(position, maxSpeed, rigidBody);
+        player.init(position.add(0, .8f, 0), maxSpeed, rigidBody, skin);
 
         dynamicsWorld.addRigidBody(rigidBody, (short) CollisionFlags.ENTITY_FLAG, (short) CollisionMasks.PLAYER_MASK);
         entities.add(player);
@@ -210,7 +212,7 @@ public final class EntityManager {
             zombie.setBehavior(arrive);
         }
 
-        zombie.init(position, rigidBody);
+        zombie.init(position.add(0, .8f, 0), rigidBody);
 
         entities.add(zombie);
     }
@@ -247,7 +249,7 @@ public final class EntityManager {
 
     //FIXME: causes weird AI behavior and also slows the game down
     public void spawnBulletCasing(Matrix4 transform, ModelInstance modelInstance, Vector3 expulsionImpulse) {
-        com.starcat.boxhead.objects.BulletCasing bulletCasing = new com.starcat.boxhead.objects.BulletCasing();
+        com.starcat.boxhead.objects.BulletCasing bulletCasing = new BulletCasing();
 
         btRigidBody rigidBody;
         modelInstance.calculateBoundingBox(boundingBox);

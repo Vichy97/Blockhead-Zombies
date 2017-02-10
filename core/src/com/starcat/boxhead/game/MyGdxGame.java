@@ -69,7 +69,7 @@ public class MyGdxGame extends Game {
         config.numDirectionalLights = 1;
         config.numPointLights = 0;
         config.numBones = 0;
-        config.defaultCullFace = GL20.GL_NONE;
+        config.defaultCullFace = GL20.GL_BACK;
         modelBatch = new ModelBatch(new DefaultShaderProvider(config));
         shadowBatch = new ModelBatch(new DepthShaderProvider());
         decalBatch = new DecalBatch(new CameraGroupStrategy(gameCamera, new ZStrategyComparator(gameCamera)));

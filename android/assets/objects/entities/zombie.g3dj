@@ -251,7 +251,7 @@
 			"textures": [
 				{
 					"id": "boxhead:file1", 
-					"filename": "skin_exclusiveZombie.png", 
+					"filename": "zombie.png",
 					"type": "DIFFUSE"
 				}
 			]

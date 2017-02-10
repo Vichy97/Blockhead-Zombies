@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.ai.GdxAI;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
@@ -76,7 +77,7 @@ public final class GameScreen extends BaseScreen {
     private EntityManager entityManager;
     private ParticleManager particleManager;
 
-    private Map currentMap;
+    private Map map;
 
     private btDiscreteDynamicsWorld dynamicsWorld;
     private DebugDrawer debugDrawer;
@@ -89,13 +90,19 @@ public final class GameScreen extends BaseScreen {
 
     private long diff, start = System.currentTimeMillis();
 
+    private float worldSize;
+    private float targetWorldSize;
 
 
-    public GameScreen(MyGdxGame game) {
+
+    public GameScreen(MyGdxGame game, Map map, Texture playerSkin) {
         super(game);
 
-        game.getGameViewport().setWorldSize(Dimensions.getGameWidth() / 90,Dimensions.getGameHeight() / 90);
-        game.getGameCamera().position.set(0, 10, 0);
+        map.setTranslation(0, 0, 0);
+        this.map = map;
+
+        targetWorldSize = 90;
+        worldSize = map.getWorldSize();
 
         initUI();
         initWorld();
@@ -106,10 +113,10 @@ public final class GameScreen extends BaseScreen {
         entityManager = EntityManager.instance();
         entityManager.setDynamicsWorld(dynamicsWorld);
 
-        entityManager.spawnPlayer(new Vector3(0, .8f, 0), .055f);
+        entityManager.spawnPlayer(new Vector3(0, 20f, 0), .055f, playerSkin);
         //TODO: wave spawning system (probably handled by entity manager)
         for (int i = 0; i < 5; i++) {
-            entityManager.spawnZombie(new Vector3(5,.8f, 5));
+            entityManager.spawnZombie(new Vector3(5, 0, 5));
         }
 
         initInput();
@@ -124,7 +131,7 @@ public final class GameScreen extends BaseScreen {
         game.getGameViewport().apply();
         game.getGameCamera().update();
 
-        currentMap.renderSky(game.getSpriteBatch());
+        map.renderSky(game.getSpriteBatch());
 
         game.getModelBatch().begin(game.getGameCamera());
         game.getModelBatch().render(modelCache, environment);
@@ -141,7 +148,7 @@ public final class GameScreen extends BaseScreen {
         game.getShadowBatch().end();
         sunlight.end();
 
-        currentMap.clearSkyColor();
+        map.clearSkyColor();
 
         if (MyGdxGame.DEBUG && MyGdxGame.WIREFRAME &&  !paused) {
               debugDrawer.begin(game.getGameCamera());
@@ -172,8 +179,18 @@ public final class GameScreen extends BaseScreen {
             GdxAI.getTimepiece().update(delta);
         }
 
+        updateCamera();
+    }
+
+    private void updateCamera() {
         Vector3 position = entityManager.getPlayer().getPosition();
-        game.getGameCamera().position.set(position.x - 10, 10, position.z - 10);
+        game.getGameCamera().position.set(position.x - 42, 35, position.z - 42);
+
+        if (worldSize > targetWorldSize) {
+            game.getGameViewport().setWorldSize(Dimensions.getGameWidth() / (worldSize -= .5f), Dimensions.getGameHeight() / (worldSize -= .5f));
+        } else if (worldSize < targetWorldSize) {
+            game.getGameViewport().setWorldSize(Dimensions.getGameWidth() / (worldSize += .5f), Dimensions.getGameHeight() / (worldSize += .5f));
+        }
     }
 
     private void renderUI() {
@@ -338,8 +355,8 @@ public final class GameScreen extends BaseScreen {
 
         environment = new Environment();
         sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 70f, 70f, 1, 75);
-        sunlight.set(currentMap.getTimeOfDay().sunlightColor, currentMap.getTimeOfDay().sunlightDirection);
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, currentMap.getTimeOfDay().ambientColor));
+        sunlight.set(map.getTimeOfDay().sunlightColor, map.getTimeOfDay().sunlightDirection);
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, map.getTimeOfDay().ambientColor));
         environment.add(sunlight);
         environment.shadowMap = sunlight;
 
@@ -350,7 +367,7 @@ public final class GameScreen extends BaseScreen {
         GameUtils.debug(this, "initPhysics");
 
         BoundingBox boundingBox = new BoundingBox();
-        currentMap.base.calculateBoundingBox(boundingBox);
+        map.base.calculateBoundingBox(boundingBox);
 
         debugDrawer = new DebugDrawer();
         debugDrawer.setDebugMode(btIDebugDraw.DebugDrawModes.DBG_MAX_DEBUG_DRAW_MODE);
@@ -359,11 +376,12 @@ public final class GameScreen extends BaseScreen {
         mapBaseCollisionObject = new btCollisionObject();
         mapBaseCollisionObject.setCollisionShape(mapBaseCollisionShape);
         mapBaseCollisionObject.setRestitution(.5f);
+        mapBaseCollisionObject.setWorldTransform(mapBaseCollisionObject.getWorldTransform().translate(0, -.58f, 0));
 
-        mapObjectsCollisionShape = Bullet.obtainStaticNodeShape(currentMap.objects.nodes);
+        mapObjectsCollisionShape = Bullet.obtainStaticNodeShape(map.objects.nodes);
         mapObjectsCollisionObject = new btCollisionObject();
         mapObjectsCollisionObject.setCollisionShape(mapObjectsCollisionShape);
-        mapObjectsCollisionObject.setWorldTransform(currentMap.objects.transform);
+        mapObjectsCollisionObject.setWorldTransform(map.objects.transform);
         mapObjectsCollisionObject.setContactCallbackFlag(CollisionFlags.OBJECT_FLAG);
         mapObjectsCollisionObject.setContactCallbackFilter(0);
 
@@ -380,25 +398,23 @@ public final class GameScreen extends BaseScreen {
     }
 
     private void initWorld() {
-        currentMap = AssetLoader.map1;
-
         modelCache = new ModelCache();
         shadowCache = new ModelCache();
 
         modelCache.begin();
-        modelCache.add(new ModelInstance(currentMap.base));
-        modelCache.add(new ModelInstance(currentMap.objects));
-        if (currentMap.doodads != null) {
-            modelCache.add(new ModelInstance(currentMap.doodads));
+        modelCache.add(new ModelInstance(map.base));
+        modelCache.add(new ModelInstance(map.objects));
+        if (map.doodads != null) {
+            modelCache.add(new ModelInstance(map.doodads));
         }
         modelCache.end();
 
         shadowCache.begin();
-        if (currentMap.objects != null) {
-            shadowCache.add(new ModelInstance(currentMap.objects));
+        if (map.objects != null) {
+            shadowCache.add(new ModelInstance(map.objects));
         }
-        if (currentMap.doodads != null) {
-            shadowCache.add(new ModelInstance(currentMap.doodads));
+        if (map.doodads != null) {
+            shadowCache.add(new ModelInstance(map.doodads));
         }
         shadowCache.end();
 
@@ -420,29 +436,29 @@ public final class GameScreen extends BaseScreen {
         if (keycode == Input.Keys.BACKSPACE) {
             GameUtils.takeScreenshot();
         } else if (keycode == Input.Keys.SHIFT_RIGHT){
-            entityManager.spawnZombie(new Vector3(0, .8f, 0));
+            entityManager.spawnZombie(new Vector3(0, 0, 0));
         } else if (keycode == Input.Keys.NUM_1) {
-            currentMap.setTimeOfDay(new Afternoon());
+            map.setTimeOfDay(new Afternoon());
             environment = new Environment();
             sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 50f, 50f, 1, 100);
-            sunlight.set(currentMap.getTimeOfDay().sunlightColor, currentMap.getTimeOfDay().sunlightDirection);
-            environment.set(new ColorAttribute(ColorAttribute.AmbientLight, currentMap.getTimeOfDay().ambientColor));
+            sunlight.set(map.getTimeOfDay().sunlightColor, map.getTimeOfDay().sunlightDirection);
+            environment.set(new ColorAttribute(ColorAttribute.AmbientLight, map.getTimeOfDay().ambientColor));
             environment.add(sunlight);
             environment.shadowMap = sunlight;
         } else if (keycode == Input.Keys.NUM_2) {
-            currentMap.setTimeOfDay(new Evening());
+            map.setTimeOfDay(new Evening());
             environment = new Environment();
             sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 50f, 50f, 1, 100);
-            sunlight.set(currentMap.getTimeOfDay().sunlightColor, currentMap.getTimeOfDay().sunlightDirection);
-            environment.set(new ColorAttribute(ColorAttribute.AmbientLight, currentMap.getTimeOfDay().ambientColor));
+            sunlight.set(map.getTimeOfDay().sunlightColor, map.getTimeOfDay().sunlightDirection);
+            environment.set(new ColorAttribute(ColorAttribute.AmbientLight, map.getTimeOfDay().ambientColor));
             environment.add(sunlight);
             environment.shadowMap = sunlight;
         } else if (keycode == Input.Keys.NUM_3) {
-            currentMap.setTimeOfDay(new Night());
+            map.setTimeOfDay(new Night());
             environment = new Environment();
             sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 50f, 50f, 1, 100);
-            sunlight.set(currentMap.getTimeOfDay().sunlightColor, currentMap.getTimeOfDay().sunlightDirection);
-            environment.set(new ColorAttribute(ColorAttribute.AmbientLight, currentMap.getTimeOfDay().ambientColor));
+            sunlight.set(map.getTimeOfDay().sunlightColor, map.getTimeOfDay().sunlightDirection);
+            environment.set(new ColorAttribute(ColorAttribute.AmbientLight, map.getTimeOfDay().ambientColor));
             environment.add(sunlight);
             environment.shadowMap = sunlight;
         }

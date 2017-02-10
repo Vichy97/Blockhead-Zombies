@@ -14,7 +14,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -50,6 +49,8 @@ public final class AssetLoader implements Disposable {
     public static Map map2;
     public static Model map2Base, map2Objects;
 
+    public static Map[] maps;
+
     public static Model pistol;
     public static Model pistolDual;
     public static Model uzi;
@@ -72,6 +73,19 @@ public final class AssetLoader implements Disposable {
     public static Model casingAssaultRifle;
 
     public static Texture skinAdventurer;
+    public static Texture skinMan;
+    public static Texture skinManAlt;
+    public static Texture skinWoman;
+    public static Texture skinWomanAlt;
+    public static Texture skinScientist;
+    public static Texture skinPolice;
+    public static Texture skinSoldier;
+    public static Texture skinCowboy;
+    public static Texture skinZombie;
+    public static Texture skinDummy;
+
+    public static Texture[] playerSkins;
+
     public static Texture libgdxLogo;
     public static Texture starcatLogo;
 
@@ -188,7 +202,17 @@ public final class AssetLoader implements Disposable {
         manager.load("objects/projectiles/casing_uzi.g3dj", Model.class);
         manager.load("objects/projectiles/casing_assault_rifle.g3dj", Model.class);
 
-        manager.load("objects/entities/skin_exclusiveZombie.png", Texture.class);
+        manager.load("objects/entities/adventurer.png", Texture.class);
+        manager.load("objects/entities/man.png", Texture.class);
+        manager.load("objects/entities/man_alt.png", Texture.class);
+        manager.load("objects/entities/woman.png", Texture.class);
+        manager.load("objects/entities/woman_alt.png", Texture.class);
+        manager.load("objects/entities/cowboy.png", Texture.class);
+        manager.load("objects/entities/soldier.png", Texture.class);
+        manager.load("objects/entities/dummy.png", Texture.class);
+        manager.load("objects/entities/scientist.png", Texture.class);
+        manager.load("objects/entities/police.png", Texture.class);
+        manager.load("objects/entities/zombie.png", Texture.class);
 
         manager.load("audio/ui/button_click.ogg", Sound.class);
         manager.load("audio/guns/pistol.ogg", Sound.class);
@@ -241,16 +265,30 @@ public final class AssetLoader implements Disposable {
         mapBase = manager.get("maps/map_1/map_1_base.g3dj", Model.class);
         mapObjects = manager.get("maps/map_1/map_1_objects.g3dj", Model.class);
         mapDoodads = manager.get("maps/map_1/map_1_doodads.g3dj", Model.class);
-        map1 = new Map(mapBase, mapObjects, mapDoodads, 30);
 
         map2Base = manager.get("maps/map_2/map_2_base.g3dj", Model.class);
         map2Objects = manager.get("maps/map_2/map_2_objects.g3dj", Model.class);
-        map2 = new Map(map2Base, map2Objects, null, 70);
+
+        maps = new Map[2];
+        maps[0] = map1 = new Map(mapBase, mapObjects, mapDoodads, 30);
+        maps[1] = map2 = new Map(map2Base, map2Objects, null, 70);
+        maps[1].setTranslation(-60, 0, 60);
 
         player = manager.get("objects/entities/player.g3dj", Model.class);
         zombie = manager.get("objects/entities/zombie.g3dj", Model.class);
 
-        skinAdventurer = manager.get("objects/entities/skin_exclusiveZombie.png", Texture.class);
+        playerSkins = new Texture[9];
+        playerSkins[0] = skinMan = manager.get("objects/entities/man.png", Texture.class);
+        playerSkins[1] = skinWoman = manager.get("objects/entities/woman.png", Texture.class);
+        playerSkins[2] = skinManAlt = manager.get("objects/entities/man_alt.png", Texture.class);
+        playerSkins[3] = skinWomanAlt = manager.get("objects/entities/woman_alt.png", Texture.class);
+        playerSkins[4] = skinAdventurer = manager.get("objects/entities/adventurer.png", Texture.class);
+        playerSkins[5] = skinCowboy = manager.get("objects/entities/cowboy.png", Texture.class);
+        playerSkins[6] = skinPolice = manager.get("objects/entities/police.png", Texture.class);
+        playerSkins[7] = skinSoldier = manager.get("objects/entities/soldier.png", Texture.class);
+        playerSkins[8] = skinScientist = manager.get("objects/entities/scientist.png", Texture.class);
+
+
 
         pistol = manager.get("objects/weapons/pistol.g3dj", Model.class);
         pistolDual = manager.get("objects/weapons/pistol_dual.g3dj", Model.class);

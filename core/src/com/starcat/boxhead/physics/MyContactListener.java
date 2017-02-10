@@ -6,6 +6,7 @@ import com.starcat.boxhead.objects.entities.Behavior.ZombieState;
 import com.starcat.boxhead.objects.Bullet;
 import com.starcat.boxhead.objects.BulletCasing;
 import com.starcat.boxhead.objects.entities.Entity;
+import com.starcat.boxhead.objects.entities.Player;
 import com.starcat.boxhead.objects.entities.Zombie;
 import com.starcat.boxhead.particles.ParticleManager;
 
