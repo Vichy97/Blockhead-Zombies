@@ -17,7 +17,9 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.starcat.boxhead.objects.entities.Behavior.PlayerState;
 import com.starcat.boxhead.objects.weapons.Gun;
-import com.starcat.boxhead.objects.weapons.UziDual;
+import com.starcat.boxhead.objects.weapons.PistolDual;
+import com.starcat.boxhead.objects.weapons.Shotgun;
+import com.starcat.boxhead.objects.weapons.Uzi;
 import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.utils.Dimensions;
 import com.starcat.boxhead.utils.GameUtils;
@@ -52,7 +54,7 @@ public class Player extends Entity implements InputProcessor {
         speed = new Vector3(maxSpeed, 0, maxSpeed);
         speed.rotate(rotationVector, -45);
 
-        currentWeapon = new UziDual(this);
+        currentWeapon = new Uzi(this);
 
         walkAnimationController = new AnimationController(modelInstance);
         shootAnimationController = new AnimationController(modelInstance);
@@ -121,6 +123,7 @@ public class Player extends Entity implements InputProcessor {
             shapeRenderer.setColor(1 - hitpoints / 100, hitpoints / 100, 0, 1);
             shapeRenderer.rect(Dimensions.getHalfScreenWidth() - Dimensions.scaleWidth(50), Dimensions.getHalfScreenHeight() + Dimensions.scaleHeight(100), Dimensions.scaleWidth((int)hitpoints), Dimensions.scaleHeight(10));
             shapeRenderer.end();
+
             currentWeapon.renderUI(spriteBatch, shapeRenderer);
         }
     }

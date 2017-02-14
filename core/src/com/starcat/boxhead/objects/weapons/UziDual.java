@@ -35,11 +35,10 @@ public final class UziDual extends DualWieldGun {
         silhouette = new Sprite(AssetLoader.textures.findRegion("uzi_dual"));
         ammoSilhouette = new Sprite(AssetLoader.textures.findRegion("ammo_uzi"));
 
-        silhouette.setSize(Dimensions.getGameScreenWidthRatio() * silhouette.getRegionWidth(), Dimensions.getGameScreenHeightRatio() * silhouette.getRegionHeight());
+        silhouette.setSize(Dimensions.scaleWidth(silhouette.getRegionWidth()), Dimensions.scaleHeight(silhouette.getRegionHeight()));
         silhouette.setX(Gdx.graphics.getWidth() / 2 - silhouette.getWidth() / 2);
         silhouette.setY(Gdx.graphics.getHeight() / 7);
-
-        ammoSilhouette.setSize(Gdx.graphics.getWidth() / 1920 * ammoSilhouette.getRegionWidth(), Gdx.graphics.getHeight() / 1080 * ammoSilhouette.getRegionHeight());
+        ammoSilhouette.setSize(Dimensions.scaleWidth(ammoSilhouette.getRegionWidth()), Dimensions.scaleHeight(ammoSilhouette.getRegionHeight()));
 
         bulletTranslation = new Vector3(WeaponConstants.UZI_BULLET_TRANSLATION);
         bulletTranslationAlt = new Vector3(WeaponConstants.UZI_BULLET_TRANSLATION_ALT);
@@ -52,8 +51,8 @@ public final class UziDual extends DualWieldGun {
         bulletSpeed = .2f;
         rateOfFire = .05f;
         reloadTime = 2;
-        clipSize = 30;
-        ammoInClip = 30;
+        clipSize = 40;
+        ammoInClip = 40;
         extraClips = 3;
         autofire = true;
     }

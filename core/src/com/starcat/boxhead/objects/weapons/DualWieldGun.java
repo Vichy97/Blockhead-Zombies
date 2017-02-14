@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.starcat.boxhead.objects.entities.EntityManager;
 import com.starcat.boxhead.objects.entities.Player;
 import com.starcat.boxhead.utils.AssetLoader;
+import com.starcat.boxhead.utils.Dimensions;
 
 /**
  * Created by Vincent on 1/1/2017.
@@ -72,34 +73,35 @@ public abstract class DualWieldGun extends Gun {
     public void renderUI(SpriteBatch spriteBatch, ShapeRenderer shapeRenderer) {
         int halfAmmo = ammoInClip / 2;
         int halfClip = clipSize / 2;
-        float startX = (Gdx.graphics.getWidth() / 2) - (ammoSilhouette.getWidth() * .375f * clipSize);
+        float startX = Dimensions.getHalfScreenWidth() - (ammoSilhouette.getWidth() * .375f * clipSize);
         float widthX = ammoSilhouette.getWidth() * 1.5f;
 
         spriteBatch.begin();
         silhouette.draw(spriteBatch);
         if (!reloading) {
-            AssetLoader.tinyFont.draw(spriteBatch, " x" + extraClips, startX + (clipSize * ammoSilhouette.getWidth() * .75f), Gdx.graphics.getHeight() / 8);
+            AssetLoader.tinyFont.draw(spriteBatch, " x" + extraClips, startX + (clipSize * ammoSilhouette.getWidth() * .75f), Dimensions.getScreenHeight() / 8);
 
-
-            ammoSilhouette.setY(Gdx.graphics.getHeight() / 8.5f);
+            ammoSilhouette.setY(Dimensions.getScreenHeight() / 8.5f);
             ammoSilhouette.setX(startX);
             for (int i = 0; i < halfClip; i++) {
-                ammoSilhouette.draw(spriteBatch, .2f);
 
                 if (i < halfAmmo) {
                     ammoSilhouette.draw(spriteBatch);
+                } else {
+                    ammoSilhouette.draw(spriteBatch, .2f);
                 }
 
                 ammoSilhouette.translateX(widthX);
             }
 
-            ammoSilhouette.setY(Gdx.graphics.getHeight() / 10);
+            ammoSilhouette.setY(Dimensions.getScreenHeight() / 10);
             ammoSilhouette.setX(startX);
             for (int i = 0; i < halfClip; i++) {
-                ammoSilhouette.draw(spriteBatch, .2f);
 
                 if (i < ammoInClip - halfAmmo) {
                     ammoSilhouette.draw(spriteBatch);
+                } else {
+                    ammoSilhouette.draw(spriteBatch, .2f);
                 }
 
                 ammoSilhouette.translateX(widthX);
@@ -110,19 +112,13 @@ public abstract class DualWieldGun extends Gun {
         if (reloading) {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             shapeRenderer.setColor(0, 0, 0, 1);
-            shapeRenderer.rect(startX, Gdx.graphics.getHeight() / 12, halfClip * widthX, Gdx.graphics.getHeight() / 100);
+            shapeRenderer.rect(startX, Dimensions.getScreenHeight() / 12, halfClip * widthX, Dimensions.getScreenHeight() / 100);
             shapeRenderer.end();
 
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             shapeRenderer.setColor(0, 1, 0, 1);
-            shapeRenderer.rect(startX, Gdx.graphics.getHeight() / 12, halfClip * widthX * (timer / reloadTime), Gdx.graphics.getHeight() / 100);
+            shapeRenderer.rect(startX, Dimensions.getScreenHeight() / 12, halfClip * widthX * (timer / reloadTime), Dimensions.getScreenHeight() / 100);
             shapeRenderer.end();
         }
-    }
-
-
-
-    public boolean isAltFire() {
-        return altFire;
     }
 }

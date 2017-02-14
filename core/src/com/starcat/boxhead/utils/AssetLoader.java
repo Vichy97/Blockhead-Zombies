@@ -121,11 +121,11 @@ public final class AssetLoader implements Disposable {
         FreetypeFontLoader.FreeTypeFontLoaderParameter tinyFont = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         tinyFont.fontFileName = "fonts/droid_sans.ttf";
         tinyFont.fontParameters.color = Color.BLACK;
-        tinyFont.fontParameters.size = Gdx.graphics.getHeight() / 30;
+        tinyFont.fontParameters.size = Dimensions.getScreenHeight() / 30;
         FreetypeFontLoader.FreeTypeFontLoaderParameter verySmallFont = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         verySmallFont.fontFileName = "fonts/droid_sans.ttf";
         verySmallFont.fontParameters.color = Color.WHITE;
-        verySmallFont.fontParameters.size = Gdx.graphics.getHeight() / 20;
+        verySmallFont.fontParameters.size = Dimensions.getScreenHeight() / 20;
         verySmallFont.fontParameters.shadowOffsetX = -3;
         verySmallFont.fontParameters.shadowOffsetY = 3;
         verySmallFont.fontParameters.borderWidth = 2;
@@ -134,7 +134,7 @@ public final class AssetLoader implements Disposable {
         FreetypeFontLoader.FreeTypeFontLoaderParameter smallFont = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         smallFont.fontFileName = "fonts/droid_sans.ttf";
         smallFont.fontParameters.color = Color.WHITE;
-        smallFont.fontParameters.size = Gdx.graphics.getHeight() / 15;
+        smallFont.fontParameters.size = Dimensions.getScreenHeight() / 15;
         smallFont.fontParameters.shadowOffsetX = -3;
         smallFont.fontParameters.shadowOffsetY = 3;
         smallFont.fontParameters.borderWidth = 2;
@@ -143,7 +143,7 @@ public final class AssetLoader implements Disposable {
         FreetypeFontLoader.FreeTypeFontLoaderParameter largeFont = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         largeFont.fontFileName = "fonts/droid_sans.ttf";
         largeFont.fontParameters.color = Color.WHITE;
-        largeFont.fontParameters.size = Gdx.graphics.getHeight() / 10;
+        largeFont.fontParameters.size = Dimensions.getScreenHeight() / 10;
         largeFont.fontParameters.shadowOffsetX = -5;
         largeFont.fontParameters.shadowOffsetY = 5;
         largeFont.fontParameters.borderStraight = false;
@@ -151,14 +151,14 @@ public final class AssetLoader implements Disposable {
         FreetypeFontLoader.FreeTypeFontLoaderParameter menuFont = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         menuFont.fontFileName = "fonts/zombie_noize.ttf";
         menuFont.fontParameters.color = Color.WHITE;
-        menuFont.fontParameters.size = Gdx.graphics.getHeight() / 6;
+        menuFont.fontParameters.size = Dimensions.getScreenHeight() / 6;
         menuFont.fontParameters.shadowOffsetX  = -5;
         menuFont.fontParameters.shadowOffsetY  = 5;
         menuFont.fontParameters.borderWidth = 2;
         FreetypeFontLoader.FreeTypeFontLoaderParameter menuLabelFont = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         menuLabelFont.fontFileName = "fonts/banana_brick.ttf";
         menuLabelFont.fontParameters.color = new Color(130f / 255f, 0, 0, 1);
-        menuLabelFont.fontParameters.size = Gdx.graphics.getHeight() / 7;
+        menuLabelFont.fontParameters.size = Dimensions.getScreenHeight() / 7;
         menuLabelFont.fontParameters.shadowOffsetX = -5;
         menuLabelFont.fontParameters.shadowOffsetY = 5;
         menuLabelFont.fontParameters.borderStraight = false;
@@ -315,10 +315,10 @@ public final class AssetLoader implements Disposable {
         button_click = manager.get("audio/ui/button_click.ogg", Sound.class);
         pistolSound = manager.get("audio/guns/pistol.ogg", Sound.class);
 
-        uiSkin.getDrawable("touchpad_knob").setMinHeight(Gdx.graphics.getHeight() / 6);
-        uiSkin.getDrawable("touchpad_knob").setMinWidth(Gdx.graphics.getHeight() / 6);
-        uiSkin.getDrawable("touchpad_base").setMinHeight(Gdx.graphics.getWidth() / 6.5f);
-        uiSkin.getDrawable("touchpad_base").setMinWidth(Gdx.graphics.getWidth() / 6.5f);
+        uiSkin.getDrawable("touchpad_knob").setMinHeight(Dimensions.getScreenHeight() / 6);
+        uiSkin.getDrawable("touchpad_knob").setMinWidth(Dimensions.getScreenHeight() / 6);
+        uiSkin.getDrawable("touchpad_base").setMinHeight(Dimensions.getScreenWidth() / 6.5f);
+        uiSkin.getDrawable("touchpad_base").setMinWidth(Dimensions.getScreenWidth() / 6.5f);
     }
 
     public AssetManager getManager() {

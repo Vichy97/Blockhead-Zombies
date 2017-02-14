@@ -15,6 +15,8 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.starcat.boxhead.objects.entities.EntityManager;
 import com.starcat.boxhead.objects.entities.Player;
+import com.starcat.boxhead.utils.AssetLoader;
+import com.starcat.boxhead.utils.Dimensions;
 
 /**
  * Created by Vincent on 8/17/2016.
@@ -95,23 +97,36 @@ public abstract class Gun {
     }
 
     public void renderUI(SpriteBatch spriteBatch, ShapeRenderer shapeRenderer) {
+        float startX = Dimensions.getHalfScreenWidth() - (ammoSilhouette.getWidth() * .75f * clipSize);
+        float widthX = ammoSilhouette.getWidth() * 1.5f;
+
         spriteBatch.begin();
         silhouette.draw(spriteBatch);
 
-        for (int i = 0; i < ammoInClip; i++) {
-            ammoSilhouette.setX(Gdx.graphics.getWidth() / 2 - (ammoSilhouette.getWidth()  * clipSize * .75f) + (i * ammoSilhouette.getWidth() * 1.5f));
-            ammoSilhouette.setY(Gdx.graphics.getHeight() / 15);
-            ammoSilhouette.draw(spriteBatch);
+        if (!reloading) {
+            AssetLoader.tinyFont.draw(spriteBatch, " x" + extraClips, startX + (clipSize * ammoSilhouette.getWidth() * 1.5f), Dimensions.getScreenHeight() / 8);
+            ammoSilhouette.setX(startX);
+            ammoSilhouette.setY(Dimensions.getScreenHeight() / 10);
+
+            for (int i = 0; i < clipSize; i++) {
+                if (i < ammoInClip) {
+                    ammoSilhouette.draw(spriteBatch);
+                } else {
+                    ammoSilhouette.draw(spriteBatch, .2f);
+                }
+                ammoSilhouette.translateX(widthX);
+            }
         }
         spriteBatch.end();
+
         if (reloading) {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             shapeRenderer.setColor(0, 0, 0, 1);
-            shapeRenderer.rect(Gdx.graphics.getWidth() / 2 - (ammoSilhouette.getWidth()  * clipSize), Gdx.graphics.getHeight() / 15, clipSize * ammoSilhouette.getWidth() * 2, Gdx.graphics.getHeight() / 100);
+            shapeRenderer.rect(Dimensions.getHalfScreenWidth() - (ammoSilhouette.getWidth()  * clipSize), Dimensions.getScreenHeight() / 15, clipSize * ammoSilhouette.getWidth() * 2, Dimensions.getScreenHeight() / 100);
             shapeRenderer.end();
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             shapeRenderer.setColor(0, 1, 0, 1);
-            shapeRenderer.rect(Gdx.graphics.getWidth() / 2 - (ammoSilhouette.getWidth()  * clipSize), Gdx.graphics.getHeight() / 15, clipSize * ammoSilhouette.getWidth() * 2 * (timer / reloadTime), Gdx.graphics.getHeight() / 100);
+            shapeRenderer.rect(Dimensions.getHalfScreenWidth() - (ammoSilhouette.getWidth()  * clipSize), Dimensions.getScreenHeight() / 15, clipSize * ammoSilhouette.getWidth() * 2 * (timer / reloadTime), Dimensions.getScreenHeight() / 100);
             shapeRenderer.end();
         }
     }
@@ -124,8 +139,6 @@ public abstract class Gun {
         } else {
             player.getWalkAnimationController().setAnimation(walkAnimation, -1).speed = .5f;
         }
-        //player.getWalkAnimationController().update(delta);
-        //player.getShootAnimationController().update(delta);
         animationController.update(delta);
 
         if (!canShoot && timer > 0) {
@@ -173,5 +186,4 @@ public abstract class Gun {
     public boolean canShoot() {
         return canShoot;
     }
-
 }

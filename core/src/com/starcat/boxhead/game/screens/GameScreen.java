@@ -113,7 +113,7 @@ public final class GameScreen extends BaseScreen {
         entityManager = EntityManager.instance();
         entityManager.setDynamicsWorld(dynamicsWorld);
 
-        entityManager.spawnPlayer(new Vector3(0, 20f, 0), .055f, playerSkin);
+        entityManager.spawnPlayer(new Vector3(0, 15f, 0), .055f, playerSkin);
         //TODO: wave spawning system (probably handled by entity manager)
         for (int i = 0; i < 5; i++) {
             entityManager.spawnZombie(new Vector3(5, 0, 5));
@@ -156,7 +156,9 @@ public final class GameScreen extends BaseScreen {
               debugDrawer.end();
         }
 
-        renderUI();
+        if (entityManager.getPlayer().isGrounded()) {
+            renderUI();
+        }
 
         super.render(delta);
     }
@@ -256,11 +258,12 @@ public final class GameScreen extends BaseScreen {
         modelCache.dispose();
         shadowCache.dispose();
 
-        dynamicsWorld.dispose();
-        collisionConfig.dispose();
-        broadphase.dispose();
-        dispatcher.dispose();
-        constraintSolver.dispose();
+        //FIXME: crashes when you dispose
+        //dynamicsWorld.dispose();
+        //collisionConfig.dispose();
+        //broadphase.dispose();
+        //dispatcher.dispose();
+        //constraintSolver.dispose();
 
         stage.dispose();
 
@@ -468,6 +471,11 @@ public final class GameScreen extends BaseScreen {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if (gameOverTable.isVisible()) {
+            game.setScreen(new MenuScreen(game));
+            dispose();
+        }
+
         touched = true;
         return false;
     }

@@ -22,7 +22,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.starcat.boxhead.game.MyGdxGame;
-import com.starcat.boxhead.objects.Map;
 import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.utils.Dimensions;
 import com.starcat.boxhead.utils.GameUtils;
@@ -59,9 +58,8 @@ public final class MenuScreen extends BaseScreen {
     private ImageButton achievementsButton;
     private ImageButton nextMapButton;
     private ImageButton previousMapButton;
-    private ImageButton playerNextButton;
+    private ImageButton nextPlayerButton;
     private ImageButton previousPlayerButton;
-    private ImageButton playerButton;
     private TextButton shopButton;
     private TextButton startButton;
 
@@ -119,8 +117,10 @@ public final class MenuScreen extends BaseScreen {
         playerModel.transform.scl(4.5f);
         playerModel.transform.setTranslation(-25, 20, -60);
 
+        playerModel.materials.get(1).set(new TextureAttribute(TextureAttribute.Diffuse, AssetLoader.playerSkins[currentSkin]));
+
         playerAnimationController = new AnimationController(playerModel);
-        playerAnimationController.setAnimation("pose_single_wield");
+        playerAnimationController.setAnimation("pose_empty");
         playerAnimationController.update(Gdx.graphics.getDeltaTime());
     }
 
@@ -142,8 +142,6 @@ public final class MenuScreen extends BaseScreen {
         super.render(delta);
 
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-
-
 
         game.getGameViewport().apply();
         game.getGameCamera().update();
@@ -347,10 +345,10 @@ public final class MenuScreen extends BaseScreen {
         startButton = new TextButton(AssetLoader.i18NBundle.get("start"), AssetLoader.uiSkin, "menu");
         startButton.addListener(startListener);
 
-        playerNextButton = new ImageButton(AssetLoader.uiSkin.getDrawable("right"));
-        playerNextButton.getImageCell().width(Dimensions.scaleWidth(100)).height(Dimensions.scaleWidth(100));
-        playerNextButton.setSize(Dimensions.scaleWidth(100), Dimensions.scaleWidth(100));
-        playerNextButton.addListener(nextPlayerListener);
+        nextPlayerButton = new ImageButton(AssetLoader.uiSkin.getDrawable("right"));
+        nextPlayerButton.getImageCell().width(Dimensions.scaleWidth(100)).height(Dimensions.scaleWidth(100));
+        nextPlayerButton.setSize(Dimensions.scaleWidth(100), Dimensions.scaleWidth(100));
+        nextPlayerButton.addListener(nextPlayerListener);
 
         previousPlayerButton = new ImageButton(AssetLoader.uiSkin.getDrawable("left"));
         previousPlayerButton.getImageCell().width(Dimensions.scaleWidth(100)).height(Dimensions.scaleWidth(100));
@@ -367,7 +365,7 @@ public final class MenuScreen extends BaseScreen {
 
         mapSelectTable2.bottom();
         mapSelectTable2.add(previousPlayerButton).padLeft(Dimensions.scaleWidth(50));
-        mapSelectTable2.add(playerNextButton).expandX().left().padLeft(Dimensions.scaleWidth(140));
+        mapSelectTable2.add(nextPlayerButton).expandX().left().padLeft(Dimensions.scaleWidth(140));
         mapSelectTable2.add(shopButton).expandX().right().padRight(Dimensions.scaleWidth(50));
         mapSelectTable2.padBottom(Dimensions.scaleHeight(100));
 
@@ -587,7 +585,7 @@ public final class MenuScreen extends BaseScreen {
             if (currentSkin == 0) {
                 previousPlayerButton.setVisible(false);
             }
-            playerNextButton.setVisible(true);
+            nextPlayerButton.setVisible(true);
         }
     };
 
@@ -603,7 +601,7 @@ public final class MenuScreen extends BaseScreen {
             }
 
             if (currentSkin == AssetLoader.playerSkins.length - 1) {
-                playerNextButton.setVisible(false);
+                nextPlayerButton.setVisible(false);
             }
             previousPlayerButton.setVisible(true);
         }

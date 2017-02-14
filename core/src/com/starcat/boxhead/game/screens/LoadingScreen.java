@@ -61,7 +61,6 @@ public final class LoadingScreen extends BaseScreen {
             splashLogo2.setColor(1, 1, 1, splashLogo2.getColor().a - .1f);
         }
 
-
         game.getSpriteBatch().begin();
         if (splashOne) {
             splashLogo.draw(game.getSpriteBatch());
