@@ -17,9 +17,7 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.starcat.boxhead.objects.entities.Behavior.PlayerState;
 import com.starcat.boxhead.objects.weapons.Gun;
-import com.starcat.boxhead.objects.weapons.PistolDual;
-import com.starcat.boxhead.objects.weapons.Shotgun;
-import com.starcat.boxhead.objects.weapons.Uzi;
+import com.starcat.boxhead.objects.weapons.UziDual;
 import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.utils.Dimensions;
 import com.starcat.boxhead.utils.GameUtils;
@@ -32,8 +30,7 @@ public class Player extends Entity implements InputProcessor {
     private Gun currentWeapon;
     private Vector3 speed;
     private float maxSpeed;
-    private float currentRotationAngle = 0;
-    private int direction = 2;
+    private float currentRotationAngle = -45;
     private AnimationController walkAnimationController;
     private AnimationController shootAnimationController;
 
@@ -54,7 +51,7 @@ public class Player extends Entity implements InputProcessor {
         speed = new Vector3(maxSpeed, 0, maxSpeed);
         speed.rotate(rotationVector, -45);
 
-        currentWeapon = new Uzi(this);
+        currentWeapon = new UziDual(this);
 
         walkAnimationController = new AnimationController(modelInstance);
         shootAnimationController = new AnimationController(modelInstance);
@@ -71,30 +68,17 @@ public class Player extends Entity implements InputProcessor {
     public void update(float delta) {
         super.update(delta);
 
-        if (upPressed) {
-            if (leftPressed) {
-                setDirection(8);
-            } else if (rightPressed) {
-                setDirection(2);
-            } else {
-                setDirection(1);
-            }
-        } else if (downPressed) {
-            if (leftPressed) {
-                setDirection(6);
-            } else if (rightPressed) {
-                setDirection(4);
-            } else {
-                setDirection(5);
-            }
-        } else if (leftPressed) {
-            setDirection(7);
-        } else if (rightPressed) {
-            setDirection(3);
-        } else if (controller != null && controller.isTouched()) {
-            setDirection(GameUtils.getTouchpadEightDirection(controller.getKnobPercentX(), controller.getKnobPercentY()));
+        if (controller != null && controller.isTouched()) {
+            moving = true;
+            speed.set(maxSpeed, 0, maxSpeed);
+            float angle = GameUtils.getTouchpadAngle(controller.getKnobPercentX(), controller.getKnobPercentY());
+
+            speed.rotate(rotationVector, angle);
+            rotation.set(rotationVector, angle - currentRotationAngle);
+            rigidBody.setWorldTransform(rigidBody.getWorldTransform().rotate(rotation));
+            currentRotationAngle = angle;
         } else {
-            setDirection(-1);
+            moving = false;
         }
 
         stateMachine.update();
@@ -135,75 +119,6 @@ public class Player extends Entity implements InputProcessor {
     }
 
 
-
-    public void setDirection(int direction) {
-
-        //this only needs to be calculated if the direction has changed
-        if (this.direction != direction || direction == -1 || (!moving)) {
-            moving = true;
-            switch (direction) {
-                case 1: {
-                    speed.rotate(rotationVector, 45 - currentRotationAngle);
-                    rotation.set(rotationVector, 45 - currentRotationAngle);
-                    rigidBody.setWorldTransform(rigidBody.getWorldTransform().rotate(rotation));
-                    currentRotationAngle = 45;
-                    break;
-                } case 2: {
-                    speed.rotate(rotationVector, 360 - currentRotationAngle);
-                    rotation.set(rotationVector, 360 - currentRotationAngle);
-                    rigidBody.setWorldTransform(rigidBody.getWorldTransform().rotate(rotation));
-                    currentRotationAngle = 360;
-                    break;
-                } case 3: {
-                    speed.rotate(rotationVector, 315 - currentRotationAngle);
-                    rotation.set(rotationVector, 315 - currentRotationAngle);
-                    rigidBody.setWorldTransform(rigidBody.getWorldTransform().rotate(rotation));
-                    currentRotationAngle = 315;
-                    break;
-                } case 4: {
-                    speed.rotate(rotationVector, 270 - currentRotationAngle);
-                    rotation.set(rotationVector, 270 - currentRotationAngle);
-                    rigidBody.setWorldTransform(rigidBody.getWorldTransform().rotate(rotation));
-                    currentRotationAngle = 270;
-                    break;
-                } case 5: {
-                    speed.rotate(rotationVector, 225 - currentRotationAngle);
-                    rotation.set(rotationVector, 225 - currentRotationAngle);
-                    rigidBody.setWorldTransform(rigidBody.getWorldTransform().rotate(rotation));
-                    currentRotationAngle = 225;
-                    break;
-                } case 6: {
-                    speed.rotate(rotationVector, 180 - currentRotationAngle);
-                    rotation.set(rotationVector, 180 - currentRotationAngle);
-                    rigidBody.setWorldTransform(rigidBody.getWorldTransform().rotate(rotation));
-                    currentRotationAngle = 180;
-                    break;
-                } case 7: {
-                    speed.rotate(rotationVector, 135 - currentRotationAngle);
-                    rotation.set(rotationVector, 135 - currentRotationAngle);
-                    rigidBody.setWorldTransform(rigidBody.getWorldTransform().rotate(rotation));
-                    currentRotationAngle = 135;
-                    break;
-                } case 8: {
-                    speed.rotate(rotationVector, 90 - currentRotationAngle);
-                    rotation.set(rotationVector, 90 - currentRotationAngle);
-                    rigidBody.setWorldTransform(rigidBody.getWorldTransform().rotate(rotation));
-                    currentRotationAngle = 90;
-                    break;
-                } default: {
-                    moving = false;
-                }
-            }
-        }
-
-        if (direction != -1) {
-            this.direction = direction;
-        }
-    }
-
-    public int getDirection() {
-        return direction;
-    }
 
     public float getCurrentRotationAngle() {
         return currentRotationAngle;

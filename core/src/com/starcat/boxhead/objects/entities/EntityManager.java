@@ -217,7 +217,7 @@ public final class EntityManager {
         entities.add(zombie);
     }
 
-    public void spawnBullet(Matrix4 transform, ModelInstance modelInstance, int direction, float velocity, int damage, float accuracy) {
+    public void spawnBullet(Matrix4 transform, ModelInstance modelInstance, float angle, float velocity, int damage, float accuracy) {
         com.starcat.boxhead.objects.Bullet bullet = bulletPool.obtain();
 
         btRigidBody rigidBody;
@@ -242,7 +242,7 @@ public final class EntityManager {
             velocity += player.getMaxSpeed();
         }
 
-        bullet.init(transform, modelInstance, rigidBody, direction, velocity, damage, accuracy);
+        bullet.init(transform, modelInstance, rigidBody, angle, velocity, damage, accuracy);
 
         bullets.add(bullet);
     }

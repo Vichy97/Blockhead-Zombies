@@ -22,13 +22,15 @@ public class Bullet extends DynamicGameObject implements Pool.Poolable {
         speed = new Vector3();
     }
 
-    public void init(Matrix4 transform, ModelInstance modelInstance, btRigidBody rigidBody, int direction, float velocity, int damage, float accuracy) {
+    public void init(Matrix4 transform, ModelInstance modelInstance, btRigidBody rigidBody, float angle, float velocity, int damage, float accuracy) {
         super.init(transform, modelInstance, rigidBody);
 
         speed.set(velocity, 0, velocity);
         this.damage = damage;
 
-        switch (direction) {
+        speed.rotate(rotationVector, angle + MathUtils.random(-accuracy, accuracy));
+
+        /*switch (direction) {
             case 1: {
                 speed.rotate(rotationVector, MathUtils.random(-accuracy, accuracy));
                 break;
@@ -54,7 +56,7 @@ public class Bullet extends DynamicGameObject implements Pool.Poolable {
                 speed.rotate(rotationVector, 45 + MathUtils.random(-accuracy, accuracy));
                 break;
             }
-        }
+        } */
     }
 
 
