@@ -2,9 +2,11 @@ package com.starcat.boxhead.objects.entities;
 
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
+import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
@@ -29,14 +31,12 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
     protected float maxAngularSpeed, maxAngularAcceleration;
     protected boolean tagged;
 
-    protected float currentRotation = -45;
-    protected float currentRotationAngle = 45;
-    protected int direction = 0;
+    protected float currentRotation = -90;
     //to prevent the entity from rapidly switching directions
     protected boolean canChangeDirection = true;
     protected boolean moving = false;
 
-    protected Arrive<Vector3> behavior;
+    protected SteeringBehavior<Vector3> behavior;
     protected SteeringAcceleration<Vector3> steeringOutput;
 
     protected float hitpoints = 100;
@@ -47,10 +47,10 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
     public Entity() {
         super();
 
-        this.maxLinearSpeed = 50;
-        this.maxLinearAcceleration = 50;
-        this.maxAngularSpeed = 0;
-        this.maxAngularAcceleration = 0;
+        this.maxLinearSpeed = 200;
+        this.maxLinearAcceleration = 100;
+        this.maxAngularSpeed = 30;
+        this.maxAngularAcceleration = 5;
 
         this.tagged = false;
         this.steeringOutput = new SteeringAcceleration<Vector3>(new Vector3());
@@ -62,6 +62,8 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
             }
         }, .5f, .5f);
     }
+
+
 
     public void init(Vector3 position, ModelInstance modelInstance, btRigidBody rigidBody) {
         super.init(position, modelInstance, rigidBody);
@@ -76,53 +78,24 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
 
 
     public void applySteering(float delta) {
+        boolean anyAccelerations = false;
 
         if(!steeringOutput.linear.isZero()) {
-            Vector3 speed = temp.set(maxLinearSpeed, 0, maxLinearSpeed);
-            float angle = (int)(vectorToAngle(steeringOutput.linear) / delta + 180);
-            float targetAngle = 0;
-            moving = true;
-
-            if(canChangeDirection) {
-                direction = GameUtils.getDirectionFromAngle(angle);
-                canChangeDirection = false;
-            }
-
-            switch(direction) {
-                case 1: {
-                    targetAngle = 135;
-                    break;
-                } case 2: {
-                    targetAngle = 90;
-                    break;
-                } case 3: {
-                    targetAngle = 45;
-                    break;
-                } case 4: {
-                    targetAngle = 360;
-                    break;
-                } case 5: {
-                    targetAngle = 315;
-                    break;
-                } case 6: {
-                    targetAngle = 270;
-                    break;
-                } case 7: {
-                    targetAngle = 225;
-                    break;
-                } case 8: {
-                    targetAngle = 180;
-                    break;
-                }
-            }
-            speed.rotate(rotationVector, targetAngle);
-            rigidBody.setLinearVelocity(speed.scl(delta));
-            setOrientation(targetAngle);
-            currentRotationAngle = targetAngle;
-        } else {
-            moving = false;
+            steeringOutput.linear.y = 0;
+            Vector3 force  = steeringOutput.linear.scl(delta);
+            rigidBody.setLinearVelocity(force);
+            anyAccelerations = true;
         }
 
+        setOrientation((float)Math.toDegrees(vectorToAngle(getLinearVelocity())));
+
+        if (anyAccelerations) {
+            Vector3 velocity = steeringOutput.linear;
+            float currentSpeedSquared = velocity.len2();
+            if (currentSpeedSquared > maxLinearSpeed * maxLinearSpeed) {
+                rigidBody.setLinearVelocity(velocity.scl(maxLinearSpeed / (float) Math.sqrt(currentSpeedSquared)));
+            }
+        }
     }
 
 
@@ -141,11 +114,11 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
 
 
 
-    public void setBehavior(Arrive<Vector3> behavior) {
+    public void setBehavior(SteeringBehavior<Vector3> behavior) {
         this.behavior = behavior;
     }
 
-    public Arrive<Vector3> getBehavior() {
+    public SteeringBehavior<Vector3> getBehavior() {
         return behavior;
     }
 
@@ -272,8 +245,7 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
 
     @Override
     public void reset() {
-        currentRotation = -45;
-        currentRotationAngle = 45;
+        currentRotation = -90;
         super.reset();
     }
 }

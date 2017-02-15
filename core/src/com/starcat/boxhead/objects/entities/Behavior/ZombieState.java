@@ -30,11 +30,11 @@ public enum ZombieState implements State<Zombie> {
                 zombie.applySteering(Gdx.graphics.getDeltaTime());
             }
 
-            if (zombie.getPosition().dst(zombie.getBehavior().getTarget().getPosition()) <= 1f) {
+            /*if (zombie.getPosition().dst(zombie.getBehavior().getTarget().getPosition()) <= 1f) {
                 if (zombie.stateMachine.getCurrentState() != DIE) {
                     zombie.stateMachine.changeState(ATTACK);
                 }
-            }
+            } */
         }
 
         @Override
@@ -62,11 +62,11 @@ public enum ZombieState implements State<Zombie> {
             zombie.getAnimationController().current.listener = new AnimationController.AnimationListener() {
                 @Override
                 public void onEnd(AnimationController.AnimationDesc animation) {
-                    if (zombie.getPosition().dst(zombie.getBehavior().getTarget().getPosition()) <= 1.5f) {
+                    /*if (zombie.getPosition().dst(zombie.getBehavior().getTarget().getPosition()) <= 1.5f) {
                         EntityManager.instance().getPlayer().damage(10);
                         ParticleManager.instance().addBloodSpLatterDecal(EntityManager.instance().getPlayer().getPosition().x, EntityManager.instance().getPlayer().getPosition().z);
 
-                    }
+                    } */
 
                     Timer.instance().scheduleTask(new Timer.Task() {
                         @Override

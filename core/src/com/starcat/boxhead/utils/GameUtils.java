@@ -3,6 +3,7 @@ package com.starcat.boxhead.utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
+import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.starcat.boxhead.game.MyGdxGame;
@@ -34,18 +35,18 @@ public final class GameUtils {
         }
     }
 
-    public static int getTouchpadEightDirection(float touchpadPercentX, float touchpadPercentY) {
-        float angle = getTouchpadAngle(touchpadPercentX, touchpadPercentY);
+    public static int getTouchpadEightDirection(Touchpad touchpad) {
+        float angle = getTouchpadAngle(touchpad);
 
-        if (touchpadPercentX == 0 && touchpadPercentY == 0) {
+        if (touchpad.getKnobPercentX() == 0 && touchpad.getKnobPercentY() == 0) {
             return -1;
         } else {
             return getDirectionFromAngle(angle);
         }
     }
 
-    public static float getTouchpadAngle(float touchpadPercentX, float touchpadPercentY) {
-        return (float)(270 + Math.atan2(touchpadPercentY, touchpadPercentX) * 180.0d / Math.PI);
+    public static float getTouchpadAngle(Touchpad touchpad) {
+        return (float)(270 + Math.atan2(touchpad.getKnobPercentY(), touchpad.getKnobPercentX()) * 180.0d / Math.PI);
     }
 
     public static int getDirectionFromAngle(float angle) {
