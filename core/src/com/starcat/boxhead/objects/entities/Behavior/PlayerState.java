@@ -38,8 +38,6 @@ public enum PlayerState implements State<Player> {
             player.getWalkAnimationController().update(Gdx.graphics.getDeltaTime());
 
             player.heal(.025f);
-
-            GameUtils.debug(player, player.getPosition().toString());
         }
 
         @Override

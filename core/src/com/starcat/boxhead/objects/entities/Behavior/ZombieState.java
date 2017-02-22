@@ -30,16 +30,16 @@ public enum ZombieState implements State<Zombie> {
                 zombie.applySteering(Gdx.graphics.getDeltaTime());
             }
 
-            /*if (zombie.getPosition().dst(zombie.getBehavior().getTarget().getPosition()) <= 1f) {
+            if (zombie.getPosition().dst(zombie.getBehavior().getTarget().getPosition()) <= 1f) {
                 if (zombie.stateMachine.getCurrentState() != DIE) {
                     zombie.stateMachine.changeState(ATTACK);
                 }
-            } */
+            }
         }
 
         @Override
         public void enter(Zombie zombie) {
-            zombie.getAnimationController().setAnimation("walk", -1).speed = .2f;
+            zombie.getAnimationController().setAnimation("walk", -1).speed = zombie.getWalkAnimationSpeed();
         }
 
         @Override
@@ -53,20 +53,21 @@ public enum ZombieState implements State<Zombie> {
         @Override
         public void update(Zombie zombie) {
             zombie.getAnimationController().update(Gdx.graphics.getDeltaTime());
+            zombie.getRigidBody().setLinearVelocity(Vector3.Zero);
         }
 
         @Override
         public void enter(final Zombie zombie) {
-            zombie.getAnimationController().setAnimation("attack").speed = .5f;
+            zombie.getAnimationController().setAnimation("attack").speed = zombie.getAttackAnimationSpeed();
 
             zombie.getAnimationController().current.listener = new AnimationController.AnimationListener() {
                 @Override
                 public void onEnd(AnimationController.AnimationDesc animation) {
-                    /*if (zombie.getPosition().dst(zombie.getBehavior().getTarget().getPosition()) <= 1.5f) {
+                    if (zombie.getPosition().dst(zombie.getBehavior().getTarget().getPosition()) <= 1.5f) {
                         EntityManager.instance().getPlayer().damage(10);
                         ParticleManager.instance().addBloodSpLatterDecal(EntityManager.instance().getPlayer().getPosition().x, EntityManager.instance().getPlayer().getPosition().z);
 
-                    } */
+                    }
 
                     Timer.instance().scheduleTask(new Timer.Task() {
                         @Override

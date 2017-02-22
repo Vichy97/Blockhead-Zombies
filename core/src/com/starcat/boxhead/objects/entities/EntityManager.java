@@ -52,9 +52,11 @@ public final class EntityManager {
     private Pool<Zombie> zombiePool;
 
     private float currentTime = 0;
-    private WaveDesc currentWave;
-    private Vector3[] spawnPoints;
-    private int zombiesLeftToSpawn = 5;
+    private WaveDesc currentWaveDesc;
+    private int currentWave = 0;
+    private ArrayList<Vector3> spawnPoints;
+    private int currentSpawnPoint = 0;
+    private int zombiesLeftToSpawn = 10;
 
 
 
@@ -84,16 +86,22 @@ public final class EntityManager {
                 return new Zombie();
             }
         };
+
+
+        spawnPoints = new ArrayList<Vector3>();
+        spawnPoints.add(new Vector3(5.5f, 0, 20));
+        spawnPoints.add(new Vector3(5.5f, 0, -20));
+        spawnPoints.add(new Vector3(20, 0, 5));
+        spawnPoints.add(new Vector3(-20, 0, 5));
+
+        currentWaveDesc = new WaveDesc();
+        currentWaveDesc.spawnRate = 1;
+        currentWaveDesc.numberOfZombies = 10;
+        currentWaveDesc.zombieSpeed = 50;
     }
-
-
 
     public static EntityManager instance() {
         return instance;
-    }
-
-    public void setDynamicsWorld(btDiscreteDynamicsWorld world) {
-        dynamicsWorld = world;
     }
 
 
@@ -149,6 +157,32 @@ public final class EntityManager {
             }
         }
 
+        updateWave(delta);
+    }
+
+    private void updateWave(float delta) {
+        currentTime += delta;
+
+        if (zombiesLeftToSpawn > 0) {
+            if (currentTime >= currentWaveDesc.spawnRate) {
+                currentTime = 0;
+                spawnZombie(spawnPoints.get(currentSpawnPoint));
+                zombiesLeftToSpawn--;
+                currentSpawnPoint++;
+                if (currentSpawnPoint >= spawnPoints.size()) {
+                    currentSpawnPoint = 0;
+                }
+            }
+        } else {
+            if (entities.size() <= 1) {
+                currentWave++;
+                currentTime = 0;
+                currentWaveDesc.numberOfZombies += 10;
+                currentWaveDesc.zombieSpeed += 5;
+                currentWaveDesc.spawnRate -= .05f;
+                zombiesLeftToSpawn = currentWaveDesc.numberOfZombies;
+            }
+        }
     }
 
     public void renderEntities(ModelBatch modelBatch, Environment environment) {
@@ -212,7 +246,8 @@ public final class EntityManager {
             zombie.setBehavior(arrive);
         }
 
-        zombie.init(position.add(0, .8f, 0), rigidBody);
+        zombie.init(position.add(0, .8f, 0), rigidBody, currentWaveDesc.zombieSpeed);
+        position.add(0, -.8f, 0);
 
         entities.add(zombie);
     }
@@ -273,21 +308,17 @@ public final class EntityManager {
         bulletCasings.add(bulletCasing);
     }
 
-    public void updateWave(float delta) {
-        currentTime += delta;
 
-        if (zombiesLeftToSpawn > 0) {
-            if (currentTime >= currentWave.spawnRate) {
-                currentTime = 0;
-                spawnZombie(spawnPoints[0]);
-            }
-        }
+
+    public void setDynamicsWorld(btDiscreteDynamicsWorld world) {
+        dynamicsWorld = world;
     }
-
 
     public Player getPlayer() {
         return player;
     }
+
+
 
     public void clear() {
         Iterator<Entity> entityIterator = entities.iterator();

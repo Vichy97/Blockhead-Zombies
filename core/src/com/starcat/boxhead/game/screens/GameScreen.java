@@ -114,10 +114,6 @@ public final class GameScreen extends BaseScreen {
         entityManager.setDynamicsWorld(dynamicsWorld);
 
         entityManager.spawnPlayer(new Vector3(0, 15f, 0), .055f, playerSkin);
-        //TODO: wave spawning system (probably handled by entity manager)
-        for (int i = 0; i < 5; i++) {
-            entityManager.spawnZombie(new Vector3(5, 0, 5));
-        }
 
         initInput();
     }
@@ -161,6 +157,8 @@ public final class GameScreen extends BaseScreen {
         }
 
         super.render(delta);
+
+        sleep(30);
     }
 
     @Override
@@ -272,7 +270,7 @@ public final class GameScreen extends BaseScreen {
 
 
 
-    //method to limit fps (will soon switch game over to 30fps)
+    //method to limit fps
     public void sleep(int fps) {
         if(fps > 0){
             diff = System.currentTimeMillis() - start;

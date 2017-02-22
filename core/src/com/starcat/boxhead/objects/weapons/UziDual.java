@@ -53,7 +53,7 @@ public final class UziDual extends DualWieldGun {
         reloadTime = 2;
         clipSize = 40;
         ammoInClip = 40;
-        extraClips = 3;
+        extraClips = 300;
         autofire = true;
     }
 }

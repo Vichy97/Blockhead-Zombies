@@ -19,6 +19,8 @@ public class Zombie extends Entity {
 
     private boolean fade = false;
     private AnimationController animationController;
+    private float walkAnimationSpeed = .2f;
+    private float attackAnimationSpeed = .2f;
     public StateMachine<Zombie, ZombieState> stateMachine;
     private BlendingAttribute blendingAttribute;
 
@@ -27,10 +29,14 @@ public class Zombie extends Entity {
         stateMachine = new DefaultStateMachine<Zombie, ZombieState>(this, ZombieState.CHASE);
     }
 
-    public void init(Vector3 position, btRigidBody rigidBody) {
+    public void init(Vector3 position, btRigidBody rigidBody, float maxSpeed) {
         super.init(position, new ModelInstance(AssetLoader.zombie), rigidBody);
         animationController = new AnimationController(modelInstance);
         animationController.allowSameAnimation = true;
+        setMaxLinearSpeed(maxSpeed);
+        setMaxLinearAcceleration(maxSpeed);
+        walkAnimationSpeed = maxSpeed / 250;
+        attackAnimationSpeed = maxSpeed / 200;
 
         blendingAttribute = new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         blendingAttribute.opacity = 1;
@@ -38,6 +44,8 @@ public class Zombie extends Entity {
 
         stateMachine.changeState(ZombieState.CHASE);
     }
+
+
 
     @Override
     public void update(float delta) {
@@ -47,6 +55,16 @@ public class Zombie extends Entity {
         if (hitpoints <= 0 && stateMachine.getCurrentState() != ZombieState.DIE) {
             stateMachine.changeState(ZombieState.DIE);
         }
+    }
+
+
+
+    public float getWalkAnimationSpeed() {
+        return walkAnimationSpeed;
+    }
+
+    public float getAttackAnimationSpeed() {
+        return attackAnimationSpeed;
     }
 
     public AnimationController getAnimationController() {

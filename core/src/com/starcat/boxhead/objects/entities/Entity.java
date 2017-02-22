@@ -2,17 +2,13 @@ package com.starcat.boxhead.objects.entities;
 
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
-import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
-import com.badlogic.gdx.utils.Timer;
 import com.starcat.boxhead.objects.DynamicGameObject;
-import com.starcat.boxhead.utils.GameUtils;
 
 /**
  * Created by Vincent on 8/12/2016.
@@ -21,22 +17,14 @@ import com.starcat.boxhead.utils.GameUtils;
  */
 public class Entity extends DynamicGameObject implements Steerable<Vector3> {
 
-    /*
-     * required fields for the Steerable interface
-     * however I don't make use of these because speed
-     * is calculated manually (with instant acceleration)
-     * because entities are limited to 8 directions
-     */
     protected float maxLinearSpeed, maxLinearAcceleration;
     protected float maxAngularSpeed, maxAngularAcceleration;
     protected boolean tagged;
 
     protected float currentRotation = -90;
-    //to prevent the entity from rapidly switching directions
-    protected boolean canChangeDirection = true;
     protected boolean moving = false;
 
-    protected SteeringBehavior<Vector3> behavior;
+    protected Arrive<Vector3> behavior;
     protected SteeringAcceleration<Vector3> steeringOutput;
 
     protected float hitpoints = 100;
@@ -47,20 +35,12 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
     public Entity() {
         super();
 
-        this.maxLinearSpeed = 200;
-        this.maxLinearAcceleration = 100;
+        this.maxLinearSpeed = 50;
+        this.maxLinearAcceleration = 50;
         this.maxAngularSpeed = 30;
         this.maxAngularAcceleration = 5;
-
         this.tagged = false;
         this.steeringOutput = new SteeringAcceleration<Vector3>(new Vector3());
-
-        Timer.instance().scheduleTask(new Timer.Task() {
-            @Override
-            public void run() {
-                canChangeDirection = true;
-            }
-        }, .5f, .5f);
     }
 
 
@@ -114,11 +94,11 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
 
 
 
-    public void setBehavior(SteeringBehavior<Vector3> behavior) {
+    public void setBehavior(Arrive<Vector3> behavior) {
         this.behavior = behavior;
     }
 
-    public SteeringBehavior<Vector3> getBehavior() {
+    public Arrive<Vector3> getBehavior() {
         return behavior;
     }
 
