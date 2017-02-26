@@ -70,7 +70,7 @@ public class Player extends Entity implements InputProcessor {
 
         if (controller != null && controller.isTouched()) {
             moving = true;
-            speed.set(maxSpeed, 0, maxSpeed);
+            speed.set(maxSpeed * delta, 0, maxSpeed * delta);
             float angle = GameUtils.getTouchpadAngle(controller);
 
             speed.rotate(rotationVector, angle);

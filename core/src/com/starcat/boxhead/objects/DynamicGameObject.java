@@ -1,11 +1,13 @@
 package com.starcat.boxhead.objects;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.Pool;
@@ -32,6 +34,11 @@ public class DynamicGameObject implements Pool.Poolable, Disposable {
 
     private boolean shouldPool = false;
     private boolean shouldRemoveBody = false;
+
+    private float radius;
+    private static BoundingBox boundingBox;
+    private Vector3 center = new Vector3();
+    private Vector3 dimensions = new Vector3();
 
 
 
@@ -61,6 +68,12 @@ public class DynamicGameObject implements Pool.Poolable, Disposable {
         rigidBody.userData = this;
         shouldPool = false;
         shouldRemoveBody = false;
+
+        boundingBox = new BoundingBox();
+        modelInstance.calculateBoundingBox(boundingBox);
+        boundingBox.getCenter(center);
+        boundingBox.getDimensions(dimensions);
+        radius = dimensions.len2() / 2f;
     }
 
     public void init(Matrix4 transform, ModelInstance modelInstance, btRigidBody rigidBody) {
@@ -77,6 +90,12 @@ public class DynamicGameObject implements Pool.Poolable, Disposable {
         rigidBody.userData = this;
         shouldPool = false;
         shouldRemoveBody = false;
+
+        boundingBox = new BoundingBox();
+        modelInstance.calculateBoundingBox(boundingBox);
+        boundingBox.getCenter(center);
+        boundingBox.getDimensions(dimensions);
+        radius = dimensions.len2() / 2f;
     }
 
 
@@ -91,6 +110,10 @@ public class DynamicGameObject implements Pool.Poolable, Disposable {
 
     public void update(float delta) {
         modelInstance.transform.getTranslation(position);
+    }
+
+    public boolean isVisible(Camera camera) {
+        return camera.frustum.sphereInFrustum(position, radius);
     }
 
 

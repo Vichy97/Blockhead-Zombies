@@ -13,8 +13,8 @@ public class DesktopLauncher {
         config.height = 1080;
         config.fullscreen = true;
         config.vSyncEnabled = false;
-        config.backgroundFPS = 30;
-        config.foregroundFPS = 30;
+        //config.backgroundFPS = 30;
+        //config.foregroundFPS = 30;
         new LwjglApplication(new MyGdxGame(), config);
     }
 }

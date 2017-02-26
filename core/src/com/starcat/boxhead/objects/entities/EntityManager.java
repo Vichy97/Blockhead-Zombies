@@ -1,10 +1,14 @@
 package com.starcat.boxhead.objects.entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelCache;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -57,6 +61,12 @@ public final class EntityManager {
     private ArrayList<Vector3> spawnPoints;
     private int currentSpawnPoint = 0;
     private int zombiesLeftToSpawn = 10;
+    private Vector3 zombieSpawnPoint = new Vector3();
+
+    public int visible;
+    public int total;
+
+    private ModelCache modelCache;
 
 
 
@@ -98,6 +108,8 @@ public final class EntityManager {
         currentWaveDesc.spawnRate = 1;
         currentWaveDesc.numberOfZombies = 10;
         currentWaveDesc.zombieSpeed = 50;
+
+        modelCache = new ModelCache();
     }
 
     public static EntityManager instance() {
@@ -106,9 +118,13 @@ public final class EntityManager {
 
 
 
-    public void update(float delta) {
+    public void update(float delta, Camera camera) {
 
+        entities.get(0).update(delta);
+
+        modelCache.begin();
         Iterator<Entity> entityIterator = entities.iterator();
+        entityIterator.next();
         while(entityIterator.hasNext()) {
             Entity entity = entityIterator.next();
 
@@ -119,12 +135,16 @@ public final class EntityManager {
                 } 
             } else {
                 entity.update(delta);
+                if (entity.isVisible(camera)) {
+                    modelCache.add(entity.getModelInstance());
+                }
             }
 
             if (entity.getShouldRemoveBody()) {
                 dynamicsWorld.removeRigidBody(entity.getRigidBody());
             }
         }
+        modelCache.end();
 
         Iterator<com.starcat.boxhead.objects.Bullet> bulletIterator = bullets.iterator();
         while(bulletIterator.hasNext()) {
@@ -166,7 +186,9 @@ public final class EntityManager {
         if (zombiesLeftToSpawn > 0) {
             if (currentTime >= currentWaveDesc.spawnRate) {
                 currentTime = 0;
-                spawnZombie(spawnPoints.get(currentSpawnPoint));
+                zombieSpawnPoint.set(spawnPoints.get(currentSpawnPoint));
+                zombieSpawnPoint.add(MathUtils.random(-3, 3), 0, MathUtils.random(-3, 3));
+                spawnZombie(zombieSpawnPoint);
                 zombiesLeftToSpawn--;
                 currentSpawnPoint++;
                 if (currentSpawnPoint >= spawnPoints.size()) {
@@ -186,14 +208,17 @@ public final class EntityManager {
     }
 
     public void renderEntities(ModelBatch modelBatch, Environment environment) {
-        for (Entity entity : entities) {
-            entity.render(modelBatch, environment);
-        }
+        visible = 0;
+        total = entities.size() - 1;
+        modelBatch.render(modelCache, environment);
+        entities.get(0).render(modelBatch, environment);
     }
 
-    public void renderBullets(ModelBatch modelBatch, Environment environment) {
+    public void renderBullets(ModelBatch modelBatch, Environment environment, Camera camera) {
         for (com.starcat.boxhead.objects.Bullet bullet : bullets) {
-            bullet.render(modelBatch, environment);
+            if (bullet.isVisible(camera)) {
+                bullet.render(modelBatch, environment);
+            }
         }
         for (com.starcat.boxhead.objects.BulletCasing bulletCasing : bulletCasings) {
             bulletCasing.render(modelBatch, environment);
@@ -274,7 +299,7 @@ public final class EntityManager {
         dynamicsWorld.addRigidBody(rigidBody, (short) CollisionFlags.BULLET_FLAG, (short) CollisionMasks.BULLET_MASK);
 
         if (player.isMoving()) {
-            velocity += player.getMaxSpeed();
+            velocity += player.getMaxSpeed() * Gdx.graphics.getDeltaTime();
         }
 
         bullet.init(transform, modelInstance, rigidBody, angle, velocity, damage, accuracy);

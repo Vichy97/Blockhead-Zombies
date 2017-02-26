@@ -113,7 +113,7 @@ public final class GameScreen extends BaseScreen {
         entityManager = EntityManager.instance();
         entityManager.setDynamicsWorld(dynamicsWorld);
 
-        entityManager.spawnPlayer(new Vector3(0, 15f, 0), .055f, playerSkin);
+        entityManager.spawnPlayer(new Vector3(0, 15f, 0), 3, playerSkin);
 
         initInput();
     }
@@ -132,7 +132,7 @@ public final class GameScreen extends BaseScreen {
         game.getModelBatch().begin(game.getGameCamera());
         game.getModelBatch().render(modelCache, environment);
         entityManager.renderEntities(game.getModelBatch(), environment);
-        entityManager.renderBullets(game.getModelBatch(), environment);
+        entityManager.renderBullets(game.getModelBatch(), environment, game.getGameCamera());
         game.getModelBatch().end();
 
         particleManager.renderDecals(game.getDecalBatch());
@@ -164,7 +164,7 @@ public final class GameScreen extends BaseScreen {
     @Override
     public void update(float delta) {
         if (!paused) {
-            entityManager.update(delta);
+            entityManager.update(delta, game.getGameCamera());
 
             if (entityManager.getPlayer().getHitpoints() <= 0) {
                 gameOverTable.setVisible(true);
@@ -175,7 +175,7 @@ public final class GameScreen extends BaseScreen {
                 entityManager.getPlayer().fire();
             }
 
-            dynamicsWorld.stepSimulation(delta, 10, 1f/75f);
+            dynamicsWorld.stepSimulation(delta, 20, 1f/75f);
             GdxAI.getTimepiece().update(delta);
         }
 
@@ -196,6 +196,9 @@ public final class GameScreen extends BaseScreen {
     private void renderUI() {
         game.getStringBuilder().setLength(0);
         game.getStringBuilder().append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
+        game.getStringBuilder().append(" total: ").append(entityManager.total);
+        game.getStringBuilder().append(" visible: ").append(entityManager.visible);
+
 
         debugLabel.setText(game.getStringBuilder());
 
