@@ -92,6 +92,7 @@ public final class GameScreen extends BaseScreen {
 
     private float worldSize;
     private float targetWorldSize;
+    private Vector3 lightPosition;
 
 
 
@@ -137,7 +138,7 @@ public final class GameScreen extends BaseScreen {
 
         particleManager.renderDecals(game.getDecalBatch());
 
-        sunlight.begin(Vector3.Zero, game.getGameCamera().direction);
+        sunlight.begin(entityManager.getPlayer().getPosition(), game.getGameCamera().direction);
         game.getShadowBatch().begin(sunlight.getCamera());
         game.getShadowBatch().render(shadowCache);
         entityManager.renderEntities(game.getShadowBatch(), environment);
@@ -158,7 +159,7 @@ public final class GameScreen extends BaseScreen {
 
         super.render(delta);
 
-        sleep(30);
+        //sleep(30);
     }
 
     @Override
@@ -358,11 +359,13 @@ public final class GameScreen extends BaseScreen {
         GameUtils.debug(this, "initLighting");
 
         environment = new Environment();
-        sunlight = new DirectionalShadowLight(1920 * 3, 1080 * 3, 70f, 70f, 1, 75);
+        sunlight = new DirectionalShadowLight(1920, 1080, 30f, 30f, 1, 75);
         sunlight.set(map.getTimeOfDay().sunlightColor, map.getTimeOfDay().sunlightDirection);
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, map.getTimeOfDay().ambientColor));
         environment.add(sunlight);
         environment.shadowMap = sunlight;
+
+        lightPosition = new Vector3(sunlight.getCamera().position);
 
         Gdx.gl20.glCullFace(GL20.GL_BACK);
     }
