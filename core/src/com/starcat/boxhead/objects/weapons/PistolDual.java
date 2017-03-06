@@ -21,7 +21,7 @@ public final class PistolDual extends DualWieldGun {
         modelInstance = new ModelInstance(AssetLoader.pistolDual);
         bulletModel = AssetLoader.bulletPistol;
         bulletCasingModel = AssetLoader.casingPistol;
-        sound = AssetLoader.pistolSound;
+        fireSound = AssetLoader.pistolSound;
         animationController = new AnimationController(modelInstance);
         animationController.allowSameAnimation = true;
         fireAnimation = "fire_right";

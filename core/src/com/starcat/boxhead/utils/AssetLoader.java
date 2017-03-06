@@ -125,9 +125,9 @@ public final class AssetLoader implements Disposable {
         FreetypeFontLoader.FreeTypeFontLoaderParameter verySmallFont = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         verySmallFont.fontFileName = "fonts/droid_sans.ttf";
         verySmallFont.fontParameters.color = Color.WHITE;
-        verySmallFont.fontParameters.size = Dimensions.getScreenHeight() / 20;
-        verySmallFont.fontParameters.shadowOffsetX = -3;
-        verySmallFont.fontParameters.shadowOffsetY = 3;
+        verySmallFont.fontParameters.size = Dimensions.getScreenHeight() / 25;
+        verySmallFont.fontParameters.shadowOffsetX = -2;
+        verySmallFont.fontParameters.shadowOffsetY = 2;
         verySmallFont.fontParameters.borderWidth = 2;
         verySmallFont.fontParameters.borderStraight = false;
         verySmallFont.fontParameters.borderWidth = 2;

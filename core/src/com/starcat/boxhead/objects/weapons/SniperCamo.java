@@ -18,7 +18,7 @@ public final class SniperCamo extends Gun {
         modelInstance = new ModelInstance(AssetLoader.sniperCamo);
         bulletModel = AssetLoader.bulletSniper;
         bulletCasingModel = AssetLoader.casingSniper;
-        sound = AssetLoader.pistolSound;
+        fireSound = AssetLoader.pistolSound;
         animationController = new AnimationController(modelInstance);
         animationController.allowSameAnimation = true;
         fireAnimation = "fire";

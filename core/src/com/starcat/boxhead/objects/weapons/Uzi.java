@@ -20,7 +20,7 @@ public final class Uzi extends Gun {
         modelInstance = new ModelInstance(AssetLoader.uzi);
         bulletModel = AssetLoader.bulletUzi;
         bulletCasingModel = AssetLoader.casingUzi;
-        sound = AssetLoader.pistolSound;
+        fireSound = AssetLoader.pistolSound;
         animationController = new AnimationController(modelInstance);
         animationController.allowSameAnimation = true;
         fireAnimation = "fire";

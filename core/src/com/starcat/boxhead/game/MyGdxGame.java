@@ -1,6 +1,8 @@
 package com.starcat.boxhead.game;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -43,6 +45,9 @@ public class MyGdxGame extends Game {
 
     private FPSLogger fpsLogger;
 
+    private Preferences settings;
+
+
 
 
     @Override
@@ -69,9 +74,11 @@ public class MyGdxGame extends Game {
         config.numDirectionalLights = 1;
         config.numPointLights = 0;
         config.numBones = 0;
+        config.numSpotLights = 0;
         config.defaultCullFace = GL20.GL_BACK;
         modelBatch = new ModelBatch(new DefaultShaderProvider(config));
         shadowBatch = new ModelBatch(new DepthShaderProvider());
+
         decalBatch = new DecalBatch(new CameraGroupStrategy(gameCamera, new ZStrategyComparator(gameCamera)));
         shapeRenderer = new ShapeRenderer();
         stringBuilder = new StringBuilder();
@@ -79,6 +86,8 @@ public class MyGdxGame extends Game {
 
         Bullet.init();
         MyContactListener contactListener = new MyContactListener();
+
+        settings = Gdx.app.getPreferences("settings");
 
         setScreen(new LoadingScreen(this));
     }
@@ -142,6 +151,10 @@ public class MyGdxGame extends Game {
 
     public FPSLogger getFpsLogger() {
         return fpsLogger;
+    }
+
+    public Preferences getSettings() {
+        return settings;
     }
 
 }

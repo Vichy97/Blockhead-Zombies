@@ -19,7 +19,7 @@ public final class Pistol extends Gun {
         modelInstance = new ModelInstance(AssetLoader.pistol);
         bulletModel = AssetLoader.bulletPistol;
         bulletCasingModel = AssetLoader.casingPistol;
-        sound = AssetLoader.pistolSound;
+        fireSound = AssetLoader.pistolSound;
         animationController = new AnimationController(modelInstance);
         animationController.allowSameAnimation = true;
         fireAnimation = "fire";

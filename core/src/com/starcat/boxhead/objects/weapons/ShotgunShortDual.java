@@ -17,7 +17,7 @@ public final class ShotgunShortDual extends DualWieldGun {
 
         modelInstance = new ModelInstance(AssetLoader.shotgunShortDual);
         bulletCasingModel = AssetLoader.casingShotgun;
-        sound = AssetLoader.pistolSound;
+        fireSound = AssetLoader.pistolSound;
         animationController = new AnimationController(modelInstance);
         animationController.allowSameAnimation = true;
         fireAnimation = "fire_right";

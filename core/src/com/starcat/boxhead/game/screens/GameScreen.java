@@ -54,6 +54,12 @@ public final class GameScreen extends BaseScreen {
     private boolean paused = false;
     private boolean touched = false;
 
+    private boolean sound;
+    private boolean music;
+    private boolean shadows;
+    private boolean blood;
+    private boolean particles;
+
     private InputMultiplexer inputMultiplexer;
     private Stage stage;
     private Table pauseTable, playTable, gameOverTable;
@@ -92,7 +98,6 @@ public final class GameScreen extends BaseScreen {
 
     private float worldSize;
     private float targetWorldSize;
-    private Vector3 lightPosition;
 
 
 
@@ -102,9 +107,10 @@ public final class GameScreen extends BaseScreen {
         map.setTranslation(0, 0, 0);
         this.map = map;
 
-        targetWorldSize = 90;
+        targetWorldSize = 110;
         worldSize = map.getWorldSize();
 
+        initSettings();
         initUI();
         initWorld();
         initLighting();
@@ -136,12 +142,16 @@ public final class GameScreen extends BaseScreen {
         entityManager.renderBullets(game.getModelBatch(), environment, game.getGameCamera());
         game.getModelBatch().end();
 
-        particleManager.renderDecals(game.getDecalBatch());
+        if (blood) {
+            particleManager.renderDecals(game.getDecalBatch());
+        }
 
         sunlight.begin(entityManager.getPlayer().getPosition(), game.getGameCamera().direction);
         game.getShadowBatch().begin(sunlight.getCamera());
-        game.getShadowBatch().render(shadowCache);
-        entityManager.renderEntities(game.getShadowBatch(), environment);
+        if (shadows) {
+            game.getShadowBatch().render(shadowCache);
+            entityManager.renderEntities(game.getShadowBatch(), environment);
+        }
         game.getShadowBatch().end();
         sunlight.end();
 
@@ -291,6 +301,13 @@ public final class GameScreen extends BaseScreen {
     }
 
 
+    private void initSettings() {
+        sound = game.getSettings().getBoolean("sound", true);
+        music = game.getSettings().getBoolean("music", true);
+        shadows = game.getSettings().getBoolean("shadows", true);
+        blood = game.getSettings().getBoolean("blood", true);
+        particles = game.getSettings().getBoolean("particles", true);
+    }
 
     private void initUI() {
         GameUtils.debug(this,"initUI");
@@ -364,8 +381,6 @@ public final class GameScreen extends BaseScreen {
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, map.getTimeOfDay().ambientColor));
         environment.add(sunlight);
         environment.shadowMap = sunlight;
-
-        lightPosition = new Vector3(sunlight.getCamera().position);
 
         Gdx.gl20.glCullFace(GL20.GL_BACK);
     }
@@ -495,7 +510,9 @@ public final class GameScreen extends BaseScreen {
     private ClickListener playButtonListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
             pauseTable.setVisible(false);
             playTable.setVisible(true);
 
@@ -506,7 +523,9 @@ public final class GameScreen extends BaseScreen {
     private ClickListener pauseButtonListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
             pause();
         }
     };
@@ -514,14 +533,18 @@ public final class GameScreen extends BaseScreen {
     private ClickListener nextWeaponButtonListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
         }
     };
 
     private ClickListener previousWeaponButtonListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
         }
     };
 

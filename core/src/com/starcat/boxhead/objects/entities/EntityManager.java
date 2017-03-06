@@ -61,6 +61,7 @@ public final class EntityManager {
     private ArrayList<Vector3> spawnPoints;
     private int currentSpawnPoint = 0;
     private int zombiesLeftToSpawn = 10;
+    private int maxZombies = 70;
     private Vector3 zombieSpawnPoint = new Vector3();
 
     public int visible;
@@ -97,7 +98,6 @@ public final class EntityManager {
             }
         };
 
-
         spawnPoints = new ArrayList<Vector3>();
         spawnPoints.add(new Vector3(5.5f, 0, 20));
         spawnPoints.add(new Vector3(5.5f, 0, -20));
@@ -107,7 +107,7 @@ public final class EntityManager {
         currentWaveDesc = new WaveDesc();
         currentWaveDesc.spawnRate = 1;
         currentWaveDesc.numberOfZombies = 10;
-        currentWaveDesc.zombieSpeed = 50;
+        currentWaveDesc.zombieSpeed = 25;
 
         modelCache = new ModelCache();
     }
@@ -180,14 +180,15 @@ public final class EntityManager {
         updateWave(delta);
     }
 
+    //TODO: cleanup
     private void updateWave(float delta) {
         currentTime += delta;
 
-        if (zombiesLeftToSpawn > 0) {
+        if (zombiesLeftToSpawn > 0 && entities.size() < maxZombies) {
             if (currentTime >= currentWaveDesc.spawnRate) {
                 currentTime = 0;
                 zombieSpawnPoint.set(spawnPoints.get(currentSpawnPoint));
-                zombieSpawnPoint.add(MathUtils.random(-3, 3), 0, MathUtils.random(-3, 3));
+                //zombieSpawnPoint.add(MathUtils.random(-3, 3), 0, MathUtils.random(-3, 3));
                 spawnZombie(zombieSpawnPoint);
                 zombiesLeftToSpawn--;
                 currentSpawnPoint++;
@@ -196,14 +197,14 @@ public final class EntityManager {
                 }
             }
         } else {
-            if (entities.size() <= 1) {
+            //if (entities.size() <= 1) {
                 currentWave++;
                 currentTime = 0;
-                currentWaveDesc.numberOfZombies += 10;
+                currentWaveDesc.numberOfZombies += 5;
                 currentWaveDesc.zombieSpeed += 5;
                 currentWaveDesc.spawnRate -= .05f;
                 zombiesLeftToSpawn = currentWaveDesc.numberOfZombies;
-            }
+            //}
         }
     }
 

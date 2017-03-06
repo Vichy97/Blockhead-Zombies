@@ -5,154 +5,196 @@ filter: Linear,Linear
 repeat: none
 touchpad_base
   rotate: false
-  xy: 1, 179
+  xy: 1, 205
   size: 300, 300
   orig: 300, 300
   offset: 0, 0
   index: -1
 touchpad_knob
   rotate: false
-  xy: 1, 1
+  xy: 1, 27
   size: 176, 176
   orig: 176, 176
   offset: 0, 0
   index: -1
 about
   rotate: false
-  xy: 303, 379
+  xy: 303, 405
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 achievement
   rotate: false
-  xy: 179, 77
+  xy: 179, 103
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+blood
+  rotate: false
+  xy: 303, 303
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+blood_off
+  rotate: false
+  xy: 405, 405
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 co_op
   rotate: false
-  xy: 303, 277
+  xy: 405, 303
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 exit
   rotate: false
-  xy: 405, 379
+  xy: 507, 405
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 leaderboard
   rotate: false
-  xy: 405, 277
+  xy: 507, 303
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 left
   rotate: false
-  xy: 507, 379
+  xy: 609, 405
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 multiplayer
   rotate: false
-  xy: 507, 277
+  xy: 609, 303
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 music_off
   rotate: false
-  xy: 609, 379
+  xy: 711, 405
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 music_on
   rotate: false
-  xy: 609, 277
+  xy: 711, 303
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 options
   rotate: false
-  xy: 711, 379
+  xy: 813, 405
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+particles
+  rotate: false
+  xy: 813, 303
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+particles_off
+  rotate: false
+  xy: 915, 405
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 pause
   rotate: false
-  xy: 711, 277
+  xy: 915, 303
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 play
   rotate: false
-  xy: 813, 379
+  xy: 303, 201
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 right
   rotate: false
-  xy: 813, 277
+  xy: 405, 201
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+shadows
+  rotate: false
+  xy: 507, 201
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+shadows_off
+  rotate: false
+  xy: 609, 201
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 share
   rotate: false
-  xy: 915, 379
+  xy: 711, 201
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 single_player
   rotate: false
-  xy: 915, 277
+  xy: 813, 201
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 sound_off
   rotate: false
-  xy: 303, 175
+  xy: 915, 201
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 sound_on
   rotate: false
-  xy: 405, 175
+  xy: 179, 1
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 trophy
   rotate: false
-  xy: 507, 175
+  xy: 281, 99
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 unlock
   rotate: false
-  xy: 609, 175
+  xy: 383, 99
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 background
   rotate: false
-  xy: 711, 180
+  xy: 281, 2
   size: 95, 95
   split: 14, 16, 14, 15
   orig: 95, 95

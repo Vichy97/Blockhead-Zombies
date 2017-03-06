@@ -47,7 +47,7 @@ public abstract class Gun {
     protected ModelInstance modelInstance;
     protected Model bulletModel;
     protected Model bulletCasingModel;
-    protected Sound sound;
+    protected Sound fireSound;
     protected AnimationController animationController;
 
     protected String fireAnimation;
@@ -59,11 +59,14 @@ public abstract class Gun {
 
     protected boolean canShoot = true;
     protected boolean reloading = false;
+    protected boolean sound;
 
 
 
     public Gun(Player player) {
         this.player = player;
+
+        sound = Gdx.app.getPreferences("settings").getBoolean("sound");
     }
 
     public void fire() {
@@ -71,7 +74,9 @@ public abstract class Gun {
             bulletCasingExpulsionImpulse.set(-2 + MathUtils.random(-.5f, .5f), 2 + MathUtils.random(-.2f, .2f), -.2f + MathUtils.random(-.5f, .5f));
             bulletCasingExpulsionImpulse.rotate(player.getCurrentRotationAngle(), 0, 1, 0);
 
-            sound.play();
+            if (sound) {
+                this.fireSound.play();
+            }
             canShoot = false;
             ammoInClip -= 1;
 

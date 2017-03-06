@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.utils.AnimationController;
 import com.badlogic.gdx.math.Vector3;
-import com.starcat.boxhead.game.MyGdxGame;
 import com.starcat.boxhead.objects.entities.Player;
 import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.utils.Dimensions;
@@ -22,7 +21,7 @@ public final class UziDual extends DualWieldGun {
         modelInstance = new ModelInstance(AssetLoader.uziDual);
         bulletModel = AssetLoader.bulletUzi;
         bulletCasingModel = AssetLoader.casingUzi;
-        sound = AssetLoader.pistolSound;
+        fireSound = AssetLoader.pistolSound;
         animationController = new AnimationController(modelInstance);
         animationController.allowSameAnimation = true;
         fireAnimation = "fire_right";

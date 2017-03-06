@@ -20,6 +20,7 @@ public final class LoadingScreen extends BaseScreen {
     private float splashTimer = 3f;
     private float splashTimer2 = 6f;
     private boolean splashOne = true;
+    private boolean init = false;
 
     public LoadingScreen(MyGdxGame game) {
         super(game);
@@ -71,7 +72,10 @@ public final class LoadingScreen extends BaseScreen {
 
         //returns true if it is done loading
         if (game.getAssetLoader().update()) {
-            game.getAssetLoader().initAssets();
+            if (!init) {
+                game.getAssetLoader().initAssets();
+                init = true;
+            }
 
             if (splashLogo2.getColor().a <= .1f) {
                 game.setScreen(new MenuScreen(game));

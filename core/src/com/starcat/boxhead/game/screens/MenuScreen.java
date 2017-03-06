@@ -35,6 +35,12 @@ public final class MenuScreen extends BaseScreen {
 
     private InputMultiplexer inputMultiplexer;
 
+    private boolean sound;
+    private boolean music;
+    private boolean shadows;
+    private boolean blood;
+    private boolean particles;
+
     private Stage stage;
     private Table menuTable;
     private Table optionsTable;
@@ -48,9 +54,15 @@ public final class MenuScreen extends BaseScreen {
     private Label titleLabel;
     private Label musicLabel;
     private Label soundLabel;
+    private Label bloodLabel;
+    private Label shadowsLabel;
+    private Label particlesLabel;
     private Label optionsLabel;
     private Label aboutLabel;
     private Label aboutTextLabel;
+    private ImageButton bloodButton;
+    private ImageButton shadowsButton;
+    private ImageButton particlesButton;
     private ImageButton musicButton;
     private ImageButton soundButton;
     private ImageButton aboutButton;
@@ -108,6 +120,7 @@ public final class MenuScreen extends BaseScreen {
         currentMap = 0;
         currentSkin = 0;
 
+        initSettings();
         initUI();
         initWorld();
         initLighting();
@@ -152,9 +165,11 @@ public final class MenuScreen extends BaseScreen {
         game.getModelBatch().end();
 
         sunlight.begin(sunlightVector, game.getGameCamera().direction);
-        game.getShadowBatch().begin(sunlight.getCamera());
-        game.getShadowBatch().render(shadowCache);
-        game.getShadowBatch().end();
+        if (shadows) {
+            game.getShadowBatch().begin(sunlight.getCamera());
+            game.getShadowBatch().render(shadowCache);
+            game.getShadowBatch().end();
+        }
         sunlight.end();
 
         AssetLoader.map1.clearSkyColor();
@@ -227,6 +242,13 @@ public final class MenuScreen extends BaseScreen {
     }
 
 
+    private void initSettings() {
+        sound = game.getSettings().getBoolean("sound", true);
+        music = game.getSettings().getBoolean("music", true);
+        shadows = game.getSettings().getBoolean("shadows", true);
+        blood = game.getSettings().getBoolean("blood", true);
+        particles = game.getSettings().getBoolean("particles", true);
+    }
 
     private void initUI()  {
         stage = new Stage(game.getUIViewport());
@@ -237,19 +259,24 @@ public final class MenuScreen extends BaseScreen {
         titleLabel = new Label(AssetLoader.i18NBundle.get("menuTitle"), AssetLoader.uiSkin, "title");
         playButton = new TextButton(AssetLoader.i18NBundle.get("play"), AssetLoader.uiSkin, "menu");
         playButton.addListener(playListener);
+
         optionsButton = new TextButton(AssetLoader.i18NBundle.get("options"), AssetLoader.uiSkin, "menu");
         optionsButton.addListener(optionsListener);
+
         exitButton = new TextButton(AssetLoader.i18NBundle.get("exit"), AssetLoader.uiSkin, "menu");
         exitButton.addListener(exitListener);
+
         aboutButton = new ImageButton(AssetLoader.uiSkin.getDrawable("about"));
-        aboutButton.addListener(aboutListener);
         aboutButton.getImageCell().width(Dimensions.scaleWidth(120)).height(Dimensions.scaleWidth(120));
         aboutButton.setSize(Dimensions.scaleWidth(120), Dimensions.scaleWidth(120));
+        aboutButton.addListener(aboutListener);
+
         shareButton = new ImageButton(AssetLoader.uiSkin.getDrawable("share"));
         shareButton.getImageCell().width(Dimensions.scaleWidth(120)).height(Dimensions.scaleWidth(120));
         shareButton.setSize(Dimensions.scaleWidth(120), Dimensions.scaleWidth(120));
         shareButton.background(AssetLoader.uiSkin.getDrawable("background"));
         shareButton.addListener(shareListener);
+
         achievementsButton = new ImageButton(AssetLoader.uiSkin.getDrawable("achievement"));
         achievementsButton.addListener(achievementsListener);
         achievementsButton.getImageCell().width(Dimensions.scaleWidth(120)).height(Dimensions.scaleWidth(120));
@@ -275,36 +302,68 @@ public final class MenuScreen extends BaseScreen {
         optionsTable.setVisible(false);
 
         optionsLabel = new Label(AssetLoader.i18NBundle.get("options"), AssetLoader.uiSkin, "large");
-        soundLabel = new Label(AssetLoader.i18NBundle.get("sound"), AssetLoader.uiSkin, "small");
-        musicLabel = new Label(AssetLoader.i18NBundle.get("music"), AssetLoader.uiSkin, "small");
+        soundLabel = new Label(AssetLoader.i18NBundle.get("sound"), AssetLoader.uiSkin, "very_small");
+        musicLabel = new Label(AssetLoader.i18NBundle.get("music"), AssetLoader.uiSkin, "very_small");
+        bloodLabel = new Label(AssetLoader.i18NBundle.get("blood"), AssetLoader.uiSkin, "very_small");
+        shadowsLabel = new Label(AssetLoader.i18NBundle.get("shadows"), AssetLoader.uiSkin, "very_small");
+        particlesLabel = new Label(AssetLoader.i18NBundle.get("particles"), AssetLoader.uiSkin, "very_small");
 
         musicButton = new ImageButton(AssetLoader.uiSkin.getDrawable("music_on"), AssetLoader.uiSkin.getDrawable("music_on"), AssetLoader.uiSkin.getDrawable("music_off"));
         musicButton.getImageCell().width(Dimensions.scaleWidth(120)).height(Dimensions.scaleWidth(120));
         musicButton.setSize(Dimensions.scaleWidth(120), Dimensions.scaleWidth(120));
+        musicButton.setChecked(!music);
         musicButton.addListener(musicListener);
+
         soundButton = new ImageButton(AssetLoader.uiSkin.getDrawable("sound_on"), AssetLoader.uiSkin.getDrawable("sound_on"), AssetLoader.uiSkin.getDrawable("sound_off"));
         soundButton.getImageCell().width(Dimensions.scaleWidth(120)).height(Dimensions.scaleWidth(120));
         soundButton.setSize(Dimensions.scaleWidth(120), Dimensions.scaleWidth(120));
+        soundButton.setChecked(!sound);
         soundButton.addListener(soundListener);
 
-        optionsTable.add(optionsLabel).colspan(2).pad(0, optionsLabel.getWidth() / 3, optionsLabel.getHeight() / 2, optionsLabel.getWidth() / 3);
-        optionsTable.row();
-        optionsTable.add(soundLabel);
-        optionsTable.add(musicLabel);
-        optionsTable.row();
-        optionsTable.add(soundButton);
-        optionsTable.add(musicButton);
+        bloodButton = new ImageButton(AssetLoader.uiSkin.getDrawable("blood"), AssetLoader.uiSkin.getDrawable("blood"), AssetLoader.uiSkin.getDrawable("blood_off"));
+        bloodButton.getImageCell().width(Dimensions.scaleWidth(150)).height(Dimensions.scaleWidth(150));
+        bloodButton.setSize(Dimensions.scaleWidth(150), Dimensions.scaleWidth(150));
+        bloodButton.setChecked(!blood);
+        bloodButton.addListener(bloodListener);
 
-        optionsTable.setWidth(Dimensions.scaleWidth(775));
-        optionsTable.setHeight(Dimensions.scaleHeight(500));
+        shadowsButton = new ImageButton(AssetLoader.uiSkin.getDrawable("shadows"), AssetLoader.uiSkin.getDrawable("shadows"), AssetLoader.uiSkin.getDrawable("shadows_off"));
+        shadowsButton.getImageCell().width(Dimensions.scaleWidth(150)).height(Dimensions.scaleWidth(150));
+        shadowsButton.setSize(Dimensions.scaleWidth(150), Dimensions.scaleWidth(150));
+        shadowsButton.setChecked(!shadows);
+        shadowsButton.addListener(shadowsListener);
+
+        particlesButton = new ImageButton(AssetLoader.uiSkin.getDrawable("particles"), AssetLoader.uiSkin.getDrawable("particles"), AssetLoader.uiSkin.getDrawable("particles_off"));
+        particlesButton.getImageCell().width(Dimensions.scaleWidth(150)).height(Dimensions.scaleWidth(150));
+        particlesButton.setSize(Dimensions.scaleWidth(150), Dimensions.scaleWidth(150));
+        particlesButton.setChecked(!particles);
+        particlesButton.addListener(particlesListener);
+
+        optionsTable.add(optionsLabel).colspan(6).pad(0, optionsLabel.getWidth() / 3, optionsLabel.getHeight() / 4, optionsLabel.getWidth() / 3);
+        optionsTable.row();
+        optionsTable.add(soundLabel).colspan(3);
+        optionsTable.add(musicLabel).colspan(3);
+        optionsTable.row();
+        optionsTable.add(soundButton).colspan(3);
+        optionsTable.add(musicButton).colspan(3);
+        optionsTable.row();
+        optionsTable.add(bloodLabel).colspan(2);
+        optionsTable.add(shadowsLabel).colspan(2);
+        optionsTable.add(particlesLabel).colspan(2);
+        optionsTable.row();
+        optionsTable.add(bloodButton).colspan(2);
+        optionsTable.add(shadowsButton).colspan(2);
+        optionsTable.add(particlesButton).colspan(2);
+
+        optionsTable.setWidth(Dimensions.scaleWidth(800));
+        optionsTable.setHeight(Dimensions.scaleHeight(550));
         optionsTable.setPosition(Dimensions.getHalfScreenWidth() - optionsTable.getWidth() / 2, Dimensions.getHalfScreenHeight() - optionsTable.getHeight() / 2);
         optionsTable.background(AssetLoader.uiSkin.getDrawable("background"));
 
 
 
         aboutTable = new Table();
-        aboutTable.setWidth(Dimensions.scaleWidth(1100));
-        aboutTable.setHeight(Dimensions.scaleHeight(800));
+        aboutTable.setWidth(Dimensions.scaleWidth(1200));
+        aboutTable.setHeight(Dimensions.scaleHeight(900));
         aboutTable.setPosition(Dimensions.getHalfScreenWidth() - aboutTable.getWidth() / 2, Dimensions.getHalfScreenHeight() - aboutTable.getHeight() / 2);
         aboutTable.setBackground(AssetLoader.uiSkin.getDrawable("background"));
         aboutTable.setVisible(false);
@@ -453,13 +512,18 @@ public final class MenuScreen extends BaseScreen {
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (optionsTable.isVisible()) {
             if (screenX > optionsTable.getX() + optionsTable.getWidth() || screenX < optionsTable.getX() || screenY < optionsTable.getY() || screenY > optionsTable.getY() + optionsTable.getHeight()) {
-                AssetLoader.button_click.play();
+                game.getSettings().flush();
+                if (sound) {
+                    AssetLoader.button_click.play();
+                }
                 optionsTable.setVisible(false);
                 menuTable.setVisible(true);
             }
         } else if (aboutTable.isVisible()) {
             if (screenX > aboutTable.getX() + aboutTable.getWidth() || screenX < aboutTable.getX() || screenY < aboutTable.getY() || screenY > aboutTable.getY() + aboutTable.getHeight()) {
-                AssetLoader.button_click.play();
+                if (sound) {
+                    AssetLoader.button_click.play();
+                }
                 aboutTable.setVisible(false);
                 menuTable.setVisible(true);
             }
@@ -470,7 +534,9 @@ public final class MenuScreen extends BaseScreen {
     private ClickListener playListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
 
             menuTable.setVisible(false);
             mapSelectTable.setVisible(true);
@@ -481,7 +547,10 @@ public final class MenuScreen extends BaseScreen {
     private ClickListener optionsListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
+
             optionsTable.setVisible(true);
             menuTable.setVisible(false);
         }
@@ -490,7 +559,10 @@ public final class MenuScreen extends BaseScreen {
     private ClickListener exitListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
+
             Gdx.app.exit();
         }
     };
@@ -498,21 +570,70 @@ public final class MenuScreen extends BaseScreen {
     private ClickListener soundListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
+            if (!sound) {
+                AssetLoader.button_click.play();
+            }
+            sound = !sound;
+            game.getSettings().putBoolean("sound", sound);
         }
     };
 
     private ClickListener musicListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
+
+            music = !music;
+            game.getSettings().putBoolean("music", music);
+        }
+    };
+
+    private ClickListener bloodListener = new ClickListener() {
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
+
+            blood = !blood;
+            game.getSettings().putBoolean("blood", blood);
+        }
+    };
+
+    private ClickListener shadowsListener = new ClickListener() {
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
+
+            shadows = !shadows;
+            game.getSettings().putBoolean("shadows", shadows);
+            game.getSettings().flush();
+        }
+    };
+
+    private ClickListener particlesListener = new ClickListener() {
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
+
+            particles = !particles;
+            game.getSettings().putBoolean("particles", particles);
         }
     };
 
     private ClickListener aboutListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
+
             menuTable.setVisible(false);
             aboutTable.setVisible(true);
         }
@@ -521,21 +642,28 @@ public final class MenuScreen extends BaseScreen {
     private ClickListener achievementsListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
         }
     };
 
     private ClickListener shareListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
         }
     };
 
     private ClickListener nextMapListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
+
             if (currentMap < AssetLoader.maps.length - 1) {
                 currentMap++;
                 initWorld();
@@ -554,7 +682,9 @@ public final class MenuScreen extends BaseScreen {
     private ClickListener previousMapListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
 
             if (currentMap > 0){
                 currentMap--;
@@ -574,7 +704,9 @@ public final class MenuScreen extends BaseScreen {
     private ClickListener previousPlayerListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
 
             if (currentSkin > 0) {
                 currentSkin --;
@@ -592,7 +724,9 @@ public final class MenuScreen extends BaseScreen {
     private ClickListener nextPlayerListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
 
             if (currentSkin < AssetLoader.playerSkins.length) {
                 currentSkin++;
@@ -610,14 +744,18 @@ public final class MenuScreen extends BaseScreen {
     private ClickListener shopListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
         }
     };
 
     private ClickListener startListener = new ClickListener() {
         @Override
         public void clicked(InputEvent event, float x, float y) {
-            AssetLoader.button_click.play();
+            if (sound) {
+                AssetLoader.button_click.play();
+            }
 
             game.setScreen(new GameScreen(game, AssetLoader.maps[currentMap], AssetLoader.playerSkins[currentSkin]));
             dispose();

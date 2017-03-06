@@ -35,7 +35,9 @@ public abstract class DualWieldGun extends Gun {
             bulletCasingExpulsionImpulse.set(-2 + MathUtils.random(-.5f, .5f), 2 + MathUtils.random(-.2f, .2f), -.2f + MathUtils.random(-.5f, .5f));
             bulletCasingExpulsionImpulse.rotate(player.getCurrentRotationAngle(), 0, 1, 0);
 
-            sound.play();
+            if (sound) {
+                fireSound.play();
+            }
             canShoot = false;
             ammoInClip -= 1;
 

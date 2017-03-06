@@ -1,5 +1,6 @@
 package com.starcat.boxhead.objects.entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
@@ -35,8 +36,8 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
     public Entity() {
         super();
 
-        this.maxLinearSpeed = 50;
-        this.maxLinearAcceleration = 50;
+        this.maxLinearSpeed = 25;
+        this.maxLinearAcceleration = 25;
         this.maxAngularSpeed = 30;
         this.maxAngularAcceleration = 5;
         this.tagged = false;
@@ -58,24 +59,13 @@ public class Entity extends DynamicGameObject implements Steerable<Vector3> {
 
 
     public void applySteering(float delta) {
-        boolean anyAccelerations = false;
-
         if(!steeringOutput.linear.isZero()) {
             steeringOutput.linear.y = 0;
-            Vector3 force  = steeringOutput.linear.scl(delta);
+            Vector3 force = steeringOutput.linear.scl(delta);
             rigidBody.setLinearVelocity(force);
-            anyAccelerations = true;
         }
 
         setOrientation((float)Math.toDegrees(vectorToAngle(getLinearVelocity())));
-
-        if (anyAccelerations) {
-            Vector3 velocity = steeringOutput.linear;
-            float currentSpeedSquared = velocity.len2();
-            if (currentSpeedSquared > maxLinearSpeed * maxLinearSpeed) {
-                rigidBody.setLinearVelocity(velocity.scl(maxLinearSpeed / (float) Math.sqrt(currentSpeedSquared)));
-            }
-        }
     }
 
 
