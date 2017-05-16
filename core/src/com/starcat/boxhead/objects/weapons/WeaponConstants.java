@@ -11,6 +11,12 @@ import com.badlogic.gdx.math.Vector3;
 
 public final class WeaponConstants {
 
+    public static final int FLAG_DUAL = 1 << 1;
+    public static final int FLAG_SILENCED = 1 << 2;
+    public static final int FLAG_SHORT = 1 << 3;
+    public static final int FLAG_ALT_SKIN = 1 << 4;
+    public static final int FLAG_AUTO_FIRE = 1 << 5;
+
     public static final Vector3 PISTOL_BULLET_TRANSLATION = new Vector3(-.3f, .487f, .75f);
     public static final Vector3 PISTOL_BULLET_TRANSLATION_ALT = new Vector3(.3f, .487f, .75f);
     public static final Vector3 PISTOL_CASING_TRANSLATION = new Vector3(-.3f, .487f, .567f);

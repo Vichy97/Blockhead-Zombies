@@ -27,11 +27,11 @@ public final class LoadingScreen extends BaseScreen {
 
         game.getAssetLoader().loadSplashScreen();
         splashLogo = new Sprite(AssetLoader.libgdxLogo);
-        splashLogo.setSize(Dimensions.scaleWidth((int)splashLogo.getWidth()), Dimensions.scaleHeight((int)splashLogo.getHeight()));
+        splashLogo.setSize(Dimensions.scaleWidth(splashLogo.getWidth()), Dimensions.scaleHeight(splashLogo.getHeight()));
         splashLogo.setX(Dimensions.getHalfScreenWidth() - splashLogo.getWidth() / 2);
         splashLogo.setY(Dimensions.getHalfScreenHeight() - splashLogo.getHeight() / 2);
         splashLogo2 = new Sprite(AssetLoader.starcatLogo);
-        splashLogo2.setSize(Dimensions.scaleWidth((int)splashLogo2.getWidth()),Dimensions.scaleHeight((int)splashLogo2.getHeight()));
+        splashLogo2.setSize(Dimensions.scaleWidth(splashLogo2.getWidth()),Dimensions.scaleHeight(splashLogo2.getHeight()));
         splashLogo2.setX(Dimensions.getHalfScreenWidth() - splashLogo2.getWidth() / 2);
         splashLogo2.setY(Dimensions.getHalfScreenHeight() - splashLogo2.getHeight() / 2);
 

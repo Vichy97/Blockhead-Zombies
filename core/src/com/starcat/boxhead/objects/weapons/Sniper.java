@@ -15,7 +15,11 @@ public final class Sniper extends Gun {
     public Sniper(Player player) {
         super(player);
 
-        modelInstance = new ModelInstance(AssetLoader.sniper);
+        if ((flags & WeaponConstants.FLAG_ALT_SKIN) == WeaponConstants.FLAG_ALT_SKIN) {
+            modelInstance = new ModelInstance(AssetLoader.sniperCamo);
+        } else {
+            modelInstance = new ModelInstance(AssetLoader.sniper);
+        }
         bulletModel = AssetLoader.bulletSniper;
         bulletCasingModel = AssetLoader.casingSniper;
         fireSound = AssetLoader.pistolSound;

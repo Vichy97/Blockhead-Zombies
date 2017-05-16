@@ -206,9 +206,9 @@ public final class GameScreen extends BaseScreen {
 
     private void renderUI() {
         game.getStringBuilder().setLength(0);
-        game.getStringBuilder().append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
-        game.getStringBuilder().append(" total: ").append(entityManager.total);
-        game.getStringBuilder().append(" visible: ").append(entityManager.visible);
+        //game.getStringBuilder().append("FPS: ").append(Gdx.graphics.getFramesPerSecond());
+        //game.getStringBuilder().append(" total: ").append(entityManager.total);
+        //game.getStringBuilder().append(" visible: ").append(entityManager.visible);
 
 
         debugLabel.setText(game.getStringBuilder());
@@ -340,6 +340,7 @@ public final class GameScreen extends BaseScreen {
         gameOverLabel = new Label("GAME OVER", AssetLoader.uiSkin, "menu");
         continueLabel = new Label("touch to continue...", AssetLoader.uiSkin, "small");
 
+        //TODO: use dimension.scale
         playTable = new Table();
         playTable.setFillParent(true);
         playTable.add(pauseButton).colspan(3).top().right().expandX();

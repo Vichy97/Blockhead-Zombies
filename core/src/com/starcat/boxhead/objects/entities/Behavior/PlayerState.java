@@ -34,8 +34,8 @@ public enum PlayerState implements State<Player> {
 
             player.getCurrentWeapon().update(Gdx.graphics.getDeltaTime());
 
-            player.getShootAnimationController().update(Gdx.graphics.getDeltaTime());
             player.getWalkAnimationController().update(Gdx.graphics.getDeltaTime());
+            player.getShootAnimationController().update(Gdx.graphics.getDeltaTime());
 
             player.heal(.025f);
         }

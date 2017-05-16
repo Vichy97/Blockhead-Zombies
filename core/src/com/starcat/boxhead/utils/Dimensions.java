@@ -5,8 +5,8 @@ import com.badlogic.gdx.Gdx;
 /**
  * Created by Vincent on 1/3/2017.
  *
- * this class is used to keep track of commonly used dimensions
- * similar to how android uses xml files
+ * this class is used to calculate dimension ratios, as well as
+ * keep track of commonly used dimensions similar to android xml files
  */
 
 public final class Dimensions {
@@ -70,11 +70,11 @@ public final class Dimensions {
         return halfScreenHeight;
     }
 
-    public static float scaleWidth(int width) {
-        return (float)width * gameScreenWidthRatio;
+    public static float scaleWidth(float width) {
+        return width * gameScreenWidthRatio;
     }
 
-    public static float scaleHeight(int height) {
-        return (float)height * gameScreenHeightRatio;
+    public static float scaleHeight(float height) {
+        return height * gameScreenHeightRatio;
     }
 }

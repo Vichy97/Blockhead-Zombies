@@ -50,6 +50,12 @@ public abstract class Gun {
     protected Sound fireSound;
     protected AnimationController animationController;
 
+    protected boolean altFire = false;
+    protected String fireAnimationAlt;
+    protected String playerFireAnimationAlt;
+    protected Vector3 bulletCasingTranslationAlt;
+    protected Vector3 bulletTranslationAlt;
+
     protected String fireAnimation;
     protected String walkAnimation;
     protected String poseAnimation;
@@ -60,6 +66,8 @@ public abstract class Gun {
     protected boolean canShoot = true;
     protected boolean reloading = false;
     protected boolean sound;
+
+    protected int flags = 0;
 
 
 
@@ -75,7 +83,7 @@ public abstract class Gun {
             bulletCasingExpulsionImpulse.rotate(player.getCurrentRotationAngle(), 0, 1, 0);
 
             if (sound) {
-                this.fireSound.play();
+                fireSound.play();
             }
             canShoot = false;
             ammoInClip -= 1;
@@ -89,11 +97,25 @@ public abstract class Gun {
                 timer = rateOfFire;
             }
 
-            animationController.setAnimation(fireAnimation);
-            player.getShootAnimationController().setAnimation(playerFireAnimation);
+            player.getShootAnimationController().setAnimation(playerFireAnimationAlt);
 
-            EntityManager.instance().spawnBullet(player.getModelInstance().transform.cpy().translate(bulletTranslation), new ModelInstance(bulletModel), player.getCurrentRotationAngle(), bulletSpeed, damage, accuracy);
-            //EntityManager.instance().spawnBulletCasing(player.getModelInstance().transform.cpy().translate(bulletCasingTranslation), new ModelInstance(bulletCasingModel), bulletCasingExpulsionImpulse.cpy());
+            if (altFire) {
+                animationController.setAnimation(fireAnimationAlt);
+                player.getShootAnimationController().setAnimation(playerFireAnimationAlt);
+            } else {
+                animationController.setAnimation(fireAnimation);
+                player.getShootAnimationController().setAnimation(playerFireAnimation);
+            }
+
+            if (altFire) {
+                EntityManager.instance().spawnBullet(player.getModelInstance().transform.cpy().translate(bulletTranslationAlt), new ModelInstance(bulletModel), player.getCurrentRotationAngle(), bulletSpeed, damage, accuracy);
+                //EntityManager.instance().spawnBulletCasing(player.getModelInstance().transform.cpy().translate(bulletCasingTranslationAlt), new ModelInstance(bulletCasingModel), bulletCasingExpulsionImpulse.cpy());
+            } else {
+                EntityManager.instance().spawnBullet(player.getModelInstance().transform.cpy().translate(bulletTranslation), new ModelInstance(bulletModel), player.getCurrentRotationAngle(), bulletSpeed, damage, accuracy);
+                //EntityManager.instance().spawnBulletCasing(player.getModelInstance().transform.cpy().translate(bulletCasingTranslation), new ModelInstance(bulletCasingModel), bulletCasingExpulsionImpulse.cpy());
+            }
+
+            altFire = !altFire;
         }
     }
 
@@ -102,6 +124,66 @@ public abstract class Gun {
     }
 
     public void renderUI(SpriteBatch spriteBatch, ShapeRenderer shapeRenderer) {
+        if ((flags & WeaponConstants.FLAG_DUAL) == WeaponConstants.FLAG_DUAL) {
+            renderUIDual(spriteBatch, shapeRenderer);
+        } else {
+            renderUISingle(spriteBatch, shapeRenderer);
+        }
+    }
+
+    public void renderUIDual(SpriteBatch spriteBatch, ShapeRenderer shapeRenderer) {
+        int halfAmmo = ammoInClip / 2;
+        int halfClip = clipSize / 2;
+        float startX = Dimensions.getHalfScreenWidth() - (ammoSilhouette.getWidth() * .375f * clipSize);
+        float widthX = ammoSilhouette.getWidth() * 1.5f;
+
+        spriteBatch.begin();
+        silhouette.draw(spriteBatch);
+        if (!reloading) {
+            AssetLoader.tinyFont.draw(spriteBatch, " x" + extraClips, startX + (clipSize * ammoSilhouette.getWidth() * .75f), Dimensions.getScreenHeight() / 8);
+
+            ammoSilhouette.setY(Dimensions.getScreenHeight() / 8.5f);
+            ammoSilhouette.setX(startX);
+            for (int i = 0; i < halfClip; i++) {
+
+                if (i < halfAmmo) {
+                    ammoSilhouette.draw(spriteBatch);
+                } else {
+                    ammoSilhouette.draw(spriteBatch, .2f);
+                }
+
+                ammoSilhouette.translateX(widthX);
+            }
+
+            ammoSilhouette.setY(Dimensions.getScreenHeight() / 10);
+            ammoSilhouette.setX(startX);
+            for (int i = 0; i < halfClip; i++) {
+
+                if (i < ammoInClip - halfAmmo) {
+                    ammoSilhouette.draw(spriteBatch);
+                } else {
+                    ammoSilhouette.draw(spriteBatch, .2f);
+                }
+
+                ammoSilhouette.translateX(widthX);
+            }
+        }
+        spriteBatch.end();
+
+        if (reloading) {
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.setColor(0, 0, 0, 1);
+            shapeRenderer.rect(startX, Dimensions.getScreenHeight() / 12, halfClip * widthX, Dimensions.getScreenHeight() / 100);
+            shapeRenderer.end();
+
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.setColor(0, 1, 0, 1);
+            shapeRenderer.rect(startX, Dimensions.getScreenHeight() / 12, halfClip * widthX * (timer / reloadTime), Dimensions.getScreenHeight() / 100);
+            shapeRenderer.end();
+        }
+    }
+
+    public void renderUISingle(SpriteBatch spriteBatch, ShapeRenderer shapeRenderer) {
         float startX = Dimensions.getHalfScreenWidth() - (ammoSilhouette.getWidth() * .75f * clipSize);
         float widthX = ammoSilhouette.getWidth() * 1.5f;
 
