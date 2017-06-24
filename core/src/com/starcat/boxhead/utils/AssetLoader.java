@@ -21,6 +21,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.starcat.boxhead.objects.Map;
+import com.starcat.boxhead.objects.weapons.Gun;
+import com.starcat.boxhead.objects.weapons.Pistol;
+import com.sun.javafx.sg.prism.NGShape;
 
 /**
  * Created by Vincent on 2/10/2015.
@@ -55,6 +58,7 @@ public final class AssetLoader implements Disposable {
     public static Model pistolDual;
     public static Model uzi;
     public static Model uziDual;
+    public static Model uziDualGold;
     public static Model shotgun;
     public static Model shotgunDual;
     public static Model shotgunShort;
@@ -91,6 +95,8 @@ public final class AssetLoader implements Disposable {
 
     public static Sound button_click;
     public static Sound pistolSound;
+
+    public static Gun[] guns;
 
 
 
@@ -182,8 +188,9 @@ public final class AssetLoader implements Disposable {
 
         manager.load("objects/weapons/pistol.g3dj", Model.class);
         manager.load("objects/weapons/pistol_dual.g3dj", Model.class);
-        manager.load("objects/weapons/uzi.g3dj", Model.class);
+        manager.load("objects/weapons/uzi.g3db", Model.class);
         manager.load("objects/weapons/uzi_dual.g3dj", Model.class);
+        manager.load("objects/weapons/uzi_dual_gold.g3dj", Model.class);
         manager.load("objects/weapons/shotgun.g3dj", Model.class);
         manager.load("objects/weapons/shotgun_dual.g3dj", Model.class);
         manager.load("objects/weapons/shotgun_short.g3dj", Model.class);
@@ -292,8 +299,9 @@ public final class AssetLoader implements Disposable {
 
         pistol = manager.get("objects/weapons/pistol.g3dj", Model.class);
         pistolDual = manager.get("objects/weapons/pistol_dual.g3dj", Model.class);
-        uzi = manager.get("objects/weapons/uzi.g3dj", Model.class);
+        uzi = manager.get("objects/weapons/uzi.g3db", Model.class);
         uziDual = manager.get("objects/weapons/uzi_dual.g3dj", Model.class);
+        uziDualGold = manager.get("objects/weapons/uzi_dual_gold.g3dj", Model.class);
         shotgun = manager.get("objects/weapons/shotgun.g3dj", Model.class);
         shotgunDual = manager.get("objects/weapons/shotgun_dual.g3dj", Model.class);
         shotgunShort = manager.get("objects/weapons/shotgun_short.g3dj", Model.class);

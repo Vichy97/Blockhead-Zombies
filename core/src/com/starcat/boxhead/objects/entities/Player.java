@@ -25,12 +25,14 @@ import com.starcat.boxhead.utils.AssetLoader;
 import com.starcat.boxhead.utils.Dimensions;
 import com.starcat.boxhead.utils.GameUtils;
 
+import java.util.ArrayList;
+
 /**
  * Created by Vincent on 8/12/2016.
  */
 public class Player extends Entity implements InputProcessor {
 
-    private Gun currentWeapon;
+    private int currentWeapon;
     private Vector3 speed;
     private float maxSpeed;
     private float currentRotationAngle = -45;
@@ -42,6 +44,7 @@ public class Player extends Entity implements InputProcessor {
     private Touchpad controller;
 
     private boolean grounded;
+    private ArrayList<Gun> guns = new ArrayList<Gun>();
 
 
 
@@ -49,12 +52,16 @@ public class Player extends Entity implements InputProcessor {
         super.init(position, new ModelInstance(AssetLoader.player), rigidBody);
         this.maxSpeed = maxSpeed;
 
-        modelInstance.materials.get(1).set(new TextureAttribute(TextureAttribute.Diffuse, skin));
+        modelInstance.materials.get(0).set(new TextureAttribute(TextureAttribute.Diffuse, skin));
 
         speed = new Vector3(maxSpeed, 0, maxSpeed);
         speed.rotate(rotationVector, -45);
 
-        currentWeapon = new Shotgun(this);
+        guns.add(new Pistol(this));
+        guns.add(new Shotgun(this));
+        guns.add(new Uzi(this));
+
+        currentWeapon = 0;
 
         walkAnimationController = new AnimationController(modelInstance);
         shootAnimationController = new AnimationController(modelInstance);
@@ -96,7 +103,7 @@ public class Player extends Entity implements InputProcessor {
     public void render(ModelBatch modelBatch, Environment environment) {
         super.render(modelBatch, environment);
         if (hitpoints > 0) {
-            currentWeapon.render(modelBatch, environment);
+            guns.get(currentWeapon).render(modelBatch, environment);
         }
     }
 
@@ -112,14 +119,26 @@ public class Player extends Entity implements InputProcessor {
             shapeRenderer.rect(Dimensions.getHalfScreenWidth() - Dimensions.scaleWidth(50), Dimensions.getHalfScreenHeight() + Dimensions.scaleHeight(100), Dimensions.scaleWidth((int)hitpoints), Dimensions.scaleHeight(10));
             shapeRenderer.end();
 
-            currentWeapon.renderUI(spriteBatch, shapeRenderer);
+            guns.get(currentWeapon).renderUI(spriteBatch, shapeRenderer);
         }
     }
 
 
 
     public void fire() {
-        currentWeapon.fire();
+        guns.get(currentWeapon).fire();
+    }
+
+    public void switchGunLeft() {
+        if (currentWeapon > 0) {
+            currentWeapon--;
+        }
+    }
+
+    public void switchGunRight() {
+        if (currentWeapon < (guns.size() - 1)) {
+            currentWeapon++;
+        }
     }
 
 
@@ -141,7 +160,7 @@ public class Player extends Entity implements InputProcessor {
     }
 
     public Gun getCurrentWeapon() {
-        return currentWeapon;
+        return guns.get(currentWeapon);
     }
 
     public AnimationController getWalkAnimationController() {
@@ -163,6 +182,7 @@ public class Player extends Entity implements InputProcessor {
     public void setGrounded(boolean grounded) {
         this.grounded = grounded;
     }
+
 
 
     @Override

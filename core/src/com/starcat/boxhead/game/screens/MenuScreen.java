@@ -130,7 +130,7 @@ public final class MenuScreen extends BaseScreen {
         playerModel.transform.scl(4.5f);
         playerModel.transform.setTranslation(-25, 20, -60);
 
-        playerModel.materials.get(1).set(new TextureAttribute(TextureAttribute.Diffuse, AssetLoader.playerSkins[currentSkin]));
+        playerModel.materials.get(0).set(new TextureAttribute(TextureAttribute.Diffuse, AssetLoader.playerSkins[currentSkin]));
 
         playerAnimationController = new AnimationController(playerModel);
         playerAnimationController.setAnimation("pose_empty");
@@ -711,7 +711,7 @@ public final class MenuScreen extends BaseScreen {
             if (currentSkin > 0) {
                 currentSkin --;
 
-                playerModel.materials.get(1).set(new TextureAttribute(TextureAttribute.Diffuse, AssetLoader.playerSkins[currentSkin]));
+                playerModel.materials.get(0).set(new TextureAttribute(TextureAttribute.Diffuse, AssetLoader.playerSkins[currentSkin]));
             }
 
             if (currentSkin == 0) {
@@ -731,7 +731,7 @@ public final class MenuScreen extends BaseScreen {
             if (currentSkin < AssetLoader.playerSkins.length) {
                 currentSkin++;
 
-                playerModel.materials.get(1).set(new TextureAttribute(TextureAttribute.Diffuse, AssetLoader.playerSkins[currentSkin]));
+                playerModel.materials.get(0).set(new TextureAttribute(TextureAttribute.Diffuse, AssetLoader.playerSkins[currentSkin]));
             }
 
             if (currentSkin == AssetLoader.playerSkins.length - 1) {

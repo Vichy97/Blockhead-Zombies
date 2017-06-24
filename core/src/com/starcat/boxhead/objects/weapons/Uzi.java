@@ -28,6 +28,9 @@ public final class Uzi extends Gun {
         extraClips = 3;
         autofire = true;
 
+        //flags |= WeaponConstants.FLAG_DUAL;
+        //flags |= WeaponConstants.FLAG_ALT_SKIN;
+
         if ((flags & WeaponConstants.FLAG_DUAL) == WeaponConstants.FLAG_DUAL) {
             if ((flags & WeaponConstants.FLAG_SILENCED) == WeaponConstants.FLAG_SILENCED) {
                 //TODO: more models
@@ -45,7 +48,19 @@ public final class Uzi extends Gun {
                     }
                 }
             } else {
-                modelInstance = new ModelInstance(AssetLoader.uziDual);
+                if ((flags & WeaponConstants.FLAG_SHORT) == WeaponConstants.FLAG_SHORT) {
+                    if ((flags & WeaponConstants.FLAG_ALT_SKIN) == WeaponConstants.FLAG_ALT_SKIN) {
+
+                    } else {
+
+                    }
+                } else {
+                    if ((flags & WeaponConstants.FLAG_ALT_SKIN) == WeaponConstants.FLAG_ALT_SKIN) {
+                        modelInstance = new ModelInstance(AssetLoader.uziDualGold);
+                    } else {
+                        modelInstance = new ModelInstance(AssetLoader.uziDual);
+                    }
+                }
             }
 
             fireAnimation = "fire_right";
@@ -84,7 +99,19 @@ public final class Uzi extends Gun {
                     }
                 }
             } else {
-                modelInstance = new ModelInstance(AssetLoader.uzi);
+                if ((flags & WeaponConstants.FLAG_SHORT) == WeaponConstants.FLAG_SHORT) {
+                    if ((flags & WeaponConstants.FLAG_ALT_SKIN) == WeaponConstants.FLAG_ALT_SKIN) {
+
+                    } else {
+
+                    }
+                } else {
+                    if ((flags & WeaponConstants.FLAG_ALT_SKIN) == WeaponConstants.FLAG_ALT_SKIN) {
+
+                    } else {
+                        modelInstance = new ModelInstance(AssetLoader.uzi);
+                    }
+                }
             }
 
             fireAnimation = "fire";

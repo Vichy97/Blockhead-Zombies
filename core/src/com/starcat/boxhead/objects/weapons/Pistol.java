@@ -26,6 +26,7 @@ public final class Pistol extends Gun {
         extraClips = 3;
         autofire = true;
 
+
         if ((flags & WeaponConstants.FLAG_DUAL) == WeaponConstants.FLAG_DUAL) {
             if ((flags & WeaponConstants.FLAG_SILENCED) == WeaponConstants.FLAG_SILENCED) {
                 //TODO:
@@ -35,10 +36,10 @@ public final class Pistol extends Gun {
 
             fireAnimation = "fire_right";
             fireAnimationAlt = "fire_left";
-            walkAnimation = "walk_dual_wield";
-            poseAnimation = "pose_dual_wield";
+            walkAnimation = "walk_single_wield";
+            poseAnimation = "walk_single_wield";
             playerFireAnimation = "shoot_dual_wield_right";
-            playerFireAnimationAlt = "shoot_dual_wield_left";
+            playerFireAnimationAlt = "shoot_dual_wield_right";
 
             silhouette = new Sprite(AssetLoader.textures.findRegion("pistol_dual"));
 

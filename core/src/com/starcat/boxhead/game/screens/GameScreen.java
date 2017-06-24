@@ -536,6 +536,7 @@ public final class GameScreen extends BaseScreen {
         public void clicked(InputEvent event, float x, float y) {
             if (sound) {
                 AssetLoader.button_click.play();
+                entityManager.getPlayer().switchGunRight();
             }
         }
     };
@@ -545,6 +546,7 @@ public final class GameScreen extends BaseScreen {
         public void clicked(InputEvent event, float x, float y) {
             if (sound) {
                 AssetLoader.button_click.play();
+                entityManager.getPlayer().switchGunLeft();
             }
         }
     };

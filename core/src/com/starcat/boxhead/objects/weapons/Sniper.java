@@ -20,6 +20,7 @@ public final class Sniper extends Gun {
         } else {
             modelInstance = new ModelInstance(AssetLoader.sniper);
         }
+
         bulletModel = AssetLoader.bulletSniper;
         bulletCasingModel = AssetLoader.casingSniper;
         fireSound = AssetLoader.pistolSound;
