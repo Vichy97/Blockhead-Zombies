@@ -60,13 +60,14 @@ public class Player extends Entity implements InputProcessor {
         guns.add(new Pistol(this));
         guns.add(new Shotgun(this));
         guns.add(new Uzi(this));
+        guns.add(new Sniper(this));
 
         currentWeapon = 0;
 
         walkAnimationController = new AnimationController(modelInstance);
         shootAnimationController = new AnimationController(modelInstance);
         shootAnimationController.allowSameAnimation = true;
-        walkAnimationController.setAnimation("pose_dual_wield");
+        walkAnimationController.setAnimation("Armature|pose_dual_wield");
 
         stateMachine = new DefaultStateMachine<Player, PlayerState>(this, PlayerState.ALIVE);
 

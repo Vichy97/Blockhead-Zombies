@@ -133,7 +133,7 @@ public final class MenuScreen extends BaseScreen {
         playerModel.materials.get(0).set(new TextureAttribute(TextureAttribute.Diffuse, AssetLoader.playerSkins[currentSkin]));
 
         playerAnimationController = new AnimationController(playerModel);
-        playerAnimationController.setAnimation("pose_empty");
+        playerAnimationController.setAnimation("Armature|pose_empty");
         playerAnimationController.update(Gdx.graphics.getDeltaTime());
     }
 

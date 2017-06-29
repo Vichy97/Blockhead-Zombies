@@ -60,7 +60,7 @@ public enum PlayerState implements State<Player> {
 
         @Override
         public void enter(Player player) {
-            player.getWalkAnimationController().setAnimation("die").speed = .4f;
+            player.getWalkAnimationController().setAnimation("Armature|die").speed = .4f;
         }
 
         @Override

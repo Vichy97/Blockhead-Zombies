@@ -26,20 +26,23 @@ public final class Pistol extends Gun {
         extraClips = 3;
         autofire = true;
 
+        //flags |= WeaponConstants.FLAG_DUAL;
+        //flags |= WeaponConstants.FLAG_SILENCED;
+
 
         if ((flags & WeaponConstants.FLAG_DUAL) == WeaponConstants.FLAG_DUAL) {
             if ((flags & WeaponConstants.FLAG_SILENCED) == WeaponConstants.FLAG_SILENCED) {
-                //TODO:
+                modelInstance = new ModelInstance(AssetLoader.pistolSilencedDual);
             } else {
                 modelInstance = new ModelInstance(AssetLoader.pistolDual);
             }
 
             fireAnimation = "fire_right";
             fireAnimationAlt = "fire_left";
-            walkAnimation = "walk_single_wield";
-            poseAnimation = "walk_single_wield";
+            walkAnimation = "walk_dual_wield";
+            poseAnimation = "pose_dual_wield";
             playerFireAnimation = "shoot_dual_wield_right";
-            playerFireAnimationAlt = "shoot_dual_wield_right";
+            playerFireAnimationAlt = "shoot_dual_wield_left";
 
             silhouette = new Sprite(AssetLoader.textures.findRegion("pistol_dual"));
 
@@ -55,7 +58,7 @@ public final class Pistol extends Gun {
             bulletCasingExpulsionImpulse = new Vector3(WeaponConstants.PISTOL_CASING_EXPULSION_IMPULSE);
         } else {
             if ((flags & WeaponConstants.FLAG_SILENCED) == WeaponConstants.FLAG_SILENCED) {
-                //TODO:
+                modelInstance = new ModelInstance(AssetLoader.pistolSilenced);
             } else {
                 modelInstance = new ModelInstance(AssetLoader.pistol);
             }

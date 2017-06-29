@@ -22,16 +22,14 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.starcat.boxhead.objects.Map;
 import com.starcat.boxhead.objects.weapons.Gun;
-import com.starcat.boxhead.objects.weapons.Pistol;
-import com.sun.javafx.sg.prism.NGShape;
 
 /**
  * Created by Vincent on 2/10/2015.
  *
- * This class handles all asset loading it makes use of AssetManager
+ * This class handles all asset loading. It makes use of AssetManager
  * to load assets asynchronously so you can display other things such
- * as a splash screen or loading bar. (there wont be a huge lag spike when loading)
- * most textures are also stored in texture atlas's for more efficient loading/rendering
+ * as a splash screen or loading bar (there wont be a huge lag spike when loading)
+ * Most textures are also stored in a texture atlas for more efficient loading/rendering
  */
 public final class AssetLoader implements Disposable {
 
@@ -56,9 +54,24 @@ public final class AssetLoader implements Disposable {
 
     public static Model pistol;
     public static Model pistolDual;
+    public static Model pistolSilenced;
+    public static Model pistolSilencedDual;
     public static Model uzi;
     public static Model uziDual;
-    public static Model uziDualGold;
+    public static Model uziGold;
+    public static Model uziGoldDual;
+    public static Model uziSilenced;
+    public static Model uziSilencedDual;
+    public static Model uziSilencedGold;
+    public static Model uziSilencedGoldDual;
+    public static Model uziShort;
+    public static Model uziShortDual;
+    public static Model uziShortGold;
+    public static Model uziShortGoldDual;
+    public static Model uziShortSilenced;
+    public static Model uziShortSilencedDual;
+    public static Model uziShortSilencedGold;
+    public static Model uziShortSilencedGoldDual;
     public static Model shotgun;
     public static Model shotgunDual;
     public static Model shotgunShort;
@@ -111,6 +124,7 @@ public final class AssetLoader implements Disposable {
         manager.load("libgdx_logo.png",Texture.class);
         manager.load("starcat_logo.png",Texture.class);
         manager.finishLoading();
+
         libgdxLogo = manager.get("libgdx_logo.png", Texture.class);
         starcatLogo = manager.get("starcat_logo.png", Texture.class);
     }
@@ -119,11 +133,105 @@ public final class AssetLoader implements Disposable {
     public void load() {
         GameUtils.debug(this, "load");
 
+        /*
+         * Set texture filtering
+         */
         TextureLoader.TextureParameter textureParam = new TextureLoader.TextureParameter();
         textureParam.minFilter = Texture.TextureFilter.Linear;
         textureParam.magFilter = Texture.TextureFilter.Linear;
         textureParam.format = Pixmap.Format.RGBA8888;
 
+        /*
+         * Localization
+         */
+        manager.load("locales/Boxhead", I18NBundle.class);
+
+        /*
+         * UI
+         */
+        manager.load("ui/ui.atlas", TextureAtlas.class);
+        manager.load("textures.atlas", TextureAtlas.class);
+
+        /*
+         * Maps
+         */
+        manager.load("maps/map_1/map_1_base.g3dj", Model.class);
+        manager.load("maps/map_1/map_1_objects.g3dj", Model.class);
+        manager.load("maps/map_1/map_1_doodads.g3dj", Model.class);
+        manager.load("maps/map_2/map_2_base.g3dj", Model.class);
+        manager.load("maps/map_2/map_2_objects.g3dj", Model.class);
+
+        /*
+         * Models
+         */
+        manager.load("objects/weapons/pistol.g3db", Model.class);
+        manager.load("objects/weapons/pistol_dual.g3db", Model.class);
+        manager.load("objects/weapons/pistol_silenced.g3db", Model.class);
+        manager.load("objects/weapons/pistol_silenced_dual.g3db", Model.class);
+        manager.load("objects/weapons/uzi.g3db", Model.class);
+        manager.load("objects/weapons/uzi_dual.g3db", Model.class);
+        manager.load("objects/weapons/uzi_gold.g3db", Model.class);
+        manager.load("objects/weapons/uzi_gold_dual.g3db", Model.class);
+        manager.load("objects/weapons/uzi_silenced.g3db", Model.class);
+        manager.load("objects/weapons/uzi_silenced_dual.g3db", Model.class);
+        manager.load("objects/weapons/uzi_silenced_gold.g3db", Model.class);
+        manager.load("objects/weapons/uzi_silenced_gold_dual.g3db", Model.class);
+        manager.load("objects/weapons/uzi_short.g3db", Model.class);
+        manager.load("objects/weapons/uzi_short_dual.g3db", Model.class);
+        manager.load("objects/weapons/uzi_short_gold.g3db", Model.class);
+        manager.load("objects/weapons/uzi_short_gold_dual.g3db", Model.class);
+        manager.load("objects/weapons/uzi_short_silenced.g3db", Model.class);
+        manager.load("objects/weapons/uzi_short_silenced_dual.g3db", Model.class);
+        manager.load("objects/weapons/uzi_short_silenced_gold.g3db", Model.class);
+        manager.load("objects/weapons/uzi_short_silenced_gold_dual.g3db", Model.class);
+        manager.load("objects/weapons/shotgun.g3db", Model.class);
+        manager.load("objects/weapons/shotgun_dual.g3db", Model.class);
+        manager.load("objects/weapons/shotgun_short.g3db", Model.class);
+        manager.load("objects/weapons/shotgun_short_dual.g3db", Model.class);
+        manager.load("objects/weapons/sniper.g3db", Model.class);
+        manager.load("objects/weapons/sniper_camo.g3db", Model.class);
+
+        manager.load("objects/projectiles/bullet_pistol.g3db", Model.class);
+        manager.load("objects/projectiles/bullet_sniper.g3db", Model.class);
+        manager.load("objects/projectiles/bullet_uzi.g3db", Model.class);
+        manager.load("objects/projectiles/bullet_assault_rifle.g3db", Model.class);
+
+        manager.load("objects/projectiles/casing_pistol.g3db", Model.class);
+        manager.load("objects/projectiles/casing_sniper.g3db", Model.class);
+        manager.load("objects/projectiles/casing_shotgun.g3db", Model.class);
+        manager.load("objects/projectiles/casing_uzi.g3db", Model.class);
+        manager.load("objects/projectiles/casing_assault_rifle.g3db", Model.class);
+
+        /*
+         * Entities
+         */
+        manager.load("objects/entities/player.g3db", Model.class);
+        manager.load("objects/entities/zombie.g3dj", Model.class);
+
+        /*
+         * Entity Skins
+         */
+        manager.load("objects/entities/skin_adventurer.png", Texture.class);
+        manager.load("objects/entities/man.png", Texture.class);
+        manager.load("objects/entities/man_alt.png", Texture.class);
+        manager.load("objects/entities/woman.png", Texture.class);
+        manager.load("objects/entities/woman_alt.png", Texture.class);
+        manager.load("objects/entities/cowboy.png", Texture.class);
+        manager.load("objects/entities/soldier.png", Texture.class);
+        manager.load("objects/entities/dummy.png", Texture.class);
+        manager.load("objects/entities/scientist.png", Texture.class);
+        manager.load("objects/entities/police.png", Texture.class);
+        manager.load("objects/entities/zombie.png", Texture.class);
+
+        /*
+         * Audio
+         */
+        manager.load("audio/ui/button_click.ogg", Sound.class);
+        manager.load("audio/guns/pistol.ogg", Sound.class);
+
+        /*
+         * Create font parameters
+         */
         FreetypeFontLoader.FreeTypeFontLoaderParameter tinyFont = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         tinyFont.fontFileName = "fonts/droid_sans.ttf";
         tinyFont.fontParameters.color = Color.BLACK;
@@ -170,60 +278,9 @@ public final class AssetLoader implements Disposable {
         menuLabelFont.fontParameters.borderStraight = false;
         menuLabelFont.fontParameters.borderWidth = 5.5f;
 
-        manager.load("locales/Boxhead", I18NBundle.class);
-
-        manager.load("ui/ui.atlas", TextureAtlas.class);
-        manager.load("textures.atlas", TextureAtlas.class);
-
-        manager.load("maps/map_1/map_1_base.g3dj", Model.class);
-        manager.load("maps/map_1/map_1_objects.g3dj", Model.class);
-        manager.load("maps/map_1/map_1_doodads.g3dj", Model.class);
-
-
-        manager.load("maps/map_2/map_2_base.g3dj", Model.class);
-        manager.load("maps/map_2/map_2_objects.g3dj", Model.class);
-
-        manager.load("objects/entities/player.g3dj", Model.class);
-        manager.load("objects/entities/zombie.g3dj", Model.class);
-
-        manager.load("objects/weapons/pistol.g3dj", Model.class);
-        manager.load("objects/weapons/pistol_dual.g3dj", Model.class);
-        manager.load("objects/weapons/uzi.g3db", Model.class);
-        manager.load("objects/weapons/uzi_dual.g3dj", Model.class);
-        manager.load("objects/weapons/uzi_dual_gold.g3dj", Model.class);
-        manager.load("objects/weapons/shotgun.g3dj", Model.class);
-        manager.load("objects/weapons/shotgun_dual.g3dj", Model.class);
-        manager.load("objects/weapons/shotgun_short.g3dj", Model.class);
-        manager.load("objects/weapons/shotgun_short_dual.g3dj", Model.class);
-        manager.load("objects/weapons/sniper.g3dj", Model.class);
-        manager.load("objects/weapons/sniper_camo.g3dj", Model.class);
-
-        manager.load("objects/projectiles/bullet_pistol.g3dj", Model.class);
-        manager.load("objects/projectiles/bullet_sniper.g3dj", Model.class);
-        manager.load("objects/projectiles/bullet_uzi.g3dj", Model.class);
-        manager.load("objects/projectiles/bullet_assault_rifle.g3dj", Model.class);
-
-        manager.load("objects/projectiles/casing_pistol.g3dj", Model.class);
-        manager.load("objects/projectiles/casing_sniper.g3dj", Model.class);
-        manager.load("objects/projectiles/casing_shotgun.g3dj", Model.class);
-        manager.load("objects/projectiles/casing_uzi.g3dj", Model.class);
-        manager.load("objects/projectiles/casing_assault_rifle.g3dj", Model.class);
-
-        manager.load("objects/entities/adventurer.png", Texture.class);
-        manager.load("objects/entities/man.png", Texture.class);
-        manager.load("objects/entities/man_alt.png", Texture.class);
-        manager.load("objects/entities/woman.png", Texture.class);
-        manager.load("objects/entities/woman_alt.png", Texture.class);
-        manager.load("objects/entities/cowboy.png", Texture.class);
-        manager.load("objects/entities/soldier.png", Texture.class);
-        manager.load("objects/entities/dummy.png", Texture.class);
-        manager.load("objects/entities/scientist.png", Texture.class);
-        manager.load("objects/entities/police.png", Texture.class);
-        manager.load("objects/entities/zombie.png", Texture.class);
-
-        manager.load("audio/ui/button_click.ogg", Sound.class);
-        manager.load("audio/guns/pistol.ogg", Sound.class);
-
+        /*
+         * Load fonts
+         */
         manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(new InternalFileHandleResolver()));
         manager.setLoader(BitmapFont.class, new FreetypeFontLoader(new InternalFileHandleResolver()));
 
@@ -244,8 +301,14 @@ public final class AssetLoader implements Disposable {
     public void initAssets() {
         GameUtils.debug(this, "initAssets");
 
+        /*
+         * Localization
+         */
         i18NBundle = manager.get("locales/Boxhead");
 
+        /*
+         * Fonts
+         */
         largeFont = manager.get("large_font", BitmapFont.class);
         smallFont = manager.get("small_font", BitmapFont.class);
         menuFont = manager.get("menu_font", BitmapFont.class);
@@ -253,6 +316,9 @@ public final class AssetLoader implements Disposable {
         verySmallFont = manager.get("very_small_font", BitmapFont.class);
         tinyFont = manager.get("tiny_font", BitmapFont.class);
 
+        /*
+         * UI
+         */
         ui = manager.get("ui/ui.atlas", TextureAtlas.class);
         uiSkin = new Skin(Gdx.files.internal("ui/ui.json"));
         uiSkin.addRegions(ui);
@@ -267,12 +333,17 @@ public final class AssetLoader implements Disposable {
         uiSkin.get("menu", Label.LabelStyle.class).font = menuFont;
         uiSkin.get("very_small", Label.LabelStyle.class).font = verySmallFont;
 
+        /*
+         * Textures
+         */
         textures = manager.get("textures.atlas", TextureAtlas.class);
 
+        /*
+         * Maps
+         */
         mapBase = manager.get("maps/map_1/map_1_base.g3dj", Model.class);
         mapObjects = manager.get("maps/map_1/map_1_objects.g3dj", Model.class);
         mapDoodads = manager.get("maps/map_1/map_1_doodads.g3dj", Model.class);
-
         map2Base = manager.get("maps/map_2/map_2_base.g3dj", Model.class);
         map2Objects = manager.get("maps/map_2/map_2_objects.g3dj", Model.class);
 
@@ -281,48 +352,76 @@ public final class AssetLoader implements Disposable {
         maps[1] = map2 = new Map(map2Base, map2Objects, null, 70);
         maps[1].setTranslation(-60, 0, 60);
 
-        player = manager.get("objects/entities/player.g3dj", Model.class);
+        /*
+         * Entities
+         */
+        player = manager.get("objects/entities/player.g3db", Model.class);
         zombie = manager.get("objects/entities/zombie.g3dj", Model.class);
 
+        /*
+         * Entity Skins
+         */
         playerSkins = new Texture[9];
         playerSkins[0] = skinMan = manager.get("objects/entities/man.png", Texture.class);
         playerSkins[1] = skinWoman = manager.get("objects/entities/woman.png", Texture.class);
         playerSkins[2] = skinManAlt = manager.get("objects/entities/man_alt.png", Texture.class);
         playerSkins[3] = skinWomanAlt = manager.get("objects/entities/woman_alt.png", Texture.class);
-        playerSkins[4] = skinAdventurer = manager.get("objects/entities/adventurer.png", Texture.class);
+        playerSkins[4] = skinAdventurer = manager.get("objects/entities/skin_adventurer.png", Texture.class);
         playerSkins[5] = skinCowboy = manager.get("objects/entities/cowboy.png", Texture.class);
         playerSkins[6] = skinPolice = manager.get("objects/entities/police.png", Texture.class);
         playerSkins[7] = skinSoldier = manager.get("objects/entities/soldier.png", Texture.class);
         playerSkins[8] = skinScientist = manager.get("objects/entities/scientist.png", Texture.class);
 
-
-
-        pistol = manager.get("objects/weapons/pistol.g3dj", Model.class);
-        pistolDual = manager.get("objects/weapons/pistol_dual.g3dj", Model.class);
+        /*
+         * Models
+         */
+        pistol = manager.get("objects/weapons/pistol.g3db", Model.class);
+        pistolDual = manager.get("objects/weapons/pistol_dual.g3db", Model.class);
+        pistolSilenced = manager.get("objects/weapons/pistol_silenced.g3db", Model.class);
+        pistolSilencedDual = manager.get("objects/weapons/pistol_silenced_dual.g3db", Model.class);
         uzi = manager.get("objects/weapons/uzi.g3db", Model.class);
-        uziDual = manager.get("objects/weapons/uzi_dual.g3dj", Model.class);
-        uziDualGold = manager.get("objects/weapons/uzi_dual_gold.g3dj", Model.class);
-        shotgun = manager.get("objects/weapons/shotgun.g3dj", Model.class);
-        shotgunDual = manager.get("objects/weapons/shotgun_dual.g3dj", Model.class);
-        shotgunShort = manager.get("objects/weapons/shotgun_short.g3dj", Model.class);
-        shotgunShortDual = manager.get("objects/weapons/shotgun_short_dual.g3dj", Model.class);
-        sniper = manager.get("objects/weapons/sniper.g3dj", Model.class);
-        sniperCamo = manager.get("objects/weapons/sniper_camo.g3dj", Model.class);
+        uziDual = manager.get("objects/weapons/uzi_dual.g3db", Model.class);
+        uziGold = manager.get("objects/weapons/uzi_gold.g3db", Model.class);
+        uziGoldDual = manager.get("objects/weapons/uzi_gold_dual.g3db", Model.class);
+        uziSilenced = manager.get("objects/weapons/uzi_silenced.g3db", Model.class);
+        uziSilencedDual = manager.get("objects/weapons/uzi_silenced_dual.g3db", Model.class);
+        uziSilencedGold = manager.get("objects/weapons/uzi_silenced_gold.g3db", Model.class);
+        uziSilencedGoldDual = manager.get("objects/weapons/uzi_silenced_gold_dual.g3db", Model.class);
+        uziShort = manager.get("objects/weapons/uzi_short.g3db", Model.class);
+        uziShortDual = manager.get("objects/weapons/uzi_short_dual.g3db", Model.class);
+        uziShortGold = manager.get("objects/weapons/uzi_short_gold.g3db", Model.class);
+        uziShortGoldDual = manager.get("objects/weapons/uzi_short_gold_dual.g3db", Model.class);
+        uziShortSilenced = manager.get("objects/weapons/uzi_short_silenced.g3db", Model.class);
+        uziShortSilencedDual = manager.get("objects/weapons/uzi_short_silenced_dual.g3db", Model.class);
+        uziShortSilencedGold = manager.get("objects/weapons/uzi_short_silenced_gold.g3db", Model.class);
+        uziShortSilencedGoldDual = manager.get("objects/weapons/uzi_short_silenced_gold_dual.g3db", Model.class);
+        shotgun = manager.get("objects/weapons/shotgun.g3db", Model.class);
+        shotgunDual = manager.get("objects/weapons/shotgun_dual.g3db", Model.class);
+        shotgunShort = manager.get("objects/weapons/shotgun_short.g3db", Model.class);
+        shotgunShortDual = manager.get("objects/weapons/shotgun_short_dual.g3db", Model.class);
+        sniper = manager.get("objects/weapons/sniper.g3db", Model.class);
+        sniperCamo = manager.get("objects/weapons/sniper_camo.g3db", Model.class);
 
-        bulletPistol = manager.get("objects/projectiles/bullet_pistol.g3dj", Model.class);
-        bulletSniper = manager.get("objects/projectiles/bullet_sniper.g3dj", Model.class);
-        bulletUzi = manager.get("objects/projectiles/bullet_uzi.g3dj", Model.class);
-        bulletAssaultRifle = manager.get("objects/projectiles/bullet_assault_rifle.g3dj", Model.class);
+        bulletPistol = manager.get("objects/projectiles/bullet_pistol.g3db", Model.class);
+        bulletSniper = manager.get("objects/projectiles/bullet_sniper.g3db", Model.class);
+        bulletUzi = manager.get("objects/projectiles/bullet_uzi.g3db", Model.class);
+        bulletAssaultRifle = manager.get("objects/projectiles/bullet_assault_rifle.g3db", Model.class);
 
-        casingPistol = manager.get("objects/projectiles/casing_pistol.g3dj", Model.class);
-        casingSniper = manager.get("objects/projectiles/casing_sniper.g3dj", Model.class);
-        casingShotgun = manager.get("objects/projectiles/casing_shotgun.g3dj", Model.class);
-        casingUzi = manager.get("objects/projectiles/casing_uzi.g3dj", Model.class);
-        casingAssaultRifle = manager.get("objects/projectiles/casing_assault_rifle.g3dj", Model.class);
+        casingPistol = manager.get("objects/projectiles/casing_pistol.g3db", Model.class);
+        casingSniper = manager.get("objects/projectiles/casing_sniper.g3db", Model.class);
+        casingShotgun = manager.get("objects/projectiles/casing_shotgun.g3db", Model.class);
+        casingUzi = manager.get("objects/projectiles/casing_uzi.g3db", Model.class);
+        casingAssaultRifle = manager.get("objects/projectiles/casing_assault_rifle.g3db", Model.class);
 
+        /*
+         * Audio
+         */
         button_click = manager.get("audio/ui/button_click.ogg", Sound.class);
         pistolSound = manager.get("audio/guns/pistol.ogg", Sound.class);
 
+        /*
+         * UI Scaling
+         */
         uiSkin.getDrawable("touchpad_knob").setMinHeight(Dimensions.getScreenHeight() / 6);
         uiSkin.getDrawable("touchpad_knob").setMinWidth(Dimensions.getScreenHeight() / 6);
         uiSkin.getDrawable("touchpad_base").setMinHeight(Dimensions.getScreenWidth() / 6.5f);

@@ -97,14 +97,14 @@ public abstract class Gun {
                 timer = rateOfFire;
             }
 
-            player.getShootAnimationController().setAnimation(playerFireAnimationAlt);
+            player.getShootAnimationController().setAnimation("Armature|" + playerFireAnimationAlt);
 
             if (altFire) {
-                animationController.setAnimation(fireAnimationAlt);
-                player.getShootAnimationController().setAnimation(playerFireAnimationAlt);
+                animationController.setAnimation("Armature|" + fireAnimationAlt);
+                player.getShootAnimationController().setAnimation("Armature|" + playerFireAnimationAlt);
             } else {
-                animationController.setAnimation(fireAnimation);
-                player.getShootAnimationController().setAnimation(playerFireAnimation);
+                animationController.setAnimation("Armature|" + fireAnimation);
+                player.getShootAnimationController().setAnimation("Armature|" + playerFireAnimation);
             }
 
             if (altFire) {
@@ -222,9 +222,9 @@ public abstract class Gun {
         setTransform(player.getRigidBody().getWorldTransform());
 
         if (!player.isMoving()) {
-            player.getWalkAnimationController().setAnimation(poseAnimation);
+            player.getWalkAnimationController().setAnimation("Armature|" + poseAnimation);
         } else {
-            player.getWalkAnimationController().setAnimation(walkAnimation, -1).speed = .5f;
+            player.getWalkAnimationController().setAnimation("Armature|" + walkAnimation, -1).speed = .5f;
         }
         animationController.update(delta);
 

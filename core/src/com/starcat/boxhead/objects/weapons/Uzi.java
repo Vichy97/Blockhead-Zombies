@@ -28,35 +28,36 @@ public final class Uzi extends Gun {
         extraClips = 3;
         autofire = true;
 
-        //flags |= WeaponConstants.FLAG_DUAL;
+        flags |= WeaponConstants.FLAG_DUAL;
+        //flags |= WeaponConstants.FLAG_SILENCED;
         //flags |= WeaponConstants.FLAG_ALT_SKIN;
+        //flags |= WeaponConstants.FLAG_SHORT;
 
         if ((flags & WeaponConstants.FLAG_DUAL) == WeaponConstants.FLAG_DUAL) {
             if ((flags & WeaponConstants.FLAG_SILENCED) == WeaponConstants.FLAG_SILENCED) {
-                //TODO: more models
                 if ((flags & WeaponConstants.FLAG_SHORT) == WeaponConstants.FLAG_SHORT) {
                     if ((flags & WeaponConstants.FLAG_ALT_SKIN) == WeaponConstants.FLAG_ALT_SKIN) {
-
+                        modelInstance = new ModelInstance(AssetLoader.uziShortSilencedGoldDual);
                     } else {
-
+                        modelInstance = new ModelInstance(AssetLoader.uziShortSilencedDual);
                     }
                 } else {
                     if ((flags & WeaponConstants.FLAG_ALT_SKIN) == WeaponConstants.FLAG_ALT_SKIN) {
-
+                        modelInstance = new ModelInstance(AssetLoader.uziSilencedGoldDual);
                     } else {
-
+                        modelInstance = new ModelInstance(AssetLoader.uziSilencedDual);
                     }
                 }
             } else {
                 if ((flags & WeaponConstants.FLAG_SHORT) == WeaponConstants.FLAG_SHORT) {
                     if ((flags & WeaponConstants.FLAG_ALT_SKIN) == WeaponConstants.FLAG_ALT_SKIN) {
-
+                        modelInstance = new ModelInstance(AssetLoader.uziShortGoldDual);
                     } else {
-
+                        modelInstance = new ModelInstance(AssetLoader.uziShortDual);
                     }
                 } else {
                     if ((flags & WeaponConstants.FLAG_ALT_SKIN) == WeaponConstants.FLAG_ALT_SKIN) {
-                        modelInstance = new ModelInstance(AssetLoader.uziDualGold);
+                        modelInstance = new ModelInstance(AssetLoader.uziGoldDual);
                     } else {
                         modelInstance = new ModelInstance(AssetLoader.uziDual);
                     }
@@ -67,8 +68,8 @@ public final class Uzi extends Gun {
             fireAnimationAlt = "fire_left";
             walkAnimation = "walk_dual_wield";
             poseAnimation = "pose_dual_wield";
-            playerFireAnimation = "shoot_dual_wield_right";
-            playerFireAnimationAlt = "shoot_dual_wield_left";
+            playerFireAnimation = "shoot_dual_wield_right_small";
+            playerFireAnimationAlt = "shoot_dual_wield_left_small";
 
             silhouette = new Sprite(AssetLoader.textures.findRegion("uzi_dual"));
 
@@ -84,30 +85,29 @@ public final class Uzi extends Gun {
             bulletCasingExpulsionImpulse = new Vector3(WeaponConstants.UZI_CASING_EXPULSION_IMPULSE);
         } else {
             if ((flags & WeaponConstants.FLAG_SILENCED) == WeaponConstants.FLAG_SILENCED) {
-                //TODO: more models
                 if ((flags & WeaponConstants.FLAG_SHORT) == WeaponConstants.FLAG_SHORT) {
                     if ((flags & WeaponConstants.FLAG_ALT_SKIN) == WeaponConstants.FLAG_ALT_SKIN) {
-
+                        modelInstance = new ModelInstance(AssetLoader.uziShortSilencedGold);
                     } else {
-
+                        modelInstance = new ModelInstance(AssetLoader.uziShortSilenced);
                     }
                 } else {
                     if ((flags & WeaponConstants.FLAG_ALT_SKIN) == WeaponConstants.FLAG_ALT_SKIN) {
-
+                        modelInstance = new ModelInstance(AssetLoader.uziSilencedGold);
                     } else {
-
+                        modelInstance = new ModelInstance(AssetLoader.uziSilenced);
                     }
                 }
             } else {
                 if ((flags & WeaponConstants.FLAG_SHORT) == WeaponConstants.FLAG_SHORT) {
                     if ((flags & WeaponConstants.FLAG_ALT_SKIN) == WeaponConstants.FLAG_ALT_SKIN) {
-
+                        modelInstance = new ModelInstance(AssetLoader.uziShortGold);
                     } else {
-
+                        modelInstance = new ModelInstance(AssetLoader.uziShort);
                     }
                 } else {
                     if ((flags & WeaponConstants.FLAG_ALT_SKIN) == WeaponConstants.FLAG_ALT_SKIN) {
-
+                        modelInstance = new ModelInstance(AssetLoader.uziGold);
                     } else {
                         modelInstance = new ModelInstance(AssetLoader.uzi);
                     }
@@ -118,8 +118,8 @@ public final class Uzi extends Gun {
             fireAnimationAlt = "fire";
             walkAnimation = "walk_single_wield";
             poseAnimation = "pose_single_wield";
-            playerFireAnimation = "shoot_single_wield";
-            playerFireAnimationAlt = "shoot_single_wield";
+            playerFireAnimation = "shoot_single_wield_small";
+            playerFireAnimationAlt = "shoot_single_wield_small";
 
             silhouette = new Sprite(AssetLoader.textures.findRegion("uzi"));
 

@@ -129,6 +129,8 @@ public final class GameScreen extends BaseScreen {
 
     @Override
     public void render(float delta) {
+        super.render(delta);
+
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         game.getGameViewport().apply();
@@ -166,8 +168,6 @@ public final class GameScreen extends BaseScreen {
         if (entityManager.getPlayer().isGrounded()) {
             renderUI();
         }
-
-        super.render(delta);
 
         //sleep(30);
     }

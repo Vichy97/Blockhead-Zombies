@@ -27,6 +27,9 @@ public final class Shotgun extends Gun {
         extraClips = 3;
         autofire = false;
 
+        //flags |= WeaponConstants.FLAG_SHORT;
+        //flags |= WeaponConstants.FLAG_DUAL;
+
         if ((flags & WeaponConstants.FLAG_DUAL) == WeaponConstants.FLAG_DUAL) {
             if ((flags & WeaponConstants.FLAG_SHORT) == WeaponConstants.FLAG_SHORT) {
                 modelInstance = new ModelInstance(AssetLoader.shotgunShortDual);
