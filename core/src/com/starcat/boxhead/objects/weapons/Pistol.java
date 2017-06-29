@@ -26,10 +26,6 @@ public final class Pistol extends Gun {
         extraClips = 3;
         autofire = true;
 
-        //flags |= WeaponConstants.FLAG_DUAL;
-        //flags |= WeaponConstants.FLAG_SILENCED;
-
-
         if ((flags & WeaponConstants.FLAG_DUAL) == WeaponConstants.FLAG_DUAL) {
             if ((flags & WeaponConstants.FLAG_SILENCED) == WeaponConstants.FLAG_SILENCED) {
                 modelInstance = new ModelInstance(AssetLoader.pistolSilencedDual);

@@ -77,7 +77,7 @@ public abstract class Gun {
         sound = Gdx.app.getPreferences("settings").getBoolean("sound");
     }
 
-    public void fire() {
+    public void fire(int number) {
         if (canShoot) {
             bulletCasingExpulsionImpulse.set(-2 + MathUtils.random(-.5f, .5f), 2 + MathUtils.random(-.2f, .2f), -.2f + MathUtils.random(-.5f, .5f));
             bulletCasingExpulsionImpulse.rotate(player.getCurrentRotationAngle(), 0, 1, 0);
@@ -108,15 +108,23 @@ public abstract class Gun {
             }
 
             if (altFire) {
-                EntityManager.instance().spawnBullet(player.getModelInstance().transform.cpy().translate(bulletTranslationAlt), new ModelInstance(bulletModel), player.getCurrentRotationAngle(), bulletSpeed, damage, accuracy);
+                for (int i = 0; i < number; i++) {
+                    EntityManager.instance().spawnBullet(player.getModelInstance().transform.cpy().translate(bulletTranslationAlt), new ModelInstance(bulletModel), player.getCurrentRotationAngle(), bulletSpeed, damage, accuracy);
+                }
                 //EntityManager.instance().spawnBulletCasing(player.getModelInstance().transform.cpy().translate(bulletCasingTranslationAlt), new ModelInstance(bulletCasingModel), bulletCasingExpulsionImpulse.cpy());
             } else {
-                EntityManager.instance().spawnBullet(player.getModelInstance().transform.cpy().translate(bulletTranslation), new ModelInstance(bulletModel), player.getCurrentRotationAngle(), bulletSpeed, damage, accuracy);
+                for (int i = 0 ; i < number; i++) {
+                    EntityManager.instance().spawnBullet(player.getModelInstance().transform.cpy().translate(bulletTranslation), new ModelInstance(bulletModel), player.getCurrentRotationAngle(), bulletSpeed, damage, accuracy);
+                }
                 //EntityManager.instance().spawnBulletCasing(player.getModelInstance().transform.cpy().translate(bulletCasingTranslation), new ModelInstance(bulletCasingModel), bulletCasingExpulsionImpulse.cpy());
             }
 
             altFire = !altFire;
         }
+    }
+
+    public void fire() {
+        fire(1);
     }
 
     public void render(ModelBatch modelBatch, Environment environment) {

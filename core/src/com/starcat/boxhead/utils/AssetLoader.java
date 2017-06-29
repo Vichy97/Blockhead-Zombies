@@ -81,6 +81,7 @@ public final class AssetLoader implements Disposable {
 
     public static Model bulletPistol;
     public static Model bulletSniper;
+    public static Model bulletShotgun;
     public static Model bulletUzi;
     public static Model bulletAssaultRifle;
     public static Model casingPistol;
@@ -193,6 +194,7 @@ public final class AssetLoader implements Disposable {
 
         manager.load("objects/projectiles/bullet_pistol.g3db", Model.class);
         manager.load("objects/projectiles/bullet_sniper.g3db", Model.class);
+        manager.load("objects/projectiles/bullet_shotgun.g3db", Model.class);
         manager.load("objects/projectiles/bullet_uzi.g3db", Model.class);
         manager.load("objects/projectiles/bullet_assault_rifle.g3db", Model.class);
 
@@ -404,6 +406,7 @@ public final class AssetLoader implements Disposable {
 
         bulletPistol = manager.get("objects/projectiles/bullet_pistol.g3db", Model.class);
         bulletSniper = manager.get("objects/projectiles/bullet_sniper.g3db", Model.class);
+        bulletShotgun = manager.get("objects/projectiles/bullet_shotgun.g3db", Model.class);
         bulletUzi = manager.get("objects/projectiles/bullet_uzi.g3db", Model.class);
         bulletAssaultRifle = manager.get("objects/projectiles/bullet_assault_rifle.g3db", Model.class);
 

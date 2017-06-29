@@ -133,12 +133,16 @@ public class Player extends Entity implements InputProcessor {
     public void switchGunLeft() {
         if (currentWeapon > 0) {
             currentWeapon--;
+        } else if (currentWeapon == 0) {
+            currentWeapon = guns.size() - 1;
         }
     }
 
     public void switchGunRight() {
         if (currentWeapon < (guns.size() - 1)) {
             currentWeapon++;
+        } else if (currentWeapon == guns.size() - 1) {
+            currentWeapon = 0;
         }
     }
 

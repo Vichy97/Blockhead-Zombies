@@ -17,18 +17,15 @@ public final class Shotgun extends Gun {
     public Shotgun(Player player) {
         super(player);
 
-        damage = 30;
-        accuracy = 5;
-        bulletSpeed = .1f;
+        damage = 20;
+        accuracy = 10;
+        bulletSpeed = .15f;
         rateOfFire = 1;
         reloadTime = 2;
         clipSize = 6;
         ammoInClip = 6;
         extraClips = 3;
         autofire = false;
-
-        //flags |= WeaponConstants.FLAG_SHORT;
-        //flags |= WeaponConstants.FLAG_DUAL;
 
         if ((flags & WeaponConstants.FLAG_DUAL) == WeaponConstants.FLAG_DUAL) {
             if ((flags & WeaponConstants.FLAG_SHORT) == WeaponConstants.FLAG_SHORT) {
@@ -81,6 +78,7 @@ public final class Shotgun extends Gun {
             bulletCasingExpulsionImpulse = new Vector3(WeaponConstants.SHOTGUN_CASING_EXPULSION_IMPULSE);
         }
 
+        bulletModel = AssetLoader.bulletShotgun;
         bulletCasingModel = AssetLoader.casingShotgun;
         fireSound = AssetLoader.pistolSound;
         animationController = new AnimationController(modelInstance);
@@ -92,5 +90,10 @@ public final class Shotgun extends Gun {
 
         ammoSilhouette = new Sprite(AssetLoader.textures.findRegion("ammo_shotgun"));
         ammoSilhouette.setSize(Dimensions.scaleWidth(ammoSilhouette.getRegionWidth()), Dimensions.scaleHeight(ammoSilhouette.getRegionHeight()));
+    }
+
+    @Override
+    public void fire() {
+        fire(5);
     }
 }

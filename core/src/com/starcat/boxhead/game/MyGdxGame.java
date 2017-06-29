@@ -49,7 +49,6 @@ public class MyGdxGame extends Game {
 
 
 
-
     @Override
     public void create() {
         GameUtils.debug(this, "created");

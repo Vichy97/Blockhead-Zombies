@@ -29,9 +29,6 @@ public final class Uzi extends Gun {
         autofire = true;
 
         flags |= WeaponConstants.FLAG_DUAL;
-        //flags |= WeaponConstants.FLAG_SILENCED;
-        //flags |= WeaponConstants.FLAG_ALT_SKIN;
-        //flags |= WeaponConstants.FLAG_SHORT;
 
         if ((flags & WeaponConstants.FLAG_DUAL) == WeaponConstants.FLAG_DUAL) {
             if ((flags & WeaponConstants.FLAG_SILENCED) == WeaponConstants.FLAG_SILENCED) {
